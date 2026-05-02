@@ -38,7 +38,11 @@
           {{ b._id.slice(-8).toUpperCase() }}
         </span>
         <span class="text-text-disabled text-xs hidden sm:inline">·</span>
-        <span class="text-text-disabled text-xs hidden sm:inline">Creado el {{ fmtCreatedAt(b.createdAt) }}</span>
+        <span class="text-text-disabled text-xs hidden sm:inline">Creado {{ fmtCreatedAt(b.createdAt) }}</span>
+        @if (b.updatedAt) {
+          <span class="text-text-disabled text-xs hidden sm:inline">·</span>
+          <span class="text-text-disabled text-xs hidden sm:inline">Editado {{ fmtCreatedAt(b.updatedAt) }}</span>
+        }
       </div>
     </div>
 
@@ -117,19 +121,57 @@
         </div>
         <div class="p-4 space-y-4">
 
-          <!-- Amounts: stacked on mobile, 3-col on sm+ -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div class="bg-bg rounded-xl p-4 flex sm:flex-col items-center sm:items-center justify-between sm:justify-center gap-2 sm:gap-1.5 sm:text-center">
-              <p class="text-text-disabled text-xs uppercase tracking-wide">Total</p>
-              <p class="text-text-primary font-bold text-base sm:text-lg">{{ fmtCOP(b.billing.totalAmount) }}</p>
+          <!-- Price breakdown -->
+          <div class="bg-bg rounded-xl divide-y divide-border/60">
+
+            <!-- Base price -->
+            <div class="flex items-center justify-between px-4 py-3">
+              <div class="flex items-center gap-2">
+                <lucide-icon [img]="Banknote" class="w-4 h-4 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
+                <span class="text-text-secondary text-sm">Precio base</span>
+              </div>
+              <span class="text-text-primary font-semibold text-sm">{{ fmtCOP(b.billing.basePrice) }}</span>
             </div>
-            <div class="bg-bg rounded-xl p-4 flex sm:flex-col items-center sm:items-center justify-between sm:justify-center gap-2 sm:gap-1.5 sm:text-center">
-              <p class="text-text-disabled text-xs uppercase tracking-wide">Recibido</p>
-              <p class="text-success font-bold text-base sm:text-lg">{{ fmtCOP(b.billing.amountReceived) }}</p>
+
+            <!-- Extra services -->
+            @for (svc of b.billing.extraServices; track $index) {
+              <div class="px-4 py-3 space-y-1">
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="text-xs px-2 py-0.5 rounded-lg font-bold shrink-0"
+                      [class]="svc.type === 'CAR' ? 'bg-blue-500/15 text-blue-400' :
+                               svc.type === 'MOTORCYCLE' ? 'bg-orange-500/15 text-orange-400' :
+                               'bg-purple-500/15 text-purple-400'">
+                      {{ svc.type === 'CAR' ? 'Auto' : svc.type === 'MOTORCYCLE' ? 'Moto' : 'Extra' }}
+                    </span>
+                    <span class="text-text-primary text-sm font-medium truncate">{{ svc.description }}</span>
+                  </div>
+                  <span class="text-text-primary font-bold text-sm shrink-0">{{ fmtCOP(svc.price * svc.quantity) }}</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs text-text-disabled pl-1">
+                  <span>{{ fmtCOP(svc.price) }} × {{ svc.quantity }} unidad{{ svc.quantity !== 1 ? 'es' : '' }}</span>
+                </div>
+              </div>
+            }
+
+            <!-- Total -->
+            <div class="flex items-center justify-between px-4 py-3">
+              <span class="text-text-primary font-bold text-sm">Total</span>
+              <span class="text-text-primary font-bold text-lg">{{ fmtCOP(b.billing.totalAmount) }}</span>
             </div>
-            <div class="bg-bg rounded-xl p-4 flex sm:flex-col items-center sm:items-center justify-between sm:justify-center gap-2 sm:gap-1.5 sm:text-center">
-              <p class="text-text-disabled text-xs uppercase tracking-wide">Pendiente</p>
-              <p class="font-bold text-base sm:text-lg" [class]="pending() > 0 ? 'text-warning' : 'text-success'">
+
+          </div>
+
+          <!-- Received / Pending -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-success/5 border border-success/20 rounded-xl p-3 text-center">
+              <p class="text-text-disabled text-xs uppercase tracking-wide mb-1">Recibido</p>
+              <p class="text-success font-bold text-base">{{ fmtCOP(b.billing.amountReceived) }}</p>
+            </div>
+            <div class="rounded-xl p-3 text-center border"
+              [class]="pending() > 0 ? 'bg-warning/5 border-warning/20' : 'bg-success/5 border-success/20'">
+              <p class="text-text-disabled text-xs uppercase tracking-wide mb-1">Pendiente</p>
+              <p class="font-bold text-base" [class]="pending() > 0 ? 'text-warning' : 'text-success'">
                 {{ fmtCOP(pending()) }}
               </p>
             </div>
@@ -205,37 +247,29 @@
 
           <p class="text-text-primary text-xl font-bold">{{ b.group.host.fullName }}</p>
 
-          @if (b.group.host.idNumber || b.group.host.country || b.group.host.city) {
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              @if (b.group.host.idNumber) {
-                <div class="bg-bg rounded-xl p-3 flex sm:flex-col items-center sm:items-start justify-between sm:justify-start gap-2 sm:gap-1.5">
-                  <div class="flex items-center gap-1">
-                    <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                    <span class="text-text-disabled text-xs">Nº ID</span>
-                  </div>
-                  <p class="text-text-primary text-sm font-semibold">{{ b.group.host.idNumber }}</p>
-                </div>
-              }
-              @if (b.group.host.country) {
-                <div class="bg-bg rounded-xl p-3 flex sm:flex-col items-center sm:items-start justify-between sm:justify-start gap-2 sm:gap-1.5">
-                  <div class="flex items-center gap-1">
-                    <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                    <span class="text-text-disabled text-xs">País</span>
-                  </div>
-                  <p class="text-text-primary text-sm font-semibold">{{ b.group.host.country }}</p>
-                </div>
-              }
-              @if (b.group.host.city) {
-                <div class="bg-bg rounded-xl p-3 flex sm:flex-col items-center sm:items-start justify-between sm:justify-start gap-2 sm:gap-1.5">
-                  <div class="flex items-center gap-1">
-                    <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                    <span class="text-text-disabled text-xs">Ciudad</span>
-                  </div>
-                  <p class="text-text-primary text-sm font-semibold">{{ b.group.host.city }}</p>
-                </div>
-              }
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-bg rounded-xl p-3">
+              <div class="flex items-center gap-1 mb-1.5">
+                <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                <span class="text-text-disabled text-xs">Nº ID</span>
+              </div>
+              <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.idNumber || '—' }}</p>
             </div>
-          }
+            <div class="bg-bg rounded-xl p-3">
+              <div class="flex items-center gap-1 mb-1.5">
+                <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                <span class="text-text-disabled text-xs">País</span>
+              </div>
+              <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.country || '—' }}</p>
+            </div>
+            <div class="bg-bg rounded-xl p-3">
+              <div class="flex items-center gap-1 mb-1.5">
+                <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                <span class="text-text-disabled text-xs">Ciudad</span>
+              </div>
+              <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.city || '—' }}</p>
+            </div>
+          </div>
 
           @if (b.group.host.identifications?.length) {
             <div>
@@ -275,37 +309,29 @@
 
             <p class="text-text-primary text-xl font-bold">{{ member.fullName }}</p>
 
-            @if (member.idNumber || member.country || member.city) {
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                @if (member.idNumber) {
-                  <div class="bg-bg rounded-xl p-3 flex sm:flex-col items-center sm:items-start justify-between sm:justify-start gap-2 sm:gap-1.5">
-                    <div class="flex items-center gap-1">
-                      <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                      <span class="text-text-disabled text-xs">Nº ID</span>
-                    </div>
-                    <p class="text-text-primary text-sm font-semibold">{{ member.idNumber }}</p>
-                  </div>
-                }
-                @if (member.country) {
-                  <div class="bg-bg rounded-xl p-3 flex sm:flex-col items-center sm:items-start justify-between sm:justify-start gap-2 sm:gap-1.5">
-                    <div class="flex items-center gap-1">
-                      <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                      <span class="text-text-disabled text-xs">País</span>
-                    </div>
-                    <p class="text-text-primary text-sm font-semibold">{{ member.country }}</p>
-                  </div>
-                }
-                @if (member.city) {
-                  <div class="bg-bg rounded-xl p-3 flex sm:flex-col items-center sm:items-start justify-between sm:justify-start gap-2 sm:gap-1.5">
-                    <div class="flex items-center gap-1">
-                      <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                      <span class="text-text-disabled text-xs">Ciudad</span>
-                    </div>
-                    <p class="text-text-primary text-sm font-semibold">{{ member.city }}</p>
-                  </div>
-                }
+            <div class="grid grid-cols-3 gap-2">
+              <div class="bg-bg rounded-xl p-3">
+                <div class="flex items-center gap-1 mb-1.5">
+                  <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                  <span class="text-text-disabled text-xs">Nº ID</span>
+                </div>
+                <p class="text-text-primary text-sm font-semibold truncate">{{ member.idNumber || '—' }}</p>
               </div>
-            }
+              <div class="bg-bg rounded-xl p-3">
+                <div class="flex items-center gap-1 mb-1.5">
+                  <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                  <span class="text-text-disabled text-xs">País</span>
+                </div>
+                <p class="text-text-primary text-sm font-semibold truncate">{{ member.country || '—' }}</p>
+              </div>
+              <div class="bg-bg rounded-xl p-3">
+                <div class="flex items-center gap-1 mb-1.5">
+                  <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                  <span class="text-text-disabled text-xs">Ciudad</span>
+                </div>
+                <p class="text-text-primary text-sm font-semibold truncate">{{ member.city || '—' }}</p>
+              </div>
+            </div>
 
             @if (member.identifications?.length) {
               <div>
@@ -320,9 +346,12 @@
                           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
                         </svg>
                       </div>
-                      <span class="absolute bottom-1.5 left-1.5 text-xs font-bold bg-black/60 text-white px-2 py-0.5 rounded-lg">
-                        {{ ID_LABELS[photo.type] ?? photo.type }}
-                      </span>
+                      <div class="absolute bottom-1.5 left-1.5 right-1.5 flex items-end justify-between gap-1">
+                        <span class="text-xs font-bold bg-black/60 text-white px-2 py-0.5 rounded-lg">{{ ID_LABELS[photo.type] ?? photo.type }}</span>
+                        @if (photo.uploadedAt) {
+                          <span class="text-xs bg-black/50 text-white/70 px-1.5 py-0.5 rounded-lg">{{ fmtDate(photo.uploadedAt) }}</span>
+                        }
+                      </div>
                     </div>
                   }
                 </div>

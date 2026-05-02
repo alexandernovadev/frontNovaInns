@@ -37,6 +37,7 @@ export interface IBooking {
   billing: IBilling;
   observations: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface BookingPage {
