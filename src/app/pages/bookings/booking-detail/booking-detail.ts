@@ -70,6 +70,7 @@ export class BookingDetailComponent implements OnInit {
   }
 
   goBack() { this.router.navigate(['/bookings']); }
+  goEdit() { this.router.navigate(['/bookings', this.booking()!._id, 'edit']); }
 
   openPayment() { this.payAmount = 0; this.showPayment.set(true); }
 

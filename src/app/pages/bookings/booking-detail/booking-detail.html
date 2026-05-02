@@ -56,6 +56,12 @@
           <span class="text-sm hidden sm:inline">Registrar pago</span>
         </button>
       }
+      <button (click)="goEdit()"
+        class="flex items-center gap-2 px-3 py-2 rounded-xl bg-brand/10 text-brand hover:bg-brand/20
+               font-bold transition-colors cursor-pointer">
+        <lucide-icon [img]="Pencil" class="w-4 h-4 shrink-0" [strokeWidth]="2"/>
+        <span class="text-sm hidden sm:inline">Editar</span>
+      </button>
       <button (click)="showDelete.set(true)"
         class="p-2 rounded-xl text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
         <lucide-icon [img]="Trash2" class="w-4 h-4" [strokeWidth]="2"/>

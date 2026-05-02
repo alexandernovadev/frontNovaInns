@@ -17,6 +17,14 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/bookings/bookings').then(m => m.BookingsComponent),
       },
       {
+        path: 'bookings/new',
+        loadComponent: () => import('./pages/bookings/booking-form/booking-form').then(m => m.BookingFormComponent),
+      },
+      {
+        path: 'bookings/:id/edit',
+        loadComponent: () => import('./pages/bookings/booking-form/booking-form').then(m => m.BookingFormComponent),
+      },
+      {
         path: 'bookings/:id',
         loadComponent: () => import('./pages/bookings/booking-detail/booking-detail').then(m => m.BookingDetailComponent),
       },
