@@ -61,30 +61,30 @@
   } @else if (bookings().length === 0) {
     <div class="text-center py-16 text-text-disabled">Sin reservas</div>
   } @else {
-    <div class="grid gap-4 lg:grid-cols-2">
+    <div class="grid gap-4 grid-cols-2 xl:grid-cols-4">
       @for (b of bookings(); track b._id) {
-        <div class="bg-surface border border-border border-l-4 rounded-2xl overflow-hidden
-                    hover:shadow-lg transition-all"
-          [class]="BORDER_CLASS[b.billing.status]">
+        <div class="bg-surface border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all">
 
           <!-- Platform strip -->
           <div class="px-5 pt-4 pb-3 flex items-center justify-between gap-3">
-            <span class="px-3 py-1.5 rounded-xl text-sm font-bold tracking-wide flex items-center gap-2"
+            <span class="p-1.5 rounded-xl flex items-center"
               [class]="PLATFORM_CLASS[b.billing.platform]">
               @if (b.billing.platform === 'Booking') {
-                <img src="/assets/images/booking_logo.png" class="w-10 h-10 shrink-0 object-contain" alt="Booking"/>
+                <img src="/assets/images/booking_logo.png" class="w-12 h-12 shrink-0 object-contain" alt="Booking"/>
               }
               @if (b.billing.platform === 'AirBnB') {
-                <img src="/assets/images/airbnb_logo.png" class="w-10 h-10 shrink-0 object-contain" alt="AirBnB"/>
+                <img src="/assets/images/airbnb_logo.png" class="w-12 h-12 shrink-0 object-contain" alt="AirBnB"/>
               }
               @if (b.billing.platform === 'Directo') {
-                <img src="/assets/images/LogoNovaInns.png" class="w-10 h-10 shrink-0 object-contain" alt="Nova Inns"/>
+                <img src="/assets/images/LogoNovaInns.png" class="w-12 h-12 shrink-0 object-contain" alt="Nova Inns"/>
               }
-              {{ b.billing.platform }}
             </span>
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-1 rounded-lg text-xs font-bold"
+              <span class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5"
                 [class]="STATUS_CLASS[b.billing.status]">
+                <span class="w-1.5 h-1.5 rounded-full"
+                  [class]="b.billing.status === 'PAGADO' ? 'bg-success' : b.billing.status === 'NO SHOW' ? 'bg-error' : 'bg-warning'">
+                </span>
                 {{ b.billing.status }}
               </span>
               <button (click)="openEdit(b, $event)" title="Editar"
@@ -303,8 +303,8 @@
               <div class="p-4 flex gap-3">
                 @for (p of PLATFORMS; track p) {
                   <button (click)="formGeneral.platform = p"
-                    class="flex-1 py-3 rounded-xl text-sm font-bold border transition-all cursor-pointer flex flex-col items-center gap-1.5"
-                    [class]="formGeneral.platform === p ? PLATFORM_CLASS[p] : 'border-border text-text-secondary hover:text-text-primary'">
+                    class="flex-1 py-3 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-center"
+                    [class]="formGeneral.platform === p ? PLATFORM_CLASS[p] : 'border-border hover:border-border/60'">
                     @if (p === 'Booking') {
                       <img src="/assets/images/booking_logo.png" class="w-14 h-14 object-contain" alt="Booking"/>
                     }
@@ -314,7 +314,6 @@
                     @if (p === 'Directo') {
                       <img src="/assets/images/LogoNovaInns.png" class="w-14 h-14 object-contain" alt="Nova Inns"/>
                     }
-                    {{ p }}
                   </button>
                 }
               </div>

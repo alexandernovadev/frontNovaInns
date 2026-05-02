@@ -410,6 +410,9 @@
   .min-h-screen {
     min-height: 100vh;
   }
+  .w-1\.5 {
+    width: calc(var(--spacing) * 1.5);
+  }
   .w-3\.5 {
     width: calc(var(--spacing) * 3.5);
   }
@@ -1308,6 +1311,16 @@
       border-width: 0px;
     }
   }
+  .hover\:border-border\/60 {
+    &:hover {
+      @media (hover: hover) {
+        border-color: color-mix(in srgb, #2A2A2E 60%, transparent);
+        @supports (color: color-mix(in lab, red, red)) {
+          border-color: color-mix(in oklab, var(--color-border) 60%, transparent);
+        }
+      }
+    }
+  }
   .hover\:border-border\/80 {
     &:hover {
       @media (hover: hover) {
@@ -1595,6 +1608,11 @@
   }
   .lg\:grid-cols-4 {
     @media (width >= 64rem) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .xl\:grid-cols-4 {
+    @media (width >= 80rem) {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }

@@ -91,11 +91,6 @@ export class BookingsComponent implements OnInit {
     'FALTA PAGO': 'bg-warning/15 text-warning',
     'NO SHOW':    'bg-error/15 text-error',
   };
-  readonly BORDER_CLASS: Record<string, string> = {
-    'PAGADO':     'border-l-success',
-    'FALTA PAGO': 'border-l-warning',
-    'NO SHOW':    'border-l-error',
-  };
 
   ngOnInit() {
     this.load();
