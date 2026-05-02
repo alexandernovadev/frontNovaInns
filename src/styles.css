@@ -290,6 +290,9 @@
   .mt-1 {
     margin-top: calc(var(--spacing) * 1);
   }
+  .mt-1\.5 {
+    margin-top: calc(var(--spacing) * 1.5);
+  }
   .mt-6 {
     margin-top: calc(var(--spacing) * 6);
   }
@@ -1022,6 +1025,9 @@
   }
   .p-8 {
     padding: calc(var(--spacing) * 8);
+  }
+  .px-1 {
+    padding-inline: calc(var(--spacing) * 1);
   }
   .px-1\.5 {
     padding-inline: calc(var(--spacing) * 1.5);

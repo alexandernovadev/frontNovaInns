@@ -306,6 +306,17 @@ export class BookingsComponent implements OnInit {
     return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
+  fmtCheckDate(d: string): string {
+    if (!d) return '';
+    const date = new Date(d + 'T12:00:00');
+    const weekday = date.toLocaleDateString('es-CO', { weekday: 'long' });
+    const day = date.getDate();
+    const month = date.toLocaleDateString('es-CO', { month: 'long' });
+    const year = String(date.getFullYear()).slice(2);
+    const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+    return `${cap(weekday)} | ${day}-${cap(month)}/${year}`;
+  }
+
   formPaidPct() {
     if (!this.formBilling.basePrice) return 0;
     return Math.min(100, Math.round(this.formBilling.amountReceived / this.formBilling.basePrice * 100));
