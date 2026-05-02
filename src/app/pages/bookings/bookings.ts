@@ -2,7 +2,11 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BookingsService, IBooking, FinancialSummary } from '../../core/services/bookings.service';
 import { ApartmentsService, IApartment } from '../../core/services/apartments.service';
-import { LucideAngularModule, CalendarDays } from 'lucide-angular';
+import {
+  LucideAngularModule, CalendarDays, Building2, LogIn, LogOut,
+  MessageSquare, User, UserPlus, X, CreditCard, Banknote, Wallet,
+  ScanLine, MapPin, IdCard,
+} from 'lucide-angular';
 
 type ModalTab = 'general' | 'guests' | 'billing';
 type IdType = 'FRONT' | 'BACK' | 'SELFIE';
@@ -16,7 +20,20 @@ interface GuestForm  { fullName: string; idNumber: string; country: string; city
   templateUrl: './bookings.html',
 })
 export class BookingsComponent implements OnInit {
-  readonly CalendarDays = CalendarDays;
+  readonly CalendarDays   = CalendarDays;
+  readonly Building2      = Building2;
+  readonly LogIn          = LogIn;
+  readonly LogOut         = LogOut;
+  readonly MessageSquare  = MessageSquare;
+  readonly User           = User;
+  readonly UserPlus       = UserPlus;
+  readonly X              = X;
+  readonly CreditCard     = CreditCard;
+  readonly Banknote       = Banknote;
+  readonly Wallet         = Wallet;
+  readonly ScanLine       = ScanLine;
+  readonly MapPin         = MapPin;
+  readonly IdCard         = IdCard;
 
   private svc    = inject(BookingsService);
   private aptSvc = inject(ApartmentsService);
@@ -52,10 +69,10 @@ export class BookingsComponent implements OnInit {
   // Upload tracking: key = 'host' | 'member-{idx}', value = IdType being uploaded
   uploading: Record<string, IdType | null> = {};
 
-  readonly MODAL_TABS: { key: ModalTab; label: string }[] = [
-    { key: 'general', label: 'General'    },
-    { key: 'guests',  label: 'Huéspedes'  },
-    { key: 'billing', label: 'Pagos'      },
+  readonly MODAL_TABS: { key: ModalTab; label: string; icon: any }[] = [
+    { key: 'general', label: 'General',    icon: Building2   },
+    { key: 'guests',  label: 'Huéspedes',  icon: User        },
+    { key: 'billing', label: 'Pagos',      icon: CreditCard  },
   ];
 
   readonly PLATFORMS = ['Booking', 'AirBnB', 'Directo'] as const;
@@ -287,6 +304,11 @@ export class BookingsComponent implements OnInit {
 
   fmtDate(d: string) {
     return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  formPaidPct() {
+    if (!this.formBilling.basePrice) return 0;
+    return Math.min(100, Math.round(this.formBilling.amountReceived / this.formBilling.basePrice * 100));
   }
 
   pages() { return Array.from({ length: this.meta().totalPages }, (_, i) => i + 1); }

@@ -13,6 +13,10 @@ import {
   ChefHat, Utensils, UtensilsCrossed,
   Tv, Shirt, Wind,
   Sofa, Bed, LayoutGrid, Car, Armchair,
+  Package, Lamp, Layers, ShowerHead, Droplets, CloudRain,
+  CheckCircle2, AlertTriangle, XCircle,
+  Building2, ArrowLeft, Pencil, Trash2,
+  Camera,
 } from 'lucide-angular';
 
 type Tab = 'general' | 'rooms' | 'bathrooms' | 'equipment' | 'photos';
@@ -38,6 +42,20 @@ export class ApartmentDetailComponent implements OnInit {
   readonly LayoutGrid      = LayoutGrid;
   readonly Car             = Car;
   readonly Armchair        = Armchair;
+  readonly Package         = Package;
+  readonly Lamp            = Lamp;
+  readonly Layers          = Layers;
+  readonly ShowerHead      = ShowerHead;
+  readonly Droplets        = Droplets;
+  readonly CloudRain       = CloudRain;
+  readonly CheckCircle2    = CheckCircle2;
+  readonly AlertTriangle   = AlertTriangle;
+  readonly XCircle         = XCircle;
+  readonly Building2       = Building2;
+  readonly ArrowLeft       = ArrowLeft;
+  readonly Pencil          = Pencil;
+  readonly Trash2          = Trash2;
+  readonly Camera          = Camera;
 
   private svc = inject(ApartmentsService);
   private route = inject(ActivatedRoute);
@@ -65,12 +83,12 @@ export class ApartmentDetailComponent implements OnInit {
   // Photos
   uploadingPhoto = signal(false);
 
-  readonly TABS: { key: Tab; label: string }[] = [
-    { key: 'general', label: 'General' },
-    { key: 'rooms', label: 'Habitaciones' },
-    { key: 'bathrooms', label: 'Baños' },
-    { key: 'equipment', label: 'Equipamiento' },
-    { key: 'photos', label: 'Fotos' },
+  readonly TABS: { key: Tab; label: string; icon: any }[] = [
+    { key: 'general',   label: 'General',        icon: Building2   },
+    { key: 'rooms',     label: 'Habitaciones',   icon: Bed         },
+    { key: 'bathrooms', label: 'Baños',          icon: ShowerHead  },
+    { key: 'equipment', label: 'Equipamiento',   icon: Package     },
+    { key: 'photos',    label: 'Fotos',          icon: Camera      },
   ];
 
   readonly STATUS_LABEL: Record<string, string> = {

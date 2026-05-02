@@ -78,7 +78,7 @@
                 <img src="/assets/images/airbnb_logo.png" class="w-10 h-10 shrink-0 object-contain" alt="AirBnB"/>
               }
               @if (b.billing.platform === 'Directo') {
-                <img src="/assets/images/logo.png" class="w-10 h-10 shrink-0 object-contain" alt="Nova Inns"/>
+                <img src="/assets/images/LogoNovaInns.png" class="w-10 h-10 shrink-0 object-contain" alt="Nova Inns"/>
               }
               {{ b.billing.platform }}
             </span>
@@ -212,9 +212,14 @@
 
       <!-- Modal header -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
-        <h2 class="text-text-primary font-bold text-lg">{{ isEditing ? 'Editar reserva' : 'Nueva reserva' }}</h2>
-        <button (click)="showCreate.set(false)" class="text-text-secondary hover:text-text-primary cursor-pointer">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-brand/10 flex items-center justify-center">
+            <lucide-icon [img]="CalendarDays" class="w-5 h-5 text-brand" [strokeWidth]="2"/>
+          </div>
+          <h2 class="text-text-primary font-bold text-lg">{{ isEditing ? 'Editar reserva' : 'Nueva reserva' }}</h2>
+        </div>
+        <button (click)="showCreate.set(false)" class="p-1.5 text-text-secondary hover:text-text-primary hover:bg-hover rounded-lg transition-colors cursor-pointer">
+          <lucide-icon [img]="X" class="w-5 h-5" [strokeWidth]="2"/>
         </button>
       </div>
 
@@ -222,10 +227,9 @@
       <div class="flex gap-1 p-2 border-b border-border shrink-0">
         @for (t of MODAL_TABS; track t.key) {
           <button (click)="modalTab.set(t.key)"
-            class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer"
-            [class]="modalTab() === t.key
-              ? 'bg-brand text-bg'
-              : 'text-text-secondary hover:text-text-primary'">
+            class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+            [class]="modalTab() === t.key ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
+            <lucide-icon [img]="t.icon" class="w-4 h-4" [strokeWidth]="2"/>
             {{ t.label }}
           </button>
         }
@@ -237,37 +241,63 @@
         <!-- ===== GENERAL ===== -->
         @if (modalTab() === 'general') {
           <div class="p-6 space-y-5">
-            <div>
-              <label class="block text-text-secondary text-sm mb-1.5">Apartamento</label>
-              <select [(ngModel)]="formGeneral.apartmentId"
-                class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
-                       focus:outline-none focus:border-brand cursor-pointer">
-                <option value="">Seleccionar apartamento</option>
-                @for (a of apartments(); track a._id) {
-                  <option [value]="a._id">{{ a.internalName }}</option>
-                }
-              </select>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-text-secondary text-sm mb-1.5">Check-in</label>
-                <input type="date" [(ngModel)]="formGeneral.checkIn"
-                  class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
-                         focus:outline-none focus:border-brand [color-scheme:dark]"/>
+
+            <!-- Apartamento -->
+            <div class="bg-bg border border-border rounded-2xl overflow-hidden">
+              <div class="flex items-center gap-2 px-4 py-3 border-b border-border bg-brand/5">
+                <lucide-icon [img]="Building2" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
+                <span class="text-brand text-sm font-semibold">Apartamento</span>
               </div>
-              <div>
-                <label class="block text-text-secondary text-sm mb-1.5">Check-out</label>
-                <input type="date" [(ngModel)]="formGeneral.checkOut"
+              <div class="p-4">
+                <select [(ngModel)]="formGeneral.apartmentId"
                   class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
-                         focus:outline-none focus:border-brand [color-scheme:dark]"/>
+                         focus:outline-none focus:border-brand cursor-pointer">
+                  <option value="">Seleccionar apartamento</option>
+                  @for (a of apartments(); track a._id) {
+                    <option [value]="a._id">{{ a.internalName }}</option>
+                  }
+                </select>
               </div>
             </div>
-            <div>
-              <label class="block text-text-secondary text-sm mb-1.5">Plataforma</label>
-              <div class="flex gap-2">
+
+            <!-- Fechas -->
+            <div class="bg-bg border border-border rounded-2xl overflow-hidden">
+              <div class="flex items-center gap-2 px-4 py-3 border-b border-border bg-indigo-500/5">
+                <lucide-icon [img]="CalendarDays" class="w-4 h-4 text-indigo-400" [strokeWidth]="2"/>
+                <span class="text-indigo-400 text-sm font-semibold">Estancia</span>
+              </div>
+              <div class="p-4 grid grid-cols-2 gap-4">
+                <div>
+                  <label class="flex items-center gap-1.5 text-text-secondary text-xs mb-2">
+                    <lucide-icon [img]="LogIn" class="w-3.5 h-3.5 text-success" [strokeWidth]="2"/>
+                    Check-in
+                  </label>
+                  <input type="date" [(ngModel)]="formGeneral.checkIn"
+                    class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
+                           focus:outline-none focus:border-success scheme-dark transition-colors"/>
+                </div>
+                <div>
+                  <label class="flex items-center gap-1.5 text-text-secondary text-xs mb-2">
+                    <lucide-icon [img]="LogOut" class="w-3.5 h-3.5 text-error" [strokeWidth]="2"/>
+                    Check-out
+                  </label>
+                  <input type="date" [(ngModel)]="formGeneral.checkOut"
+                    class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
+                           focus:outline-none focus:border-error scheme-dark transition-colors"/>
+                </div>
+              </div>
+            </div>
+
+            <!-- Plataforma -->
+            <div class="bg-bg border border-border rounded-2xl overflow-hidden">
+              <div class="flex items-center gap-2 px-4 py-3 border-b border-border">
+                <lucide-icon [img]="Wallet" class="w-4 h-4 text-text-secondary" [strokeWidth]="2"/>
+                <span class="text-text-secondary text-sm font-semibold">Plataforma</span>
+              </div>
+              <div class="p-4 flex gap-3">
                 @for (p of PLATFORMS; track p) {
                   <button (click)="formGeneral.platform = p"
-                    class="flex-1 py-3 rounded-xl text-sm font-bold border transition-colors cursor-pointer flex flex-col items-center gap-1.5"
+                    class="flex-1 py-3 rounded-xl text-sm font-bold border transition-all cursor-pointer flex flex-col items-center gap-1.5"
                     [class]="formGeneral.platform === p ? PLATFORM_CLASS[p] : 'border-border text-text-secondary hover:text-text-primary'">
                     @if (p === 'Booking') {
                       <img src="/assets/images/booking_logo.png" class="w-14 h-14 object-contain" alt="Booking"/>
@@ -276,130 +306,85 @@
                       <img src="/assets/images/airbnb_logo.png" class="w-14 h-14 object-contain" alt="AirBnB"/>
                     }
                     @if (p === 'Directo') {
-                      <img src="/assets/images/logo.png" class="w-14 h-14 object-contain" alt="Nova Inns"/>
+                      <img src="/assets/images/LogoNovaInns.png" class="w-14 h-14 object-contain" alt="Nova Inns"/>
                     }
                     {{ p }}
                   </button>
                 }
               </div>
             </div>
-            <div>
-              <label class="block text-text-secondary text-sm mb-1.5">Observaciones</label>
-              <textarea [(ngModel)]="formGeneral.observations" rows="3" placeholder="Notas adicionales..." autocomplete="off"
-                class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-                       placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand resize-none"></textarea>
+
+            <!-- Observaciones -->
+            <div class="bg-bg border border-border rounded-2xl overflow-hidden">
+              <div class="flex items-center gap-2 px-4 py-3 border-b border-border">
+                <lucide-icon [img]="MessageSquare" class="w-4 h-4 text-text-secondary" [strokeWidth]="2"/>
+                <span class="text-text-secondary text-sm font-semibold">Observaciones</span>
+              </div>
+              <div class="p-4">
+                <textarea [(ngModel)]="formGeneral.observations" rows="3" placeholder="Notas adicionales..." autocomplete="off"
+                  class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+                         placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand resize-none"></textarea>
+              </div>
             </div>
+
           </div>
         }
 
         <!-- ===== HUÉSPEDES ===== -->
         @if (modalTab() === 'guests') {
-          <div class="p-6 space-y-6">
+          <div class="p-6 space-y-5">
 
             <!-- Host -->
-            <div class="space-y-3">
-              <div class="flex items-center gap-2">
-                <span class="w-5 h-5 bg-brand rounded-full flex items-center justify-center text-bg text-xs font-bold shrink-0">1</span>
-                <h3 class="text-text-primary font-semibold">Huésped principal</h3>
+            <div class="bg-bg border border-border rounded-2xl overflow-hidden">
+              <div class="flex items-center gap-2 px-4 py-3 border-b border-brand/20 bg-brand/5">
+                <lucide-icon [img]="User" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
+                <span class="text-brand text-sm font-semibold">Huésped principal</span>
               </div>
-              <input type="text" [(ngModel)]="host.fullName" placeholder="Nombre completo" autocomplete="off"
-                class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-                       placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
-              <div class="grid grid-cols-3 gap-3">
-                <input type="text" [(ngModel)]="host.idNumber" placeholder="N° de ID" autocomplete="off"
-                  class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-                         placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
-                <input type="text" [(ngModel)]="host.country" placeholder="País" autocomplete="off"
-                  class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-                         placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
-                <input type="text" [(ngModel)]="host.city" placeholder="Ciudad" autocomplete="off"
-                  class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-                         placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
-              </div>
-              <div class="grid grid-cols-3 gap-3">
-                @for (type of ID_TYPES; track type) {
-                  <div>
-                    @if (getPhoto(host, type); as photo) {
-                      <div class="relative rounded-xl overflow-hidden aspect-video bg-bg group">
-                        <img [src]="photo.url" class="w-full h-full object-cover"/>
-                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <button (click)="removePhoto(host, type)"
-                            class="p-1.5 bg-error rounded-lg text-white cursor-pointer">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                          </button>
-                        </div>
-                        <span class="absolute bottom-1 left-1 text-xs font-bold bg-black/60 text-white px-1.5 py-0.5 rounded">{{ ID_LABELS[type] }}</span>
-                      </div>
-                    } @else {
-                      <label class="flex flex-col items-center justify-center gap-1 border border-dashed border-border
-                                    rounded-xl aspect-video cursor-pointer hover:border-brand transition-colors group">
-                        <input type="file" accept="image/*" class="hidden" (change)="onHostPhoto($event, type)"/>
-                        @if (uploading['host'] === type) {
-                          <span class="text-text-disabled text-xs">Subiendo...</span>
-                        } @else {
-                          <svg class="w-5 h-5 text-text-disabled group-hover:text-brand transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-                          </svg>
-                          <span class="text-text-disabled text-xs group-hover:text-brand">{{ ID_LABELS[type] }}</span>
-                        }
-                      </label>
-                    }
-                  </div>
-                }
-              </div>
-            </div>
-
-            <!-- Members -->
-            @for (member of members; track $index) {
-              <div class="space-y-3 border border-border rounded-2xl p-4">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="w-5 h-5 bg-border rounded-full flex items-center justify-center text-text-secondary text-xs font-bold shrink-0">{{ $index + 2 }}</span>
-                    <h3 class="text-text-primary font-semibold">Acompañante {{ $index + 1 }}</h3>
-                  </div>
-                  <button (click)="removeMember($index)"
-                    class="p-1.5 text-text-secondary hover:text-error hover:bg-error/10 rounded-lg transition-colors cursor-pointer">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                  </button>
-                </div>
-                <input type="text" [(ngModel)]="member.fullName" placeholder="Nombre completo" autocomplete="off"
+              <div class="p-4 space-y-3">
+                <input type="text" [(ngModel)]="host.fullName" placeholder="Nombre completo" autocomplete="off"
                   class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
                          placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
                 <div class="grid grid-cols-3 gap-3">
-                  <input type="text" [(ngModel)]="member.idNumber" placeholder="N° de ID" autocomplete="off"
-                    class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-                           placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
-                  <input type="text" [(ngModel)]="member.country" placeholder="País" autocomplete="off"
-                    class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-                           placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
-                  <input type="text" [(ngModel)]="member.city" placeholder="Ciudad" autocomplete="off"
-                    class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-                           placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                  <div class="relative">
+                    <lucide-icon [img]="IdCard" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none" [strokeWidth]="1.8"/>
+                    <input type="text" [(ngModel)]="host.idNumber" placeholder="N° de ID" autocomplete="off"
+                      class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
+                             placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                  </div>
+                  <div class="relative">
+                    <lucide-icon [img]="MapPin" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none" [strokeWidth]="1.8"/>
+                    <input type="text" [(ngModel)]="host.country" placeholder="País" autocomplete="off"
+                      class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
+                             placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                  </div>
+                  <div class="relative">
+                    <lucide-icon [img]="MapPin" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none" [strokeWidth]="1.8"/>
+                    <input type="text" [(ngModel)]="host.city" placeholder="Ciudad" autocomplete="off"
+                      class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
+                             placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                  </div>
                 </div>
                 <div class="grid grid-cols-3 gap-3">
                   @for (type of ID_TYPES; track type) {
                     <div>
-                      @if (getPhoto(member, type); as photo) {
+                      @if (getPhoto(host, type); as photo) {
                         <div class="relative rounded-xl overflow-hidden aspect-video bg-bg group">
                           <img [src]="photo.url" class="w-full h-full object-cover"/>
                           <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <button (click)="removePhoto(member, type)"
-                              class="p-1.5 bg-error rounded-lg text-white cursor-pointer">
-                              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <button (click)="removePhoto(host, type)" class="p-1.5 bg-error rounded-lg text-white cursor-pointer">
+                              <lucide-icon [img]="X" class="w-4 h-4" [strokeWidth]="2"/>
                             </button>
                           </div>
                           <span class="absolute bottom-1 left-1 text-xs font-bold bg-black/60 text-white px-1.5 py-0.5 rounded">{{ ID_LABELS[type] }}</span>
                         </div>
                       } @else {
-                        <label class="flex flex-col items-center justify-center gap-1 border border-dashed border-border
+                        <label class="flex flex-col items-center justify-center gap-1.5 border border-dashed border-border
                                       rounded-xl aspect-video cursor-pointer hover:border-brand transition-colors group">
-                          <input type="file" accept="image/*" class="hidden" (change)="onMemberPhoto($event, $index, type)"/>
-                          @if (uploading['member-' + $index] === type) {
+                          <input type="file" accept="image/*" class="hidden" (change)="onHostPhoto($event, type)"/>
+                          @if (uploading['host'] === type) {
                             <span class="text-text-disabled text-xs">Subiendo...</span>
                           } @else {
-                            <svg class="w-5 h-5 text-text-disabled group-hover:text-brand transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-                            </svg>
+                            <lucide-icon [img]="ScanLine" class="w-5 h-5 text-text-disabled group-hover:text-brand transition-colors" [strokeWidth]="1.8"/>
                             <span class="text-text-disabled text-xs group-hover:text-brand">{{ ID_LABELS[type] }}</span>
                           }
                         </label>
@@ -408,14 +393,81 @@
                   }
                 </div>
               </div>
+            </div>
+
+            <!-- Members -->
+            @for (member of members; track $index) {
+              <div class="bg-bg border border-border rounded-2xl overflow-hidden">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-border">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-lg bg-border flex items-center justify-center text-text-secondary text-xs font-bold shrink-0">{{ $index + 2 }}</div>
+                    <span class="text-text-primary text-sm font-semibold">Acompañante {{ $index + 1 }}</span>
+                  </div>
+                  <button (click)="removeMember($index)"
+                    class="p-1.5 text-text-secondary hover:text-error hover:bg-error/10 rounded-lg transition-colors cursor-pointer">
+                    <lucide-icon [img]="X" class="w-4 h-4" [strokeWidth]="2"/>
+                  </button>
+                </div>
+                <div class="p-4 space-y-3">
+                  <input type="text" [(ngModel)]="member.fullName" placeholder="Nombre completo" autocomplete="off"
+                    class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+                           placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                  <div class="grid grid-cols-3 gap-3">
+                    <div class="relative">
+                      <lucide-icon [img]="IdCard" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none" [strokeWidth]="1.8"/>
+                      <input type="text" [(ngModel)]="member.idNumber" placeholder="N° de ID" autocomplete="off"
+                        class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
+                               placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                    </div>
+                    <div class="relative">
+                      <lucide-icon [img]="MapPin" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none" [strokeWidth]="1.8"/>
+                      <input type="text" [(ngModel)]="member.country" placeholder="País" autocomplete="off"
+                        class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
+                               placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                    </div>
+                    <div class="relative">
+                      <lucide-icon [img]="MapPin" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none" [strokeWidth]="1.8"/>
+                      <input type="text" [(ngModel)]="member.city" placeholder="Ciudad" autocomplete="off"
+                        class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
+                               placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-3">
+                    @for (type of ID_TYPES; track type) {
+                      <div>
+                        @if (getPhoto(member, type); as photo) {
+                          <div class="relative rounded-xl overflow-hidden aspect-video bg-bg group">
+                            <img [src]="photo.url" class="w-full h-full object-cover"/>
+                            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                              <button (click)="removePhoto(member, type)" class="p-1.5 bg-error rounded-lg text-white cursor-pointer">
+                                <lucide-icon [img]="X" class="w-4 h-4" [strokeWidth]="2"/>
+                              </button>
+                            </div>
+                            <span class="absolute bottom-1 left-1 text-xs font-bold bg-black/60 text-white px-1.5 py-0.5 rounded">{{ ID_LABELS[type] }}</span>
+                          </div>
+                        } @else {
+                          <label class="flex flex-col items-center justify-center gap-1.5 border border-dashed border-border
+                                        rounded-xl aspect-video cursor-pointer hover:border-brand transition-colors group">
+                            <input type="file" accept="image/*" class="hidden" (change)="onMemberPhoto($event, $index, type)"/>
+                            @if (uploading['member-' + $index] === type) {
+                              <span class="text-text-disabled text-xs">Subiendo...</span>
+                            } @else {
+                              <lucide-icon [img]="ScanLine" class="w-5 h-5 text-text-disabled group-hover:text-brand transition-colors" [strokeWidth]="1.8"/>
+                              <span class="text-text-disabled text-xs group-hover:text-brand">{{ ID_LABELS[type] }}</span>
+                            }
+                          </label>
+                        }
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
             }
 
             <button (click)="addMember()"
-              class="w-full py-3 border border-dashed border-border rounded-2xl text-text-secondary
+              class="w-full py-3.5 border-2 border-dashed border-border rounded-2xl text-text-secondary
                      hover:border-brand hover:text-brand text-sm font-medium transition-colors cursor-pointer flex items-center justify-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-              </svg>
+              <lucide-icon [img]="UserPlus" class="w-4 h-4" [strokeWidth]="2"/>
               Añadir acompañante
             </button>
           </div>
@@ -424,29 +476,47 @@
         <!-- ===== PAGOS ===== -->
         @if (modalTab() === 'billing') {
           <div class="p-6 space-y-5">
-            <div>
-              <label class="block text-text-secondary text-sm mb-1.5">Precio base</label>
-              <input type="text" inputmode="numeric" [value]="fmtNumber(formBilling.basePrice)"
-                (input)="onPriceInput($event, 'basePrice')" placeholder="0" autocomplete="off"
-                class="w-full bg-input border border-border rounded-xl px-4 py-3 text-text-primary text-xl font-bold
-                       focus:outline-none focus:border-brand transition-colors"/>
+
+            <!-- Precios -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="bg-bg border border-border rounded-2xl overflow-hidden">
+                <div class="flex items-center gap-2 px-4 py-3 border-b border-brand/20 bg-brand/5">
+                  <lucide-icon [img]="Banknote" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
+                  <span class="text-brand text-sm font-semibold">Precio base</span>
+                </div>
+                <div class="p-4">
+                  <input type="text" inputmode="numeric" [value]="fmtNumber(formBilling.basePrice)"
+                    (input)="onPriceInput($event, 'basePrice')" placeholder="0" autocomplete="off"
+                    class="w-full bg-input border border-border rounded-xl px-4 py-3 text-text-primary text-2xl font-bold text-center
+                           focus:outline-none focus:border-brand transition-colors"/>
+                </div>
+              </div>
+              <div class="bg-bg border border-border rounded-2xl overflow-hidden">
+                <div class="flex items-center gap-2 px-4 py-3 border-b border-success/20 bg-success/5">
+                  <lucide-icon [img]="CreditCard" class="w-4 h-4 text-success" [strokeWidth]="2"/>
+                  <span class="text-success text-sm font-semibold">Monto recibido</span>
+                </div>
+                <div class="p-4">
+                  <input type="text" inputmode="numeric" [value]="fmtNumber(formBilling.amountReceived)"
+                    (input)="onPriceInput($event, 'amountReceived')" placeholder="0" autocomplete="off"
+                    class="w-full bg-input border border-border rounded-xl px-4 py-3 text-text-primary text-2xl font-bold text-center
+                           focus:outline-none focus:border-success transition-colors"/>
+                </div>
+              </div>
             </div>
-            <div>
-              <label class="block text-text-secondary text-sm mb-1.5">Monto recibido</label>
-              <input type="text" inputmode="numeric" [value]="fmtNumber(formBilling.amountReceived)"
-                (input)="onPriceInput($event, 'amountReceived')" placeholder="0" autocomplete="off"
-                class="w-full bg-input border border-border rounded-xl px-4 py-3 text-text-primary text-xl font-bold
-                       focus:outline-none focus:border-brand transition-colors"/>
-            </div>
-            <div>
-              <label class="block text-text-secondary text-sm mb-1.5">Método de pago</label>
-              <div class="flex gap-2 flex-wrap">
+            <!-- Método de pago -->
+            <div class="bg-bg border border-border rounded-2xl overflow-hidden">
+              <div class="flex items-center gap-2 px-4 py-3 border-b border-border">
+                <lucide-icon [img]="Wallet" class="w-4 h-4 text-text-secondary" [strokeWidth]="2"/>
+                <span class="text-text-secondary text-sm font-semibold">Método de pago</span>
+              </div>
+              <div class="p-4 flex gap-3">
                 @for (m of METHODS; track m) {
                   <button (click)="formBilling.paymentMethod = m"
-                    class="flex-1 flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl text-sm font-medium border transition-colors cursor-pointer"
+                    class="flex-1 flex flex-col items-center gap-2 py-3 rounded-xl text-sm font-bold border-2 transition-all cursor-pointer"
                     [class]="formBilling.paymentMethod === m
-                      ? 'bg-brand/15 text-brand border-brand/30'
-                      : 'border-border text-text-secondary hover:text-text-primary'">
+                      ? 'bg-brand/10 text-brand border-brand/40'
+                      : 'border-border text-text-secondary hover:border-border/80 hover:text-text-primary'">
                     @if (m === 'Efectivo') {
                       <img src="/assets/images/dinero.png" class="w-10 h-10 object-contain" alt="Efectivo"/>
                     }
@@ -454,35 +524,48 @@
                       <img src="/assets/images/nequi.svg" class="w-10 h-10 object-contain" alt="Nequi"/>
                     }
                     @if (m === 'Bancolombia') {
-                      <img src="/assets/images/bancolombia.svg" class="w-10 h-10 bg-white object-contain" alt="Bancolombia"/>
+                      <img src="/assets/images/bancolombia.svg" class="w-10 h-10 rounded-lg bg-white p-0.5 object-contain" alt="Bancolombia"/>
                     }
                     @if (m === 'None') {
-                      <svg class="w-10 h-10 text-text-disabled" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                      </svg>
+                      <div class="w-10 h-10 rounded-xl bg-border/50 flex items-center justify-center">
+                        <lucide-icon [img]="X" class="w-5 h-5 text-text-disabled" [strokeWidth]="2"/>
+                      </div>
                     }
                     {{ m }}
                   </button>
                 }
               </div>
             </div>
+
+            <!-- Resumen -->
             @if (formBilling.basePrice > 0) {
-              <div class="bg-bg rounded-2xl p-4 space-y-2">
-                <div class="flex justify-between text-sm">
-                  <span class="text-text-secondary">Total</span>
-                  <span class="text-text-primary font-bold">{{ fmtCOP(formBilling.basePrice) }}</span>
+              <div class="bg-bg border border-border rounded-2xl overflow-hidden">
+                <div class="flex items-center gap-2 px-4 py-3 border-b border-border">
+                  <lucide-icon [img]="CreditCard" class="w-4 h-4 text-text-secondary" [strokeWidth]="2"/>
+                  <span class="text-text-secondary text-sm font-semibold">Resumen</span>
                 </div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-text-secondary">Recibido</span>
-                  <span class="text-success font-bold">{{ fmtCOP(formBilling.amountReceived) }}</span>
-                </div>
-                <div class="h-px bg-border"></div>
-                <div class="flex justify-between text-sm">
-                  <span class="text-text-secondary">Pendiente</span>
-                  <span class="font-bold"
-                    [class]="formBilling.basePrice - formBilling.amountReceived > 0 ? 'text-warning' : 'text-success'">
-                    {{ fmtCOP(formBilling.basePrice - formBilling.amountReceived) }}
-                  </span>
+                <div class="p-4 space-y-3">
+                  <div class="flex justify-between items-center">
+                    <span class="text-text-secondary text-sm">Precio total</span>
+                    <span class="text-text-primary font-bold text-base">{{ fmtCOP(formBilling.basePrice) }}</span>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-text-secondary text-sm">Recibido</span>
+                    <span class="text-success font-bold text-base">{{ fmtCOP(formBilling.amountReceived) }}</span>
+                  </div>
+                  <div class="h-1.5 bg-border/40 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full transition-all"
+                      [style.width.%]="formPaidPct()"
+                      [class]="formBilling.amountReceived >= formBilling.basePrice ? 'bg-success' : 'bg-warning'">
+                    </div>
+                  </div>
+                  <div class="flex justify-between items-center pt-1 border-t border-border">
+                    <span class="text-text-secondary text-sm font-medium">Pendiente</span>
+                    <span class="font-bold text-lg"
+                      [class]="formBilling.basePrice - formBilling.amountReceived > 0 ? 'text-warning' : 'text-success'">
+                      {{ fmtCOP(formBilling.basePrice - formBilling.amountReceived) }}
+                    </span>
+                  </div>
                 </div>
               </div>
             }
