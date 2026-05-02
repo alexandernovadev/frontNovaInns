@@ -1,0 +1,383 @@
+@if (loading()) {
+  <div class="flex items-center justify-center h-64 text-text-disabled">Cargando...</div>
+} @else if (booking(); as b) {
+<div class="p-6 space-y-6">
+
+  <!-- ── Header ── -->
+  <div class="flex items-start gap-4">
+    <button (click)="goBack()"
+      class="p-2 mt-0.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-hover transition-colors cursor-pointer shrink-0">
+      <lucide-icon [img]="ArrowLeft" class="w-5 h-5" [strokeWidth]="2"/>
+    </button>
+
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-3 flex-wrap">
+        <!-- Platform logo -->
+        <span class="p-1.5 rounded-xl flex items-center shrink-0" [class]="PLATFORM_CLASS[b.billing.platform]">
+          @if (b.billing.platform === 'Booking') {
+            <img src="/assets/images/booking_logo.png" class="w-6 h-6 object-contain" alt="Booking"/>
+          }
+          @if (b.billing.platform === 'AirBnB') {
+            <img src="/assets/images/airbnb_logo.png" class="w-6 h-6 object-contain" alt="AirBnB"/>
+          }
+          @if (b.billing.platform === 'Directo') {
+            <img src="/assets/images/LogoNovaInns.png" class="w-6 h-6 object-contain" alt="Nova Inns"/>
+          }
+        </span>
+
+        <h1 class="text-text-primary text-2xl font-bold">{{ aptName() }}</h1>
+
+        <!-- Status pill -->
+        <span class="px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5"
+          [class]="STATUS_CLASS[b.billing.status]">
+          <span class="w-1.5 h-1.5 rounded-full shrink-0"
+            [class]="b.billing.status === 'PAGADO' ? 'bg-success' : b.billing.status === 'NO SHOW' ? 'bg-error' : 'bg-warning'">
+          </span>
+          {{ b.billing.status }}
+        </span>
+      </div>
+
+      <div class="flex items-center gap-3 mt-1.5 flex-wrap">
+        <span class="text-text-disabled text-xs flex items-center gap-1">
+          <lucide-icon [img]="Hash" class="w-3 h-3" [strokeWidth]="2"/>
+          {{ b._id.slice(-8).toUpperCase() }}
+        </span>
+        <span class="text-text-disabled text-xs">·</span>
+        <span class="text-text-disabled text-xs">Creado el {{ fmtCreatedAt(b.createdAt) }}</span>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-2 shrink-0">
+      @if (b.billing.status !== 'PAGADO' && b.billing.status !== 'NO SHOW') {
+        <button (click)="openPayment()"
+          class="flex items-center gap-2 px-4 py-2 rounded-xl bg-success/10 text-success hover:bg-success/20
+                 text-sm font-bold transition-colors cursor-pointer">
+          <lucide-icon [img]="CreditCard" class="w-4 h-4" [strokeWidth]="2"/>
+          Registrar pago
+        </button>
+      }
+      <button (click)="showDelete.set(true)"
+        class="p-2 rounded-xl text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
+        <lucide-icon [img]="Trash2" class="w-4 h-4" [strokeWidth]="2"/>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Body grid ── -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- ════ LEFT ════ -->
+    <div class="space-y-5">
+
+      <!-- Estancia -->
+      <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+        <div class="flex items-center gap-2 px-5 py-4 border-b border-indigo-500/20 bg-indigo-500/5">
+          <lucide-icon [img]="CalendarDays" class="w-4 h-4 text-indigo-400" [strokeWidth]="2"/>
+          <span class="text-indigo-400 font-semibold text-sm">Estancia</span>
+          <span class="ml-auto bg-indigo-500/15 text-indigo-400 text-xs font-bold px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+            <lucide-icon [img]="Moon" class="w-3 h-3" [strokeWidth]="2"/>
+            {{ nights() }} {{ nights() === 1 ? 'noche' : 'noches' }}
+          </span>
+        </div>
+        <div class="p-5 grid grid-cols-2 gap-4">
+          <div class="bg-bg rounded-xl p-4">
+            <div class="flex items-center gap-1.5 mb-2">
+              <lucide-icon [img]="LogIn" class="w-3.5 h-3.5 text-success" [strokeWidth]="2"/>
+              <span class="text-text-disabled text-xs uppercase tracking-wide">Check-in</span>
+            </div>
+            <p class="text-text-primary font-bold">{{ fmtDate(b.stay.checkIn) }}</p>
+            <p class="text-success text-xs font-medium mt-0.5">{{ fmtCheckDate(b.stay.checkIn) }}</p>
+          </div>
+          <div class="bg-bg rounded-xl p-4">
+            <div class="flex items-center gap-1.5 mb-2">
+              <lucide-icon [img]="LogOut" class="w-3.5 h-3.5 text-error" [strokeWidth]="2"/>
+              <span class="text-text-disabled text-xs uppercase tracking-wide">Check-out</span>
+            </div>
+            <p class="text-text-primary font-bold">{{ fmtDate(b.stay.checkOut) }}</p>
+            <p class="text-error text-xs font-medium mt-0.5">{{ fmtCheckDate(b.stay.checkOut) }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facturación -->
+      <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+        <div class="flex items-center gap-2 px-5 py-4 border-b border-brand/20 bg-brand/5">
+          <lucide-icon [img]="CreditCard" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
+          <span class="text-brand font-semibold text-sm">Facturación</span>
+        </div>
+        <div class="p-5 space-y-4">
+
+          <!-- Amounts -->
+          <div class="grid grid-cols-3 gap-3">
+            <div class="bg-bg rounded-xl p-4 text-center">
+              <p class="text-text-disabled text-xs uppercase tracking-wide mb-1.5">Total</p>
+              <p class="text-text-primary font-bold text-lg">{{ fmtCOP(b.billing.totalAmount) }}</p>
+            </div>
+            <div class="bg-bg rounded-xl p-4 text-center">
+              <p class="text-text-disabled text-xs uppercase tracking-wide mb-1.5">Recibido</p>
+              <p class="text-success font-bold text-lg">{{ fmtCOP(b.billing.amountReceived) }}</p>
+            </div>
+            <div class="bg-bg rounded-xl p-4 text-center">
+              <p class="text-text-disabled text-xs uppercase tracking-wide mb-1.5">Pendiente</p>
+              <p class="font-bold text-lg" [class]="pending() > 0 ? 'text-warning' : 'text-success'">
+                {{ fmtCOP(pending()) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Progress -->
+          <div>
+            <div class="flex justify-between text-xs mb-2">
+              <span class="text-text-disabled">Progreso de pago</span>
+              <span class="font-bold" [class]="paidPct() === 100 ? 'text-success' : 'text-warning'">{{ paidPct() }}%</span>
+            </div>
+            <div class="h-2.5 bg-bg rounded-full overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-500"
+                [style.width.%]="paidPct()"
+                [class]="paidPct() === 100 ? 'bg-success' : 'bg-warning'">
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment method -->
+          <div class="flex items-center gap-3 bg-bg rounded-xl p-4">
+            <lucide-icon [img]="Wallet" class="w-4 h-4 text-text-disabled shrink-0" [strokeWidth]="2"/>
+            <span class="text-text-secondary text-sm">Método de pago</span>
+            <div class="ml-auto flex items-center gap-2">
+              @if (b.billing.paymentMethod === 'Efectivo') {
+                <img src="/assets/images/dinero.png" class="w-7 h-7 object-contain" alt="Efectivo"/>
+              }
+              @if (b.billing.paymentMethod === 'Nequi') {
+                <img src="/assets/images/nequi.svg" class="w-7 h-7 object-contain" alt="Nequi"/>
+              }
+              @if (b.billing.paymentMethod === 'Bancolombia') {
+                <img src="/assets/images/bancolombia.svg" class="w-7 h-7 bg-white rounded-lg p-0.5 object-contain" alt="Bancolombia"/>
+              }
+              <span class="text-text-primary font-semibold text-sm">{{ b.billing.paymentMethod }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Observaciones -->
+      @if (b.observations) {
+        <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+          <div class="flex items-center gap-2 px-5 py-4 border-b border-border">
+            <lucide-icon [img]="MessageSquare" class="w-4 h-4 text-text-secondary" [strokeWidth]="2"/>
+            <span class="text-text-secondary font-semibold text-sm">Observaciones</span>
+          </div>
+          <div class="p-5">
+            <p class="text-text-primary text-sm leading-relaxed whitespace-pre-line">{{ b.observations }}</p>
+          </div>
+        </div>
+      }
+
+    </div>
+
+    <!-- ════ RIGHT: Guests ════ -->
+    <div class="space-y-5">
+
+      <!-- Counter -->
+      <div class="flex items-center gap-2 px-1">
+        <lucide-icon [img]="Users" class="w-4 h-4 text-text-secondary" [strokeWidth]="2"/>
+        <span class="text-text-secondary text-sm font-medium">
+          {{ totalGuests() }} {{ totalGuests() === 1 ? 'huésped' : 'huéspedes' }}
+        </span>
+      </div>
+
+      <!-- Host card -->
+      <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+        <div class="flex items-center gap-2 px-5 py-4 border-b border-brand/20 bg-brand/5">
+          <lucide-icon [img]="User" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
+          <span class="text-brand font-semibold text-sm">Huésped principal</span>
+        </div>
+        <div class="p-5 space-y-4">
+
+          <p class="text-text-primary text-xl font-bold">{{ b.group.host.fullName }}</p>
+
+          <!-- Info fields -->
+          @if (b.group.host.idNumber || b.group.host.country || b.group.host.city) {
+            <div class="grid grid-cols-3 gap-3">
+              @if (b.group.host.idNumber) {
+                <div class="bg-bg rounded-xl p-3">
+                  <div class="flex items-center gap-1 mb-1.5">
+                    <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                    <span class="text-text-disabled text-xs">Nº ID</span>
+                  </div>
+                  <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.idNumber }}</p>
+                </div>
+              }
+              @if (b.group.host.country) {
+                <div class="bg-bg rounded-xl p-3">
+                  <div class="flex items-center gap-1 mb-1.5">
+                    <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                    <span class="text-text-disabled text-xs">País</span>
+                  </div>
+                  <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.country }}</p>
+                </div>
+              }
+              @if (b.group.host.city) {
+                <div class="bg-bg rounded-xl p-3">
+                  <div class="flex items-center gap-1 mb-1.5">
+                    <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                    <span class="text-text-disabled text-xs">Ciudad</span>
+                  </div>
+                  <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.city }}</p>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- ID photos -->
+          @if (b.group.host.identifications?.length) {
+            <div>
+              <p class="text-text-disabled text-xs uppercase tracking-wide mb-2">Identificaciones</p>
+              <div class="grid grid-cols-3 gap-3">
+                @for (photo of b.group.host.identifications; track photo.type) {
+                  <a [href]="photo.url" target="_blank" class="block">
+                    <div class="relative rounded-xl overflow-hidden aspect-video bg-bg group cursor-pointer">
+                      <img [src]="photo.url" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+                      <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      <span class="absolute bottom-1 left-1 text-xs font-bold bg-black/60 text-white px-1.5 py-0.5 rounded">
+                        {{ ID_LABELS[photo.type] ?? photo.type }}
+                      </span>
+                    </div>
+                  </a>
+                }
+              </div>
+            </div>
+          }
+
+        </div>
+      </div>
+
+      <!-- Member cards -->
+      @for (member of b.group.members; track $index) {
+        <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+          <div class="flex items-center gap-2 px-5 py-4 border-b border-border">
+            <div class="w-6 h-6 rounded-lg bg-border flex items-center justify-center text-text-secondary text-xs font-bold shrink-0">
+              {{ $index + 2 }}
+            </div>
+            <span class="text-text-primary font-semibold text-sm">Acompañante {{ $index + 1 }}</span>
+          </div>
+          <div class="p-5 space-y-4">
+
+            <p class="text-text-primary text-xl font-bold">{{ member.fullName }}</p>
+
+            @if (member.idNumber || member.country || member.city) {
+              <div class="grid grid-cols-3 gap-3">
+                @if (member.idNumber) {
+                  <div class="bg-bg rounded-xl p-3">
+                    <div class="flex items-center gap-1 mb-1.5">
+                      <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                      <span class="text-text-disabled text-xs">Nº ID</span>
+                    </div>
+                    <p class="text-text-primary text-sm font-semibold truncate">{{ member.idNumber }}</p>
+                  </div>
+                }
+                @if (member.country) {
+                  <div class="bg-bg rounded-xl p-3">
+                    <div class="flex items-center gap-1 mb-1.5">
+                      <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                      <span class="text-text-disabled text-xs">País</span>
+                    </div>
+                    <p class="text-text-primary text-sm font-semibold truncate">{{ member.country }}</p>
+                  </div>
+                }
+                @if (member.city) {
+                  <div class="bg-bg rounded-xl p-3">
+                    <div class="flex items-center gap-1 mb-1.5">
+                      <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                      <span class="text-text-disabled text-xs">Ciudad</span>
+                    </div>
+                    <p class="text-text-primary text-sm font-semibold truncate">{{ member.city }}</p>
+                  </div>
+                }
+              </div>
+            }
+
+            @if (member.identifications?.length) {
+              <div>
+                <p class="text-text-disabled text-xs uppercase tracking-wide mb-2">Identificaciones</p>
+                <div class="grid grid-cols-3 gap-3">
+                  @for (photo of member.identifications; track photo.type) {
+                    <a [href]="photo.url" target="_blank" class="block">
+                      <div class="relative rounded-xl overflow-hidden aspect-video bg-bg group cursor-pointer">
+                        <img [src]="photo.url" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <span class="absolute bottom-1 left-1 text-xs font-bold bg-black/60 text-white px-1.5 py-0.5 rounded">
+                          {{ ID_LABELS[photo.type] ?? photo.type }}
+                        </span>
+                      </div>
+                    </a>
+                  }
+                </div>
+              </div>
+            }
+
+          </div>
+        </div>
+      }
+
+    </div>
+  </div>
+</div>
+}
+
+<!-- ── Modal: Registrar pago ── -->
+@if (showPayment()) {
+  <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-surface border border-border rounded-2xl w-full max-w-sm">
+      <div class="px-6 py-4 border-b border-border">
+        <h2 class="text-text-primary font-bold text-lg">Registrar pago</h2>
+        <p class="text-text-secondary text-sm mt-0.5">
+          Pendiente: <span class="text-warning font-bold">{{ fmtCOP(pending()) }}</span>
+        </p>
+      </div>
+      <div class="p-6">
+        <label class="block text-text-secondary text-sm mb-1.5">Monto a registrar</label>
+        <input type="number" min="0" [(ngModel)]="payAmount" placeholder="0" autocomplete="off"
+          class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
+                 focus:outline-none focus:border-brand transition-colors"/>
+      </div>
+      <div class="flex gap-3 px-6 pb-6">
+        <button (click)="showPayment.set(false)"
+          class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">
+          Cancelar
+        </button>
+        <button (click)="confirmPayment()" [disabled]="saving() || !payAmount"
+          class="flex-1 bg-success hover:bg-success/80 text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+          {{ saving() ? 'Guardando...' : 'Confirmar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ── Modal: Borrar ── -->
+@if (showDelete()) {
+  <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-surface border border-border rounded-2xl w-full max-w-sm">
+      <div class="px-6 py-5 space-y-2">
+        <h2 class="text-text-primary font-bold text-lg">Borrar reserva</h2>
+        <p class="text-text-secondary text-sm">
+          ¿Seguro que quieres borrar la reserva de
+          <span class="text-text-primary font-semibold">{{ booking()?.group?.host?.fullName }}</span>?
+          Esta acción no se puede deshacer.
+        </p>
+      </div>
+      <div class="flex gap-3 px-6 pb-6">
+        <button (click)="showDelete.set(false)"
+          class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">
+          Cancelar
+        </button>
+        <button (click)="confirmDelete()" [disabled]="saving()"
+          class="flex-1 bg-error hover:bg-error/80 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+          {{ saving() ? 'Borrando...' : 'Borrar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

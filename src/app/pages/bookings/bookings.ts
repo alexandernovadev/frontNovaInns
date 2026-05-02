@@ -1,5 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { BookingsService, IBooking, FinancialSummary } from '../../core/services/bookings.service';
 import { ApartmentsService, IApartment } from '../../core/services/apartments.service';
 import {
@@ -37,6 +38,7 @@ export class BookingsComponent implements OnInit {
 
   private svc    = inject(BookingsService);
   private aptSvc = inject(ApartmentsService);
+  private router = inject(Router);
 
   bookings  = signal<IBooking[]>([]);
   meta      = signal({ total: 0, page: 1, limit: 20, totalPages: 1 });
@@ -108,6 +110,10 @@ export class BookingsComponent implements OnInit {
 
   loadSummary() {
     this.svc.financialSummary().subscribe({ next: s => this.summary.set(s) });
+  }
+
+  openDetail(b: IBooking) {
+    this.router.navigate(['/bookings', b._id]);
   }
 
   openCreate() {
