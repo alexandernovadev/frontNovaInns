@@ -1,0 +1,553 @@
+<div class="p-6 space-y-6">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-text-primary text-2xl font-bold">Reservas</h1>
+      <p class="text-text-secondary text-sm mt-0.5">{{ meta().total }} reservas</p>
+    </div>
+    <button (click)="openCreate()"
+      class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
+             px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      Nueva reserva
+    </button>
+  </div>
+
+  <!-- Summary -->
+  <div class="grid grid-cols-3 gap-4">
+    <div class="bg-surface border border-border rounded-2xl p-5">
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-2">Total esperado</p>
+      <p class="text-text-primary text-2xl font-bold">{{ fmtCOP(summary().totalExpected) }}</p>
+    </div>
+    <div class="bg-surface border border-border rounded-2xl p-5">
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-2">Recibido</p>
+      <p class="text-success text-2xl font-bold">{{ fmtCOP(summary().totalReceived) }}</p>
+    </div>
+    <div class="bg-surface border border-border rounded-2xl p-5">
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-2">Pendiente</p>
+      <p class="text-warning text-2xl font-bold">{{ fmtCOP(summary().totalPending) }}</p>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="flex flex-wrap gap-3">
+    <input [(ngModel)]="search" (ngModelChange)="load(1)" placeholder="Buscar por huésped..."
+      class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
+             text-text-primary placeholder:text-text-disabled text-sm
+             focus:outline-none focus:border-brand transition-colors"/>
+    <select [(ngModel)]="platformFilter" (ngModelChange)="load(1)"
+      class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+             text-sm focus:outline-none focus:border-brand cursor-pointer">
+      <option value="">Todas las plataformas</option>
+      @for (p of PLATFORMS; track p) { <option [value]="p">{{ p }}</option> }
+    </select>
+    <select [(ngModel)]="statusFilter" (ngModelChange)="load(1)"
+      class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+             text-sm focus:outline-none focus:border-brand cursor-pointer">
+      <option value="">Todos los estados</option>
+      @for (s of STATUSES; track s) { <option [value]="s">{{ s }}</option> }
+    </select>
+  </div>
+
+  <!-- Cards -->
+  @if (loading()) {
+    <div class="text-center py-16 text-text-disabled">Cargando...</div>
+  } @else if (bookings().length === 0) {
+    <div class="text-center py-16 text-text-disabled">Sin reservas</div>
+  } @else {
+    <div class="grid gap-4 lg:grid-cols-2">
+      @for (b of bookings(); track b._id) {
+        <div class="bg-surface border border-border border-l-4 rounded-2xl overflow-hidden
+                    hover:shadow-lg transition-all"
+          [class]="BORDER_CLASS[b.billing.status]">
+
+          <!-- Platform strip -->
+          <div class="px-5 pt-4 pb-3 flex items-center justify-between gap-3">
+            <span class="px-3 py-1.5 rounded-xl text-sm font-bold tracking-wide flex items-center gap-2"
+              [class]="PLATFORM_CLASS[b.billing.platform]">
+              @if (b.billing.platform === 'Booking') {
+                <img src="/assets/images/booking_logo.png" class="w-10 h-10 shrink-0 object-contain" alt="Booking"/>
+              }
+              @if (b.billing.platform === 'AirBnB') {
+                <img src="/assets/images/airbnb_logo.png" class="w-10 h-10 shrink-0 object-contain" alt="AirBnB"/>
+              }
+              @if (b.billing.platform === 'Directo') {
+                <img src="/assets/images/logo.png" class="w-10 h-10 shrink-0 object-contain" alt="Nova Inns"/>
+              }
+              {{ b.billing.platform }}
+            </span>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold"
+                [class]="STATUS_CLASS[b.billing.status]">
+                {{ b.billing.status }}
+              </span>
+              <button (click)="openEdit(b, $event)" title="Editar"
+                class="p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
+                </svg>
+              </button>
+              <button (click)="openDeleteConfirm(b, $event)" title="Borrar"
+                class="p-1.5 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Apt + host + guest count -->
+          <div class="px-5 pb-3 space-y-1.5">
+            <h2 class="text-text-primary text-xl font-bold leading-tight">{{ aptName(b) }}</h2>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-text-disabled shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <span class="text-text-primary font-semibold text-base">{{ b.group.host.fullName }}</span>
+              </div>
+              <div class="flex items-center gap-1.5 bg-bg px-2.5 py-1 rounded-lg">
+                <svg class="w-3.5 h-3.5 text-text-disabled" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span class="text-text-secondary text-xs font-medium">{{ totalGuests(b) }} {{ totalGuests(b) === 1 ? 'huésped' : 'huéspedes' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dates -->
+          <div class="mx-5 mb-4 bg-bg rounded-xl px-4 py-3 flex items-center justify-between">
+            <div class="text-center">
+              <p class="text-text-disabled text-xs mb-0.5">Check-in</p>
+              <p class="text-text-primary font-bold text-sm">{{ fmtDate(b.stay.checkIn) }}</p>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <div class="flex items-center gap-1">
+                <div class="w-8 h-px bg-border"></div>
+                <svg class="w-3.5 h-3.5 text-brand" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+                <div class="w-8 h-px bg-border"></div>
+              </div>
+              <span class="text-brand text-xs font-bold">{{ nights(b) }}n</span>
+            </div>
+            <div class="text-center">
+              <p class="text-text-disabled text-xs mb-0.5">Check-out</p>
+              <p class="text-text-primary font-bold text-sm">{{ fmtDate(b.stay.checkOut) }}</p>
+            </div>
+          </div>
+
+          <!-- Billing -->
+          <div class="border-t border-border px-5 py-4">
+            <div class="flex items-end justify-between mb-3">
+              <div>
+                <p class="text-text-disabled text-xs mb-0.5">Total</p>
+                <p class="text-text-primary text-xl font-bold">{{ fmtCOP(b.billing.totalAmount) }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-text-disabled text-xs mb-0.5">Recibido</p>
+                <p class="text-success font-bold text-base">{{ fmtCOP(b.billing.amountReceived) }}</p>
+              </div>
+              @if (pending(b) > 0) {
+                <div class="text-right">
+                  <p class="text-text-disabled text-xs mb-0.5">Pendiente</p>
+                  <p class="text-warning text-xl font-bold">{{ fmtCOP(pending(b)) }}</p>
+                </div>
+              }
+            </div>
+
+            <div class="h-1.5 bg-bg rounded-full overflow-hidden mb-3">
+              <div class="h-full rounded-full transition-all"
+                [style.width.%]="paidPct(b)"
+                [class]="paidPct(b) === 100 ? 'bg-success' : 'bg-warning'">
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between">
+              <span class="text-text-disabled text-xs">{{ b.billing.paymentMethod }}</span>
+              @if (b.billing.status !== 'PAGADO' && b.billing.status !== 'NO SHOW') {
+                <button (click)="openPayment(b, $event)"
+                  class="text-xs font-bold px-3 py-1.5 rounded-lg bg-brand/10 text-brand
+                         hover:bg-brand/20 transition-colors cursor-pointer">
+                  + Registrar pago
+                </button>
+              }
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+
+    @if (meta().totalPages > 1) {
+      <div class="flex items-center justify-center gap-1 pt-2">
+        <button (click)="load(meta().page - 1)" [disabled]="meta().page === 1"
+          class="px-3 py-1.5 rounded-lg text-sm text-text-secondary border border-border
+                 hover:border-brand hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">‹</button>
+        @for (p of pages(); track p) {
+          <button (click)="load(p)"
+            class="px-3 py-1.5 rounded-lg text-sm cursor-pointer transition-colors"
+            [class]="p === meta().page
+              ? 'bg-brand text-bg font-bold'
+              : 'text-text-secondary border border-border hover:border-brand hover:text-brand'">{{ p }}</button>
+        }
+        <button (click)="load(meta().page + 1)" [disabled]="meta().page === meta().totalPages"
+          class="px-3 py-1.5 rounded-lg text-sm text-text-secondary border border-border
+                 hover:border-brand hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">›</button>
+      </div>
+    }
+  }
+</div>
+
+<!-- =============== MODAL CREAR =============== -->
+@if (showCreate()) {
+  <div class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+    <div class="bg-surface border border-border rounded-2xl w-full max-w-2xl flex flex-col max-h-[92vh]">
+
+      <!-- Modal header -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+        <h2 class="text-text-primary font-bold text-lg">{{ isEditing ? 'Editar reserva' : 'Nueva reserva' }}</h2>
+        <button (click)="showCreate.set(false)" class="text-text-secondary hover:text-text-primary cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex gap-1 p-2 border-b border-border shrink-0">
+        @for (t of MODAL_TABS; track t.key) {
+          <button (click)="modalTab.set(t.key)"
+            class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer"
+            [class]="modalTab() === t.key
+              ? 'bg-brand text-bg'
+              : 'text-text-secondary hover:text-text-primary'">
+            {{ t.label }}
+          </button>
+        }
+      </div>
+
+      <!-- Tab content -->
+      <div class="overflow-y-auto flex-1">
+
+        <!-- ===== GENERAL ===== -->
+        @if (modalTab() === 'general') {
+          <div class="p-6 space-y-5">
+            <div>
+              <label class="block text-text-secondary text-sm mb-1.5">Apartamento</label>
+              <select [(ngModel)]="formGeneral.apartmentId"
+                class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
+                       focus:outline-none focus:border-brand cursor-pointer">
+                <option value="">Seleccionar apartamento</option>
+                @for (a of apartments(); track a._id) {
+                  <option [value]="a._id">{{ a.internalName }}</option>
+                }
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-text-secondary text-sm mb-1.5">Check-in</label>
+                <input type="date" [(ngModel)]="formGeneral.checkIn"
+                  class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
+                         focus:outline-none focus:border-brand [color-scheme:dark]"/>
+              </div>
+              <div>
+                <label class="block text-text-secondary text-sm mb-1.5">Check-out</label>
+                <input type="date" [(ngModel)]="formGeneral.checkOut"
+                  class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
+                         focus:outline-none focus:border-brand [color-scheme:dark]"/>
+              </div>
+            </div>
+            <div>
+              <label class="block text-text-secondary text-sm mb-1.5">Plataforma</label>
+              <div class="flex gap-2">
+                @for (p of PLATFORMS; track p) {
+                  <button (click)="formGeneral.platform = p"
+                    class="flex-1 py-3 rounded-xl text-sm font-bold border transition-colors cursor-pointer flex flex-col items-center gap-1.5"
+                    [class]="formGeneral.platform === p ? PLATFORM_CLASS[p] : 'border-border text-text-secondary hover:text-text-primary'">
+                    @if (p === 'Booking') {
+                      <img src="/assets/images/booking_logo.png" class="w-14 h-14 object-contain" alt="Booking"/>
+                    }
+                    @if (p === 'AirBnB') {
+                      <img src="/assets/images/airbnb_logo.png" class="w-14 h-14 object-contain" alt="AirBnB"/>
+                    }
+                    @if (p === 'Directo') {
+                      <img src="/assets/images/logo.png" class="w-14 h-14 object-contain" alt="Nova Inns"/>
+                    }
+                    {{ p }}
+                  </button>
+                }
+              </div>
+            </div>
+            <div>
+              <label class="block text-text-secondary text-sm mb-1.5">Observaciones</label>
+              <textarea [(ngModel)]="formGeneral.observations" rows="3" placeholder="Notas adicionales..." autocomplete="off"
+                class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+                       placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand resize-none"></textarea>
+            </div>
+          </div>
+        }
+
+        <!-- ===== HUÉSPEDES ===== -->
+        @if (modalTab() === 'guests') {
+          <div class="p-6 space-y-6">
+
+            <!-- Host -->
+            <div class="space-y-3">
+              <div class="flex items-center gap-2">
+                <span class="w-5 h-5 bg-brand rounded-full flex items-center justify-center text-bg text-xs font-bold shrink-0">1</span>
+                <h3 class="text-text-primary font-semibold">Huésped principal</h3>
+              </div>
+              <input type="text" [(ngModel)]="host.fullName" placeholder="Nombre completo" autocomplete="off"
+                class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+                       placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+              <div class="grid grid-cols-3 gap-3">
+                <input type="text" [(ngModel)]="host.idNumber" placeholder="N° de ID" autocomplete="off"
+                  class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+                         placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                <input type="text" [(ngModel)]="host.country" placeholder="País" autocomplete="off"
+                  class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+                         placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                <input type="text" [(ngModel)]="host.city" placeholder="Ciudad" autocomplete="off"
+                  class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+                         placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+              </div>
+              <div class="grid grid-cols-3 gap-3">
+                @for (type of ID_TYPES; track type) {
+                  <div>
+                    @if (getPhoto(host, type); as photo) {
+                      <div class="relative rounded-xl overflow-hidden aspect-video bg-bg group">
+                        <img [src]="photo.url" class="w-full h-full object-cover"/>
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <button (click)="removePhoto(host, type)"
+                            class="p-1.5 bg-error rounded-lg text-white cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                          </button>
+                        </div>
+                        <span class="absolute bottom-1 left-1 text-xs font-bold bg-black/60 text-white px-1.5 py-0.5 rounded">{{ ID_LABELS[type] }}</span>
+                      </div>
+                    } @else {
+                      <label class="flex flex-col items-center justify-center gap-1 border border-dashed border-border
+                                    rounded-xl aspect-video cursor-pointer hover:border-brand transition-colors group">
+                        <input type="file" accept="image/*" class="hidden" (change)="onHostPhoto($event, type)"/>
+                        @if (uploading['host'] === type) {
+                          <span class="text-text-disabled text-xs">Subiendo...</span>
+                        } @else {
+                          <svg class="w-5 h-5 text-text-disabled group-hover:text-brand transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+                          </svg>
+                          <span class="text-text-disabled text-xs group-hover:text-brand">{{ ID_LABELS[type] }}</span>
+                        }
+                      </label>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Members -->
+            @for (member of members; track $index) {
+              <div class="space-y-3 border border-border rounded-2xl p-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-5 h-5 bg-border rounded-full flex items-center justify-center text-text-secondary text-xs font-bold shrink-0">{{ $index + 2 }}</span>
+                    <h3 class="text-text-primary font-semibold">Acompañante {{ $index + 1 }}</h3>
+                  </div>
+                  <button (click)="removeMember($index)"
+                    class="p-1.5 text-text-secondary hover:text-error hover:bg-error/10 rounded-lg transition-colors cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                  </button>
+                </div>
+                <input type="text" [(ngModel)]="member.fullName" placeholder="Nombre completo" autocomplete="off"
+                  class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+                         placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                <div class="grid grid-cols-3 gap-3">
+                  <input type="text" [(ngModel)]="member.idNumber" placeholder="N° de ID" autocomplete="off"
+                    class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+                           placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                  <input type="text" [(ngModel)]="member.country" placeholder="País" autocomplete="off"
+                    class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+                           placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                  <input type="text" [(ngModel)]="member.city" placeholder="Ciudad" autocomplete="off"
+                    class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+                           placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand"/>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                  @for (type of ID_TYPES; track type) {
+                    <div>
+                      @if (getPhoto(member, type); as photo) {
+                        <div class="relative rounded-xl overflow-hidden aspect-video bg-bg group">
+                          <img [src]="photo.url" class="w-full h-full object-cover"/>
+                          <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button (click)="removePhoto(member, type)"
+                              class="p-1.5 bg-error rounded-lg text-white cursor-pointer">
+                              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                          </div>
+                          <span class="absolute bottom-1 left-1 text-xs font-bold bg-black/60 text-white px-1.5 py-0.5 rounded">{{ ID_LABELS[type] }}</span>
+                        </div>
+                      } @else {
+                        <label class="flex flex-col items-center justify-center gap-1 border border-dashed border-border
+                                      rounded-xl aspect-video cursor-pointer hover:border-brand transition-colors group">
+                          <input type="file" accept="image/*" class="hidden" (change)="onMemberPhoto($event, $index, type)"/>
+                          @if (uploading['member-' + $index] === type) {
+                            <span class="text-text-disabled text-xs">Subiendo...</span>
+                          } @else {
+                            <svg class="w-5 h-5 text-text-disabled group-hover:text-brand transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+                            </svg>
+                            <span class="text-text-disabled text-xs group-hover:text-brand">{{ ID_LABELS[type] }}</span>
+                          }
+                        </label>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+            <button (click)="addMember()"
+              class="w-full py-3 border border-dashed border-border rounded-2xl text-text-secondary
+                     hover:border-brand hover:text-brand text-sm font-medium transition-colors cursor-pointer flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+              </svg>
+              Añadir acompañante
+            </button>
+          </div>
+        }
+
+        <!-- ===== PAGOS ===== -->
+        @if (modalTab() === 'billing') {
+          <div class="p-6 space-y-5">
+            <div>
+              <label class="block text-text-secondary text-sm mb-1.5">Precio base</label>
+              <input type="text" inputmode="numeric" [value]="fmtNumber(formBilling.basePrice)"
+                (input)="onPriceInput($event, 'basePrice')" placeholder="0" autocomplete="off"
+                class="w-full bg-input border border-border rounded-xl px-4 py-3 text-text-primary text-xl font-bold
+                       focus:outline-none focus:border-brand transition-colors"/>
+            </div>
+            <div>
+              <label class="block text-text-secondary text-sm mb-1.5">Monto recibido</label>
+              <input type="text" inputmode="numeric" [value]="fmtNumber(formBilling.amountReceived)"
+                (input)="onPriceInput($event, 'amountReceived')" placeholder="0" autocomplete="off"
+                class="w-full bg-input border border-border rounded-xl px-4 py-3 text-text-primary text-xl font-bold
+                       focus:outline-none focus:border-brand transition-colors"/>
+            </div>
+            <div>
+              <label class="block text-text-secondary text-sm mb-1.5">Método de pago</label>
+              <div class="flex gap-2 flex-wrap">
+                @for (m of METHODS; track m) {
+                  <button (click)="formBilling.paymentMethod = m"
+                    class="flex-1 flex flex-col items-center gap-1.5 px-3 py-3 rounded-xl text-sm font-medium border transition-colors cursor-pointer"
+                    [class]="formBilling.paymentMethod === m
+                      ? 'bg-brand/15 text-brand border-brand/30'
+                      : 'border-border text-text-secondary hover:text-text-primary'">
+                    @if (m === 'Efectivo') {
+                      <img src="/assets/images/dinero.png" class="w-10 h-10 object-contain" alt="Efectivo"/>
+                    }
+                    @if (m === 'Nequi') {
+                      <img src="/assets/images/nequi.svg" class="w-10 h-10 object-contain" alt="Nequi"/>
+                    }
+                    @if (m === 'Bancolombia') {
+                      <img src="/assets/images/bancolombia.svg" class="w-10 h-10 bg-white object-contain" alt="Bancolombia"/>
+                    }
+                    @if (m === 'None') {
+                      <svg class="w-10 h-10 text-text-disabled" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                      </svg>
+                    }
+                    {{ m }}
+                  </button>
+                }
+              </div>
+            </div>
+            @if (formBilling.basePrice > 0) {
+              <div class="bg-bg rounded-2xl p-4 space-y-2">
+                <div class="flex justify-between text-sm">
+                  <span class="text-text-secondary">Total</span>
+                  <span class="text-text-primary font-bold">{{ fmtCOP(formBilling.basePrice) }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-text-secondary">Recibido</span>
+                  <span class="text-success font-bold">{{ fmtCOP(formBilling.amountReceived) }}</span>
+                </div>
+                <div class="h-px bg-border"></div>
+                <div class="flex justify-between text-sm">
+                  <span class="text-text-secondary">Pendiente</span>
+                  <span class="font-bold"
+                    [class]="formBilling.basePrice - formBilling.amountReceived > 0 ? 'text-warning' : 'text-success'">
+                    {{ fmtCOP(formBilling.basePrice - formBilling.amountReceived) }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="flex gap-3 px-6 py-4 border-t border-border shrink-0">
+        <button (click)="showCreate.set(false)"
+          class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">Cancelar</button>
+        <button (click)="submitCreate()" [disabled]="saving()"
+          class="flex-1 bg-brand hover:bg-brand-accent text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+          {{ saving() ? 'Guardando...' : isEditing ? 'Guardar cambios' : 'Crear reserva' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- =============== MODAL BORRAR =============== -->
+@if (showDelete()) {
+  <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-surface border border-border rounded-2xl w-full max-w-sm">
+      <div class="px-6 py-5 space-y-2">
+        <h2 class="text-text-primary font-bold text-lg">Borrar reserva</h2>
+        <p class="text-text-secondary text-sm">
+          ¿Seguro que quieres borrar la reserva de
+          <span class="text-text-primary font-semibold">{{ selected()?.group?.host?.fullName }}</span>?
+          Esta acción no se puede deshacer.
+        </p>
+      </div>
+      <div class="flex gap-3 px-6 pb-6">
+        <button (click)="showDelete.set(false)"
+          class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">Cancelar</button>
+        <button (click)="confirmDelete()" [disabled]="saving()"
+          class="flex-1 bg-error hover:bg-error/80 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+          {{ saving() ? 'Borrando...' : 'Borrar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- =============== MODAL PAGO =============== -->
+@if (showPayment()) {
+  <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+    <div class="bg-surface border border-border rounded-2xl w-full max-w-sm">
+      <div class="px-6 py-4 border-b border-border">
+        <h2 class="text-text-primary font-bold text-lg">Registrar pago</h2>
+        <p class="text-text-secondary text-sm mt-0.5">
+          Pendiente: <span class="text-warning font-bold">{{ fmtCOP(pending(selected()!)) }}</span>
+        </p>
+      </div>
+      <div class="p-6">
+        <label class="block text-text-secondary text-sm mb-1.5">Monto a registrar</label>
+        <input type="number" min="0" [(ngModel)]="payAmount" placeholder="0" autocomplete="off"
+          class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
+                 focus:outline-none focus:border-brand transition-colors"/>
+      </div>
+      <div class="flex gap-3 px-6 pb-6">
+        <button (click)="showPayment.set(false)"
+          class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">Cancelar</button>
+        <button (click)="confirmPayment()" [disabled]="saving() || !payAmount"
+          class="flex-1 bg-success hover:bg-success/80 text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+          {{ saving() ? 'Guardando...' : 'Confirmar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

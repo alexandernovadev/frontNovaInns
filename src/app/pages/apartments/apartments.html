@@ -61,7 +61,7 @@
                 </td>
                 <td class="px-5 py-4 text-text-secondary">{{ apt.rooms.length }}</td>
                 <td class="px-5 py-4 text-text-secondary">{{ apt.bathrooms.length }}</td>
-                <td class="px-5 py-4 text-text-secondary">{{ apt.parking?.totalSpots ?? 0 }} spots</td>
+                <td class="px-5 py-4 text-text-secondary">{{ apt.parking.totalSpots }} spots</td>
                 <td class="px-5 py-4">
                   <div class="flex items-center gap-2 justify-end">
                     <button (click)="openDelete(apt, $event)"
