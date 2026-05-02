@@ -3,7 +3,10 @@
   <!-- Header -->
   <div class="flex items-center justify-between">
     <div>
-      <h1 class="text-text-primary text-2xl font-bold">Apartamentos</h1>
+      <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2">
+        <lucide-icon [img]="Building2" class="w-6 h-6 text-brand" [strokeWidth]="2"/>
+        Apartamentos
+      </h1>
       <p class="text-text-secondary text-sm mt-0.5">{{ meta().total }} apartamentos registrados</p>
     </div>
     <button (click)="openCreate()"

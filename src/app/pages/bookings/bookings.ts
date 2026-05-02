@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BookingsService, IBooking, FinancialSummary } from '../../core/services/bookings.service';
 import { ApartmentsService, IApartment } from '../../core/services/apartments.service';
+import { LucideAngularModule, CalendarDays } from 'lucide-angular';
 
 type ModalTab = 'general' | 'guests' | 'billing';
 type IdType = 'FRONT' | 'BACK' | 'SELFIE';
@@ -11,10 +12,12 @@ interface GuestForm  { fullName: string; idNumber: string; country: string; city
 
 @Component({
   selector: 'app-bookings',
-  imports: [FormsModule],
+  imports: [FormsModule, LucideAngularModule],
   templateUrl: './bookings.html',
 })
 export class BookingsComponent implements OnInit {
+  readonly CalendarDays = CalendarDays;
+
   private svc    = inject(BookingsService);
   private aptSvc = inject(ApartmentsService);
 

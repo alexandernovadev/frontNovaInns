@@ -7,15 +7,38 @@ import {
   IRoom,
   IBathroom,
 } from '../../../core/services/apartments.service';
+import {
+  LucideAngularModule,
+  Refrigerator, Flame, Microwave, Zap,
+  ChefHat, Utensils, UtensilsCrossed,
+  Tv, Shirt, Wind,
+  Sofa, Bed, LayoutGrid, Car, Armchair,
+} from 'lucide-angular';
 
 type Tab = 'general' | 'rooms' | 'bathrooms' | 'equipment' | 'photos';
 
 @Component({
   selector: 'app-apartment-detail',
-  imports: [FormsModule],
+  imports: [FormsModule, LucideAngularModule],
   templateUrl: './apartment-detail.html',
 })
 export class ApartmentDetailComponent implements OnInit {
+  readonly Refrigerator    = Refrigerator;
+  readonly Flame           = Flame;
+  readonly Microwave       = Microwave;
+  readonly Zap             = Zap;
+  readonly ChefHat         = ChefHat;
+  readonly Utensils        = Utensils;
+  readonly UtensilsCrossed = UtensilsCrossed;
+  readonly Tv              = Tv;
+  readonly Shirt           = Shirt;
+  readonly Wind            = Wind;
+  readonly Sofa            = Sofa;
+  readonly Bed             = Bed;
+  readonly LayoutGrid      = LayoutGrid;
+  readonly Car             = Car;
+  readonly Armchair        = Armchair;
+
   private svc = inject(ApartmentsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);

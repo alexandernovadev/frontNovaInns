@@ -165,112 +165,195 @@
 
   <!-- ========== TAB: EQUIPAMIENTO ========== -->
   @if (tab() === 'equipment') {
-    <div class="space-y-4">
-      <div class="bg-surface border border-border rounded-2xl p-5 space-y-5">
+    <div class="space-y-5">
 
-        <h3 class="text-text-primary font-semibold">Cocina — Electrodomésticos</h3>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <label class="text-text-secondary mb-1 block">Neveras</label>
+      <!-- COCINA -->
+      <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+        <div class="flex items-center gap-3 px-5 py-3.5 bg-orange-500/10 border-b border-orange-500/20">
+          <lucide-icon [img]="ChefHat" class="w-5 h-5 text-orange-400" [strokeWidth]="2"/>
+          <h3 class="text-orange-400 font-semibold text-sm">Cocina</h3>
+        </div>
+        <div class="p-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-orange-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Refrigerator" class="w-5 h-5 text-orange-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Neveras</span>
             <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.appliances.fridges"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
-          <div>
-            <label class="text-text-secondary mb-1 block">Estufas</label>
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-orange-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Flame" class="w-5 h-5 text-orange-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Estufas</span>
             <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.appliances.stoves"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
-          <div>
-            <label class="text-text-secondary mb-1 block">Microondas</label>
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-orange-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Microwave" class="w-5 h-5 text-orange-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Microondas</span>
             <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.appliances.microwaves"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
-          <div>
-            <label class="text-text-secondary mb-1 block">Licuadoras</label>
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-orange-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Zap" class="w-5 h-5 text-orange-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Licuadoras</span>
             <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.appliances.blenders"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
-        </div>
 
-        <h3 class="text-text-primary font-semibold pt-2">Cocina — Utensilios</h3>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <label class="text-text-secondary mb-1 block">Ollas</label>
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-orange-500/15 flex items-center justify-center">
+              <lucide-icon [img]="ChefHat" class="w-5 h-5 text-orange-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Ollas</span>
             <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.cookware.pots"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
-          <div>
-            <label class="text-text-secondary mb-1 block">Sartenes</label>
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-orange-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Utensils" class="w-5 h-5 text-orange-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Sartenes</span>
             <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.cookware.pans"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
-          <div>
-            <label class="text-text-secondary mb-1 block">Sillas comedor</label>
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-orange-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Armchair" class="w-5 h-5 text-orange-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Sillas comedor</span>
             <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.seating.diningSillas"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
-        </div>
 
-        <h3 class="text-text-primary font-semibold pt-2">Electrónica</h3>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <label class="text-text-secondary mb-1 block">Televisores</label>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.electronics.tvs"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
-          </div>
-          <div>
-            <label class="text-text-secondary mb-1 block">Planchas</label>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.electronics.irons"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
-          </div>
-          <div>
-            <label class="text-text-secondary mb-1 block">Secadores de cabello</label>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.electronics.hairDryers"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
-          </div>
-        </div>
-
-        <h3 class="text-text-primary font-semibold pt-2">Muebles sala</h3>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <label class="text-text-secondary mb-1 block">Sofás</label>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.sofas"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
-          </div>
-          <div>
-            <label class="text-text-secondary mb-1 block">Sofás cama</label>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.sofaBeds"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
-          </div>
-          <div>
-            <label class="text-text-secondary mb-1 block">Tapetes</label>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.rugs"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
-          </div>
-          <div>
-            <label class="text-text-secondary mb-1 block">Mesas de comedor</label>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.diningTables"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
-          </div>
-        </div>
-
-        <h3 class="text-text-primary font-semibold pt-2">Parqueadero</h3>
-        <div class="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <label class="text-text-secondary mb-1 block">Puestos</label>
-            <input type="number" min="0" [(ngModel)]="apt()!.parking.totalSpots"
-              class="w-full bg-input border border-border rounded-xl px-4 py-2 text-text-primary text-sm focus:outline-none focus:border-brand"/>
-          </div>
-        </div>
-
-        <div class="pt-2">
-          <button (click)="saveEquipment()" [disabled]="saving()"
-            class="bg-brand hover:bg-brand-accent text-bg font-bold px-6 py-2.5 rounded-xl text-sm
-                   transition-colors disabled:opacity-50 cursor-pointer">
-            {{ saving() ? 'Guardando...' : 'Guardar cambios' }}
-          </button>
         </div>
       </div>
+
+      <!-- ELECTRÓNICA -->
+      <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+        <div class="flex items-center gap-3 px-5 py-3.5 bg-blue-500/10 border-b border-blue-500/20">
+          <lucide-icon [img]="Tv" class="w-5 h-5 text-blue-400" [strokeWidth]="2"/>
+          <h3 class="text-blue-400 font-semibold text-sm">Electrónica</h3>
+        </div>
+        <div class="p-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Tv" class="w-5 h-5 text-blue-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Televisores</span>
+            <input type="number" min="0" [(ngModel)]="apt()!.equipment.electronics.tvs"
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-blue-400 transition-colors"/>
+          </div>
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Shirt" class="w-5 h-5 text-blue-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Planchas</span>
+            <input type="number" min="0" [(ngModel)]="apt()!.equipment.electronics.irons"
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-blue-400 transition-colors"/>
+          </div>
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Wind" class="w-5 h-5 text-blue-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Secadores</span>
+            <input type="number" min="0" [(ngModel)]="apt()!.equipment.electronics.hairDryers"
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-blue-400 transition-colors"/>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MUEBLES -->
+      <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+        <div class="flex items-center gap-3 px-5 py-3.5 bg-purple-500/10 border-b border-purple-500/20">
+          <lucide-icon [img]="Sofa" class="w-5 h-5 text-purple-400" [strokeWidth]="2"/>
+          <h3 class="text-purple-400 font-semibold text-sm">Muebles</h3>
+        </div>
+        <div class="p-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Sofa" class="w-5 h-5 text-purple-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Sofás</span>
+            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.sofas"
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-purple-400 transition-colors"/>
+          </div>
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Bed" class="w-5 h-5 text-purple-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Sofás cama</span>
+            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.sofaBeds"
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-purple-400 transition-colors"/>
+          </div>
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center">
+              <lucide-icon [img]="LayoutGrid" class="w-5 h-5 text-purple-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Tapetes</span>
+            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.rugs"
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-purple-400 transition-colors"/>
+          </div>
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center">
+              <lucide-icon [img]="UtensilsCrossed" class="w-5 h-5 text-purple-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Mesas comedor</span>
+            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.diningTables"
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-purple-400 transition-colors"/>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- PARQUEADERO -->
+      <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+        <div class="flex items-center gap-3 px-5 py-3.5 bg-emerald-500/10 border-b border-emerald-500/20">
+          <lucide-icon [img]="Car" class="w-5 h-5 text-emerald-400" [strokeWidth]="2"/>
+          <h3 class="text-emerald-400 font-semibold text-sm">Parqueadero</h3>
+        </div>
+        <div class="p-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+
+          <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+              <lucide-icon [img]="Car" class="w-5 h-5 text-emerald-400" [strokeWidth]="1.8"/>
+            </div>
+            <span class="text-text-secondary text-xs text-center">Puestos</span>
+            <input type="number" min="0" [(ngModel)]="apt()!.parking.totalSpots"
+              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-base font-bold text-center focus:outline-none focus:border-emerald-400 transition-colors"/>
+          </div>
+
+        </div>
+      </div>
+
+      <div>
+        <button (click)="saveEquipment()" [disabled]="saving()"
+          class="bg-brand hover:bg-brand-accent text-bg font-bold px-6 py-2.5 rounded-xl text-sm
+                 transition-colors disabled:opacity-50 cursor-pointer">
+          {{ saving() ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+
     </div>
   }
 

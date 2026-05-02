@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UsersService, IUser, UserQuery } from '../../core/services/users.service';
+import { LucideAngularModule, Users } from 'lucide-angular';
 
 const ROLES = ['SUPER_ADMIN', 'ADMIN', 'STAFF', 'GUEST'] as const;
 const ROLE_LABELS: Record<string, string> = {
@@ -9,10 +10,12 @@ const ROLE_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-users',
-  imports: [FormsModule],
+  imports: [FormsModule, LucideAngularModule],
   templateUrl: './users.html',
 })
 export class UsersComponent implements OnInit {
+  readonly UsersIcon = Users;
+
   private svc = inject(UsersService);
 
   // tabla

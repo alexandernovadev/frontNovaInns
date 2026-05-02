@@ -28,6 +28,10 @@ export const routes: Routes = [
         path: 'users',
         loadComponent: () => import('./pages/users/users').then(m => m.UsersComponent),
       },
+      {
+        path: 'data',
+        loadComponent: () => import('./pages/data/data').then(m => m.DataComponent),
+      },
     ],
   },
   { path: '**', redirectTo: 'bookings' },

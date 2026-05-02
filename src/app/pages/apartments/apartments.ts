@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApartmentsService, IApartment } from '../../core/services/apartments.service';
+import { LucideAngularModule, Building2 } from 'lucide-angular';
 
 const STATUS_LABEL: Record<string, string> = {
   ACTIVE: 'Activo',
@@ -16,10 +17,12 @@ const STATUS_CLASS: Record<string, string> = {
 
 @Component({
   selector: 'app-apartments',
-  imports: [FormsModule],
+  imports: [FormsModule, LucideAngularModule],
   templateUrl: './apartments.html',
 })
 export class ApartmentsComponent implements OnInit {
+  readonly Building2 = Building2;
+
   private svc = inject(ApartmentsService);
   private router = inject(Router);
 
