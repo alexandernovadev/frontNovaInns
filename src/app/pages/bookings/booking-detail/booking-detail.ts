@@ -44,6 +44,7 @@ export class BookingDetailComponent implements OnInit {
   saving      = signal(false);
   showPayment = signal(false);
   showDelete  = signal(false);
+  showPhoto   = signal<string | null>(null);
   payAmount   = 0;
 
   readonly STATUS_CLASS: Record<string, string> = {
