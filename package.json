@@ -1,11 +1,13 @@
 {
-  "name": "front",
+  "name": "nova-inns-apartments-front",
   "version": "0.0.0",
+  "author": "Nova Alex Labs",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "tw": "npx @tailwindcss/cli -i src/tailwind.input.css -o src/styles.css",
+    "tw:watch": "npm run tw -- --watch",
+    "start": "concurrently \"npm:tw:watch\" \"ng serve\"",
+    "build": "npm run tw && ng build",
     "test": "ng test"
   },
   "private": true,
@@ -24,9 +26,10 @@
     "@angular/build": "^21.2.8",
     "@angular/cli": "^21.2.8",
     "@angular/compiler-cli": "^21.2.0",
-    "jsdom": "^28.0.0",
+    "@tailwindcss/cli": "^4.2.4",
+    "concurrently": "^9.2.1",
     "prettier": "^3.8.1",
-    "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+    "tailwindcss": "^4.2.4",
+    "typescript": "~5.9.2"
   }
 }

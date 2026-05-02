@@ -1,0 +1,73 @@
+<div class="min-h-screen bg-bg flex items-center justify-center px-4">
+  <div class="w-full max-w-md">
+
+    <!-- Logo -->
+    <div class="flex justify-center mb-10">
+      <img src="assets/images/logo.png" alt="Nova Inns" class="w-64 h-64 object-contain" />
+    </div>
+
+    <!-- Card -->
+    <div class="bg-surface border border-border rounded-2xl p-8">
+
+      <form (ngSubmit)="submit()" #f="ngForm" novalidate>
+
+        <!-- Email -->
+        <div class="mb-5">
+          <label class="block text-text-secondary text-sm mb-2">Correo electrónico</label>
+          <input
+            type="email"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="tu@novainns.com"
+            autocomplete="email"
+            class="w-full bg-input border border-border rounded-xl px-4 py-3
+                   text-text-primary placeholder:text-text-disabled
+                   focus:outline-none focus:border-brand transition-colors"
+          />
+        </div>
+
+        <!-- Password -->
+        <div class="mb-8">
+          <label class="block text-text-secondary text-sm mb-2">Contraseña</label>
+          <input
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            class="w-full bg-input border border-border rounded-xl px-4 py-3
+                   text-text-primary placeholder:text-text-disabled
+                   focus:outline-none focus:border-brand transition-colors"
+          />
+        </div>
+
+        <!-- Error -->
+        @if (error()) {
+          <div class="bg-error/10 border border-error/30 rounded-xl px-4 py-3 mb-6">
+            <p class="text-error text-sm">{{ error() }}</p>
+          </div>
+        }
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          [disabled]="loading()"
+          class="w-full bg-brand hover:bg-brand-accent text-bg font-bold
+                 py-3 rounded-xl transition-colors disabled:opacity-50
+                 disabled:cursor-not-allowed cursor-pointer"
+        >
+          @if (loading()) {
+            Ingresando...
+          } @else {
+            Ingresar
+          }
+        </button>
+
+      </form>
+    </div>
+
+    <p class="text-center text-text-disabled text-xs mt-6">
+      Nova Inns Apartments &copy; {{ year }}
+    </p>
+  </div>
+</div>

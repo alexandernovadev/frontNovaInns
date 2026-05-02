@@ -1,0 +1,26 @@
+<div class="min-h-screen bg-bg">
+
+  <!-- Topbar -->
+  <header class="bg-surface border-b border-border px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <img src="assets/images/logo.png" alt="Nova Inns" class="w-8 h-8 object-contain" />
+      <span class="text-text-primary font-bold text-lg">Nova Inns</span>
+    </div>
+    <button
+      (click)="auth.logout()"
+      class="text-text-secondary hover:text-error text-sm transition-colors cursor-pointer"
+    >
+      Cerrar sesión
+    </button>
+  </header>
+
+  <!-- Content -->
+  <main class="flex items-center justify-center" style="min-height: calc(100vh - 65px)">
+    <div class="text-center">
+      <img src="assets/images/logo.png" alt="Nova Inns" class="w-24 h-24 object-contain mx-auto mb-6 opacity-20" />
+      <h2 class="text-text-secondary text-xl">Dashboard en construcción</h2>
+      <p class="text-text-disabled text-sm mt-2">Pronto aquí verás el resumen de tu negocio</p>
+    </div>
+  </main>
+
+</div>
