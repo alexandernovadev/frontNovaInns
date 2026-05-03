@@ -83,8 +83,6 @@
                 [class]="b.billing.status === 'PAGADO' ? 'bg-success' : b.billing.status === 'NO SHOW' ? 'bg-error' : 'bg-warning'">
               </span>
               <span class="hidden sm:flex"><status-badge [value]="b.billing.status" type="billing" /></span>
-                {{ b.billing.status }}
-              </span>
               <button (click)="openEdit(b, $event)" title="Editar"
                 class="p-1 sm:p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
                 <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

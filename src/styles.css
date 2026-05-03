@@ -354,9 +354,6 @@
   .inline {
     display: inline;
   }
-  .inline-block {
-    display: inline-block;
-  }
   .inline-flex {
     display: inline-flex;
   }
@@ -1752,11 +1749,6 @@
       height: calc(var(--spacing) * 4);
     }
   }
-  .sm\:h-10 {
-    @media (width >= 40rem) {
-      height: calc(var(--spacing) * 10);
-    }
-  }
   .sm\:h-full {
     @media (width >= 40rem) {
       height: 100%;
@@ -1770,11 +1762,6 @@
   .sm\:w-4 {
     @media (width >= 40rem) {
       width: calc(var(--spacing) * 4);
-    }
-  }
-  .sm\:w-10 {
-    @media (width >= 40rem) {
-      width: calc(var(--spacing) * 10);
     }
   }
   .sm\:w-px {
