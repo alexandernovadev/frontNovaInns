@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, HostListener, effect, ElementRef, inject, signal, viewChild, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookingsService, IBooking } from '../../../core/services/bookings.service';
@@ -46,6 +46,12 @@ export class BookingDetailComponent implements OnInit {
   showDelete  = signal(false);
   showPhoto   = signal<string | null>(null);
   payAmount   = 0;
+  photoOverlay = viewChild<ElementRef<HTMLElement>>('photoOverlay');
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    if (this.showPhoto()) this.showPhoto.set(null);
+  }
 
   readonly STATUS_CLASS: Record<string, string> = {
     'PAGADO':     'bg-success/15 text-success',
@@ -99,6 +105,12 @@ export class BookingDetailComponent implements OnInit {
   aptName()     { const b = this.booking(); return b ? this.svc.aptName(b) : ''; }
   totalGuests() { const b = this.booking(); return b ? 1 + b.group.members.length : 0; }
 
+  onPhotoKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      this.showPhoto.set(null);
+    }
+  }
+
   paidPct() {
     const b = this.booking();
     if (!b || !b.billing.totalAmount) return 0;
@@ -110,12 +122,18 @@ export class BookingDetailComponent implements OnInit {
   }
 
   fmtDate(d: string) {
-    return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+    if (!d) return '';
+    const p = d.split('T')[0].split('-');
+    if (p.length !== 3) return d;
+    const date = new Date(+p[0], +p[1] - 1, +p[2]);
+    return date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
   fmtCheckDate(d: string): string {
     if (!d) return '';
-    const date = new Date(d + 'T12:00:00');
+    const p = d.split('T')[0].split('-');
+    if (p.length !== 3) return d;
+    const date = new Date(+p[0], +p[1] - 1, +p[2]);
     const weekday = date.toLocaleDateString('es-CO', { weekday: 'long' });
     const day = date.getDate();
     const month = date.toLocaleDateString('es-CO', { month: 'long' });
