@@ -27,15 +27,15 @@
         <span class="hidden sm:inline">Total esperado</span>
         <span class="sm:hidden">Esperado</span>
       </p>
-      <p class="text-text-primary text-sm sm:text-2xl font-bold truncate">{{ fmtCOP(summary().totalExpected) }}</p>
+      <p class="text-text-primary text-sm sm:text-2xl font-bold truncate">{{ summary().totalExpected | currencyCop }}</p>
     </div>
     <div class="bg-surface border border-border rounded-2xl p-3 sm:p-5">
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1 sm:mb-2">Recibido</p>
-      <p class="text-success text-sm sm:text-2xl font-bold truncate">{{ fmtCOP(summary().totalReceived) }}</p>
+      <p class="text-success text-sm sm:text-2xl font-bold truncate">{{ summary().totalReceived | currencyCop }}</p>
     </div>
     <div class="bg-surface border border-border rounded-2xl p-3 sm:p-5">
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1 sm:mb-2">Pendiente</p>
-      <p class="text-warning text-sm sm:text-2xl font-bold truncate">{{ fmtCOP(summary().totalPending) }}</p>
+      <p class="text-warning text-sm sm:text-2xl font-bold truncate">{{ summary().totalPending | currencyCop }}</p>
     </div>
   </div>
 
@@ -118,19 +118,19 @@
             <div class="flex items-center justify-between sm:hidden">
               <div>
                 <p class="text-text-disabled text-xs leading-none mb-0.5">Entrada</p>
-                <p class="text-text-primary font-bold text-xs">{{ fmtDate(b.stay.checkIn) }}</p>
+                <p class="text-text-primary font-bold text-xs">{{ b.stay.checkIn | dateEs:'short' }}</p>
               </div>
               <span class="text-brand text-xs font-bold px-2 py-0.5 bg-brand/10 rounded-lg">{{ nights(b) }}n</span>
               <div class="text-right">
                 <p class="text-text-disabled text-xs leading-none mb-0.5">Salida</p>
-                <p class="text-text-primary font-bold text-xs">{{ fmtDate(b.stay.checkOut) }}</p>
+                <p class="text-text-primary font-bold text-xs">{{ b.stay.checkOut | dateEs:'short' }}</p>
               </div>
             </div>
             <!-- sm+: original layout -->
             <div class="hidden sm:flex items-center justify-between">
               <div class="text-center">
                 <p class="text-text-disabled text-xs mb-0.5">Check-in</p>
-                <p class="text-text-primary font-bold text-sm">{{ fmtDate(b.stay.checkIn) }}</p>
+                <p class="text-text-primary font-bold text-sm">{{ b.stay.checkIn | dateEs:'short' }}</p>
               </div>
               <div class="flex flex-col items-center gap-1">
                 <div class="flex items-center gap-1">
@@ -144,7 +144,7 @@
               </div>
               <div class="text-center">
                 <p class="text-text-disabled text-xs mb-0.5">Check-out</p>
-                <p class="text-text-primary font-bold text-sm">{{ fmtDate(b.stay.checkOut) }}</p>
+                <p class="text-text-primary font-bold text-sm">{{ b.stay.checkOut | dateEs:'short' }}</p>
               </div>
             </div>
           </div>
@@ -155,17 +155,17 @@
             <div class="flex items-center justify-between mb-2 sm:mb-3">
               <div>
                 <p class="text-text-disabled text-xs mb-0.5">Total</p>
-                <p class="text-text-primary text-sm sm:text-xl font-bold">{{ fmtCOP(b.billing.totalAmount) }}</p>
+                <p class="text-text-primary text-sm sm:text-xl font-bold">{{ b.billing.totalAmount | currencyCop }}</p>
               </div>
               @if (pending(b) > 0) {
                 <div class="text-right">
                   <p class="text-text-disabled text-xs mb-0.5">Pendiente</p>
-                  <p class="text-warning text-sm sm:text-xl font-bold">{{ fmtCOP(pending(b)) }}</p>
+                  <p class="text-warning text-sm sm:text-xl font-bold">{{ pending(b) | currencyCop }}</p>
                 </div>
               } @else {
                 <div class="text-right">
                   <p class="text-text-disabled text-xs mb-0.5">Recibido</p>
-                  <p class="text-success text-sm sm:text-base font-bold">{{ fmtCOP(b.billing.amountReceived) }}</p>
+                  <p class="text-success text-sm sm:text-base font-bold">{{ b.billing.amountReceived | currencyCop }}</p>
                 </div>
               }
             </div>
@@ -219,7 +219,7 @@
 <!-- =============== MODAL PAGO =============== -->
 <modal-nova [visible]="showPayment()" title="Registrar pago" size="sm" (closed)="onPaymentClosed()" [footerTemplate]="paymentFooter">
   <p class="text-text-secondary text-sm mb-3">
-    Pendiente: <span class="text-warning font-bold">{{ fmtCOP(pending(selected()!)) }}</span>
+    Pendiente: <span class="text-warning font-bold">{{ pending(selected()!) | currencyCop }}</span>
   </p>
   <label class="block text-text-secondary text-sm mb-1.5">Monto a registrar</label>
   <input type="number" min="0" [(ngModel)]="payAmount" placeholder="0" autocomplete="off"

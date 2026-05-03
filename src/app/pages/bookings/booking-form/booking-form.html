@@ -79,7 +79,7 @@
         <input type="date" [(ngModel)]="formGeneral.checkIn" class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
                    focus:outline-none focus:border-success scheme-dark transition-colors" />
         @if (formGeneral.checkIn) {
-        <p class="text-success text-xs font-medium mt-1.5 px-1">{{ fmtCheckDate(formGeneral.checkIn) }}</p>
+        <p class="text-success text-xs font-medium mt-1.5 px-1">{{ formGeneral.checkIn | dateEs:'check' }}</p>
         }
       </div>
       <div>
@@ -90,7 +90,7 @@
         <input type="date" [(ngModel)]="formGeneral.checkOut" class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
                    focus:outline-none focus:border-error scheme-dark transition-colors" />
         @if (formGeneral.checkOut) {
-        <p class="text-error text-xs font-medium mt-1.5 px-1">{{ fmtCheckDate(formGeneral.checkOut) }}</p>
+        <p class="text-error text-xs font-medium mt-1.5 px-1">{{ formGeneral.checkOut | dateEs:'check' }}</p>
         }
       </div>
     </div>
@@ -369,11 +369,11 @@
     <div class="p-4 space-y-3">
       <div class="flex justify-between items-center">
         <span class="text-text-secondary text-sm">Precio total</span>
-        <span class="text-text-primary font-bold text-base">{{ fmtCOP(formBilling.basePrice) }}</span>
+        <span class="text-text-primary font-bold text-base">{{ formBilling.basePrice | currencyCop }}</span>
       </div>
       <div class="flex justify-between items-center">
         <span class="text-text-secondary text-sm">Recibido</span>
-        <span class="text-success font-bold text-base">{{ fmtCOP(formBilling.amountReceived) }}</span>
+        <span class="text-success font-bold text-base">{{ formBilling.amountReceived | currencyCop }}</span>
       </div>
       <div class="h-1.5 bg-border/40 rounded-full overflow-hidden">
         <div class="h-full rounded-full transition-all" [style.width.%]="formPaidPct()"
@@ -384,7 +384,7 @@
         <span class="text-text-secondary text-sm font-medium">Pendiente</span>
         <span class="font-bold text-lg"
           [class]="formBilling.basePrice - formBilling.amountReceived > 0 ? 'text-warning' : 'text-success'">
-          {{ fmtCOP(formBilling.basePrice - formBilling.amountReceived) }}
+          {{ formBilling.basePrice - formBilling.amountReceived | currencyCop }}
         </span>
       </div>
     </div>

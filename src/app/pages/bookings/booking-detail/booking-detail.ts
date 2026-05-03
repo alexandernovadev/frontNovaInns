@@ -8,6 +8,7 @@ import { StatusBadge } from '../../../shared/components/status-badge';
 import { PlatformIcon } from '../../../shared/components/platform-icon';
 import { PaymentMethodIcon } from '../../../shared/components/payment-method-icon';
 import { PhotoViewer } from '../../../shared/components/photo-viewer';
+import { CurrencyCopPipe } from '../../../shared/pipes/currency-cop.pipe';
 import { PLATFORM_CLASS, ID_LABELS } from '../../../shared/constants/booking.constants';
 import { AlertService } from '../../../shared/components/services/alert.service';
 import {
@@ -20,7 +21,7 @@ import {
 
 @Component({
   selector: 'app-booking-detail',
-  imports: [FormsModule, LucideAngularModule, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer],
+  imports: [FormsModule, LucideAngularModule, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer, CurrencyCopPipe],
   templateUrl: './booking-detail.html',
 })
 export class BookingDetailComponent implements OnInit {
@@ -112,31 +113,6 @@ export class BookingDetailComponent implements OnInit {
     const b = this.booking();
     if (!b || !b.billing.totalAmount) return 0;
     return Math.min(100, Math.round(b.billing.amountReceived / b.billing.totalAmount * 100));
-  }
-
-  fmtCOP(n: number) {
-    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
-  }
-
-  fmtDate(d: string) {
-    if (!d) return '';
-    const p = d.split('T')[0].split('-');
-    if (p.length !== 3) return d;
-    const date = new Date(+p[0], +p[1] - 1, +p[2]);
-    return date.toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
-  }
-
-  fmtCheckDate(d: string): string {
-    if (!d) return '';
-    const p = d.split('T')[0].split('-');
-    if (p.length !== 3) return d;
-    const date = new Date(+p[0], +p[1] - 1, +p[2]);
-    const weekday = date.toLocaleDateString('es-CO', { weekday: 'long' });
-    const day = date.getDate();
-    const month = date.toLocaleDateString('es-CO', { month: 'long' });
-    const year = String(date.getFullYear()).slice(2);
-    const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-    return `${cap(weekday)} | ${day}-${cap(month)}/${year}`;
   }
 
   fmtCreatedAt(d: string) {

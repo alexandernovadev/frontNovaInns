@@ -6,13 +6,15 @@ import { ModalNova } from '../../shared/components/modal-nova';
 import { StatusBadge } from '../../shared/components/status-badge';
 import { PlatformIcon } from '../../shared/components/platform-icon';
 import { Pagination } from '../../shared/components/pagination';
+import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
+import { DateEsPipe } from '../../shared/pipes/date-es.pipe';
 import { PLATFORMS, PLATFORM_CLASS, STATUSES } from '../../shared/constants/booking.constants';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, CalendarDays } from 'lucide-angular';
 
 @Component({
   selector: 'app-bookings',
-  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, PlatformIcon, Pagination],
+  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, PlatformIcon, Pagination, CurrencyCopPipe, DateEsPipe],
   templateUrl: './bookings.html',
 })
 export class BookingsComponent implements OnInit {
@@ -116,14 +118,6 @@ export class BookingsComponent implements OnInit {
   paidPct(b: IBooking) {
     if (!b.billing.totalAmount) return 0;
     return Math.min(100, Math.round((b.billing.amountReceived / b.billing.totalAmount) * 100));
-  }
-
-  fmtCOP(n: number) {
-    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
-  }
-
-  fmtDate(d: string) {
-    return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
 }

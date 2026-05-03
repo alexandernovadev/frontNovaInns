@@ -6,6 +6,8 @@ import { ApartmentsService, IApartment } from '../../../core/services/apartments
 import { COUNTRIES_DATA, CountryData } from './countries';
 import { PlatformIcon } from '../../../shared/components/platform-icon';
 import { PaymentMethodIcon } from '../../../shared/components/payment-method-icon';
+import { CurrencyCopPipe } from '../../../shared/pipes/currency-cop.pipe';
+import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
 import { PLATFORMS, METHODS, ID_TYPES, ID_LABELS, PLATFORM_CLASS } from '../../../shared/constants/booking.constants';
 import {
   LucideAngularModule,
@@ -47,7 +49,7 @@ interface GuestForm {
 
 @Component({
   selector: 'app-booking-form',
-  imports: [FormsModule, LucideAngularModule, PlatformIcon, PaymentMethodIcon],
+  imports: [FormsModule, LucideAngularModule, PlatformIcon, PaymentMethodIcon, CurrencyCopPipe, DateEsPipe],
   templateUrl: './booking-form.html',
 })
 export class BookingFormComponent implements OnInit {
@@ -337,21 +339,6 @@ export class BookingFormComponent implements OnInit {
 
   fmtNumber(n: number) {
     return n ? new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(n) : '';
-  }
-
-  fmtCOP(n: number) {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
-      maximumFractionDigits: 0,
-    }).format(n);
-  }
-
-  fmtCheckDate(d: string): string {
-    if (!d) return '';
-    const date = new Date(d + 'T12:00:00');
-    const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
-    return `${cap(date.toLocaleDateString('es-CO', { weekday: 'long' }))} | ${date.getDate()}-${cap(date.toLocaleDateString('es-CO', { month: 'long' }))}/${String(date.getFullYear()).slice(2)}`;
   }
 
   formPaidPct() {

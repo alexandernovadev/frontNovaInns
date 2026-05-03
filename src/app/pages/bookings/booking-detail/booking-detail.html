@@ -77,8 +77,8 @@
               <lucide-icon [img]="LogIn" class="w-3.5 h-3.5 text-success" [strokeWidth]="2"/>
               <span class="text-text-disabled text-xs uppercase tracking-wide">Check-in</span>
             </div>
-            <p class="text-text-primary font-bold">{{ fmtDate(b.stay.checkIn) }}</p>
-            <p class="text-success text-xs font-medium mt-0.5">{{ fmtCheckDate(b.stay.checkIn) }}</p>
+            <p class="text-text-primary font-bold">{{ b.stay.checkIn | dateEs:'short' }}</p>
+            <p class="text-success text-xs font-medium mt-0.5">{{ b.stay.checkIn | dateEs:'check' }}</p>
           </div>
 
           <!-- Nights separator -->
@@ -98,8 +98,8 @@
               <lucide-icon [img]="LogOut" class="w-3.5 h-3.5 text-error" [strokeWidth]="2"/>
               <span class="text-text-disabled text-xs uppercase tracking-wide">Check-out</span>
             </div>
-            <p class="text-text-primary font-bold">{{ fmtDate(b.stay.checkOut) }}</p>
-            <p class="text-error text-xs font-medium mt-0.5">{{ fmtCheckDate(b.stay.checkOut) }}</p>
+            <p class="text-text-primary font-bold">{{ b.stay.checkOut | dateEs:'short' }}</p>
+            <p class="text-error text-xs font-medium mt-0.5">{{ b.stay.checkOut | dateEs:'check' }}</p>
           </div>
 
         </div>
@@ -122,7 +122,7 @@
                 <lucide-icon [img]="Banknote" class="w-4 h-4 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
                 <span class="text-text-secondary text-sm">Precio base</span>
               </div>
-              <span class="text-text-primary font-semibold text-sm">{{ fmtCOP(b.billing.basePrice) }}</span>
+              <span class="text-text-primary font-semibold text-sm">{{ b.billing.basePrice | currencyCop }}</span>
             </div>
 
             <!-- Extra services -->
@@ -138,10 +138,10 @@
                     </span>
                     <span class="text-text-primary text-sm font-medium truncate">{{ svc.description }}</span>
                   </div>
-                  <span class="text-text-primary font-bold text-sm shrink-0">{{ fmtCOP(svc.price * svc.quantity) }}</span>
+                  <span class="text-text-primary font-bold text-sm shrink-0">{{ svc.price * svc.quantity | currencyCop }}</span>
                 </div>
                 <div class="flex items-center gap-3 text-xs text-text-disabled pl-1">
-                  <span>{{ fmtCOP(svc.price) }} × {{ svc.quantity }} unidad{{ svc.quantity !== 1 ? 'es' : '' }}</span>
+                  <span>{{ svc.price | currencyCop }} × {{ svc.quantity }} unidad{{ svc.quantity !== 1 ? 'es' : '' }}</span>
                 </div>
               </div>
             }
@@ -149,7 +149,7 @@
             <!-- Total -->
             <div class="flex items-center justify-between px-4 py-3">
               <span class="text-text-primary font-bold text-sm">Total</span>
-              <span class="text-text-primary font-bold text-lg">{{ fmtCOP(b.billing.totalAmount) }}</span>
+              <span class="text-text-primary font-bold text-lg">{{ b.billing.totalAmount | currencyCop }}</span>
             </div>
 
           </div>
@@ -158,13 +158,13 @@
           <div class="grid grid-cols-2 gap-3">
             <div class="bg-success/5 border border-success/20 rounded-xl p-3 text-center">
               <p class="text-text-disabled text-xs uppercase tracking-wide mb-1">Recibido</p>
-              <p class="text-success font-bold text-base">{{ fmtCOP(b.billing.amountReceived) }}</p>
+              <p class="text-success font-bold text-base">{{ b.billing.amountReceived | currencyCop }}</p>
             </div>
             <div class="rounded-xl p-3 text-center border"
               [class]="pending() > 0 ? 'bg-warning/5 border-warning/20' : 'bg-success/5 border-success/20'">
               <p class="text-text-disabled text-xs uppercase tracking-wide mb-1">Pendiente</p>
               <p class="font-bold text-base" [class]="pending() > 0 ? 'text-warning' : 'text-success'">
-                {{ fmtCOP(pending()) }}
+                {{ pending() | currencyCop }}
               </p>
             </div>
           </div>
@@ -327,7 +327,7 @@
                       <div class="absolute bottom-1.5 left-1.5 right-1.5 flex items-end justify-between gap-1">
                         <span class="text-xs font-bold bg-black/60 text-white px-2 py-0.5 rounded-lg">{{ ID_LABELS[photo.type] || photo.type }}</span>
                         @if (photo.uploadedAt) {
-                          <span class="text-xs bg-black/50 text-white/70 px-1.5 py-0.5 rounded-lg">{{ fmtDate(photo.uploadedAt) }}</span>
+                          <span class="text-xs bg-black/50 text-white/70 px-1.5 py-0.5 rounded-lg">{{ photo.uploadedAt | dateEs:'short' }}</span>
                         }
                       </div>
                     </div>
@@ -348,7 +348,7 @@
 <!-- ── Modal: Registrar pago ── -->
 <modal-nova [visible]="showPayment()" title="Registrar pago" size="sm" (closed)="onPaymentClosed()" [footerTemplate]="paymentFooter">
   <p class="text-text-secondary text-sm mb-3">
-    Pendiente: <span class="text-warning font-bold">{{ fmtCOP(pending()) }}</span>
+    Pendiente: <span class="text-warning font-bold">{{ pending() | currencyCop }}</span>
   </p>
   <label class="block text-text-secondary text-sm mb-1.5">Monto a registrar</label>
   <input type="number" min="0" [(ngModel)]="payAmount" placeholder="0" autocomplete="off"

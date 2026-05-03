@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { UploadService } from '../../shared/services/upload.service';
 
 const API = 'http://localhost:3000/api';
 
@@ -94,13 +95,11 @@ export class BookingsService {
   }
 
   uploadImage(file: File) {
-    const form = new FormData();
-    form.append('file', file);
-    return this.http.post<{ url: string; publicId: string }>(`${API}/upload/bookings`, form);
+    return inject(UploadService).upload(file, 'bookings');
   }
 
   deleteImage(publicId: string) {
-    return this.http.delete<void>(`${API}/upload`, { params: { publicId } });
+    return inject(UploadService).delete(publicId);
   }
 
   aptName(booking: IBooking): string {

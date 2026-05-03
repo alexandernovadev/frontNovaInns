@@ -5,11 +5,7 @@ import { ModalNova } from '../../shared/components/modal-nova';
 import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, Users } from 'lucide-angular';
-
-const ROLES = ['SUPER_ADMIN', 'ADMIN', 'STAFF', 'GUEST'] as const;
-const ROLE_LABELS: Record<string, string> = {
-  SUPER_ADMIN: 'Super Admin', ADMIN: 'Admin', STAFF: 'Staff', GUEST: 'Guest',
-};
+import { ROLES, ROLE_LABELS } from '../../shared/constants/user.constants';
 
 @Component({
   selector: 'app-users',

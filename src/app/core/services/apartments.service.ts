@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { UploadService } from '../../shared/services/upload.service';
 
 const API = 'http://localhost:3000/api';
 
@@ -65,8 +66,6 @@ export class ApartmentsService {
 
   // Upload imagen a Cloudinary via backend
   uploadImage(file: File) {
-    const form = new FormData();
-    form.append('file', file);
-    return this.http.post<{ url: string; publicId: string }>(`${API}/upload/apartments`, form);
+    return inject(UploadService).upload(file, 'apartments');
   }
 }
