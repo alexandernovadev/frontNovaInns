@@ -8,7 +8,7 @@ export interface IGuest {
   idNumber?: string;
   country?:  string;
   city?:     string;
-  identifications?: { url: string; type: string; uploadedAt: string }[];
+  identifications?: { url: string; publicId: string; type: string; uploadedAt: string }[];
 }
 
 export interface IExtraService {
@@ -92,6 +92,10 @@ export class BookingsService {
     const form = new FormData();
     form.append('file', file);
     return this.http.post<{ url: string; publicId: string }>(`${API}/upload/bookings`, form);
+  }
+
+  deleteImage(publicId: string) {
+    return this.http.delete<void>(`${API}/upload`, { params: { publicId } });
   }
 
   aptName(booking: IBooking): string {

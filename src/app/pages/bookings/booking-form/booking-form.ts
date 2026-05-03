@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookingsService, IBooking } from '../../../core/services/bookings.service';
@@ -42,6 +42,7 @@ export class BookingFormComponent implements OnInit {
   private aptSvc = inject(ApartmentsService);
   private route  = inject(ActivatedRoute);
   private router = inject(Router);
+  private cdr   = inject(ChangeDetectorRef);
 
   isEditing  = false;
   editingId  = '';
@@ -106,14 +107,14 @@ export class BookingFormComponent implements OnInit {
       idNumber: b.group.host.idNumber ?? '',
       country:  b.group.host.country  ?? '',
       city:     b.group.host.city     ?? '',
-      identifications: (b.group.host.identifications ?? []).map(i => ({ url: i.url, publicId: '', type: i.type as IdType })),
+      identifications: (b.group.host.identifications ?? []).map(i => ({ url: i.url, publicId: i.publicId ?? '', type: i.type as IdType })),
     };
     this.members = b.group.members.map(m => ({
       fullName: m.fullName,
       idNumber: m.idNumber ?? '',
       country:  m.country  ?? '',
       city:     m.city     ?? '',
-      identifications: (m.identifications ?? []).map(i => ({ url: i.url, publicId: '', type: i.type as IdType })),
+      identifications: (m.identifications ?? []).map(i => ({ url: i.url, publicId: i.publicId ?? '', type: i.type as IdType })),
     }));
   }
 
@@ -148,20 +149,40 @@ export class BookingFormComponent implements OnInit {
   }
 
   // ── Guests ──
-  addMember()               { this.members.push(this.blankGuest()); }
-  removeMember(i: number)   { this.members.splice(i, 1); }
+  addMember() { this.members.push(this.blankGuest()); }
+
+  private deleteOldPhoto(guest: GuestForm, type: IdType) {
+    const old = guest.identifications.find(i => i.type === type);
+    if (old?.publicId) this.svc.deleteImage(old.publicId).subscribe();
+  }
 
   uploadPhoto(file: File, key: string, type: IdType, target: GuestForm) {
     this.uploading[key] = type;
+    this.deleteOldPhoto(target, type);
     this.svc.uploadImage(file).subscribe({
       next: res => {
         const idx = target.identifications.findIndex(i => i.type === type);
-        if (idx !== -1) target.identifications[idx] = { ...res, type };
-        else            target.identifications.push({ ...res, type });
+        if (idx !== -1) target.identifications[idx] = { url: res.url, publicId: res.publicId, type };
+        else            target.identifications.push({ url: res.url, publicId: res.publicId, type });
         this.uploading[key] = null;
+        this.cdr.detectChanges();
       },
-      error: () => { this.uploading[key] = null; },
+      error: () => {
+        this.uploading[key] = null;
+        this.cdr.detectChanges();
+      },
     });
+  }
+
+  removePhoto(guest: GuestForm, type: IdType) {
+    this.deleteOldPhoto(guest, type);
+    guest.identifications = guest.identifications.filter(i => i.type !== type);
+  }
+
+  removeMember(i: number) {
+    const member = this.members[i];
+    if (member) member.identifications.forEach(id => { if (id.publicId) this.svc.deleteImage(id.publicId).subscribe(); });
+    this.members.splice(i, 1);
   }
 
   onHostPhoto(e: Event, type: IdType) {
@@ -177,7 +198,6 @@ export class BookingFormComponent implements OnInit {
   }
 
   getPhoto(guest: GuestForm, type: IdType) { return guest.identifications.find(i => i.type === type); }
-  removePhoto(guest: GuestForm, type: IdType) { guest.identifications = guest.identifications.filter(i => i.type !== type); }
 
   // ── Billing ──
   onPriceInput(e: Event, field: 'basePrice' | 'amountReceived') {
