@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookingsService, IBooking } from '../../../core/services/bookings.service';
 import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
+import { ModalNova } from '../../../shared/components/modal-nova';
+import { AlertService } from '../../../shared/components/services/alert.service';
 import {
   LucideAngularModule,
   CalendarDays, Building2, LogIn, LogOut,
@@ -13,7 +15,7 @@ import {
 
 @Component({
   selector: 'app-booking-detail',
-  imports: [FormsModule, LucideAngularModule, DateEsPipe],
+  imports: [FormsModule, LucideAngularModule, DateEsPipe, ModalNova],
   templateUrl: './booking-detail.html',
 })
 export class BookingDetailComponent implements OnInit {
@@ -36,9 +38,10 @@ export class BookingDetailComponent implements OnInit {
   readonly X             = X;
   readonly Hash          = Hash;
 
-  private svc    = inject(BookingsService);
-  private route  = inject(ActivatedRoute);
-  private router = inject(Router);
+  private svc     = inject(BookingsService);
+  private route   = inject(ActivatedRoute);
+  private router  = inject(Router);
+  private alert   = inject(AlertService);
 
   booking     = signal<IBooking | null>(null);
   loading     = signal(true);
@@ -81,13 +84,17 @@ export class BookingDetailComponent implements OnInit {
 
   openPayment() { this.payAmount = 0; this.showPayment.set(true); }
 
+  onPaymentClosed() { this.showPayment.set(false); }
+
+  onDeleteClosed() { this.showDelete.set(false); }
+
   confirmPayment() {
     const id = this.booking()?._id;
     if (!id || !this.payAmount) return;
     this.saving.set(true);
     this.svc.registerPayment(id, this.payAmount).subscribe({
-      next: updated => { this.booking.set(updated); this.showPayment.set(false); this.saving.set(false); },
-      error: () => this.saving.set(false),
+      next: updated => { this.booking.set(updated); this.showPayment.set(false); this.saving.set(false); this.alert.success('Pago registrado'); },
+      error: () => { this.saving.set(false); this.alert.error('Error al registrar pago'); },
     });
   }
 
@@ -96,8 +103,8 @@ export class BookingDetailComponent implements OnInit {
     if (!id) return;
     this.saving.set(true);
     this.svc.delete(id).subscribe({
-      next: () => { this.saving.set(false); this.router.navigate(['/bookings']); },
-      error: () => this.saving.set(false),
+      next: () => { this.saving.set(false); this.alert.success('Reserva eliminada'); this.router.navigate(['/bookings']); },
+      error: () => { this.saving.set(false); this.alert.error('Error al eliminar reserva'); },
     });
   }
 

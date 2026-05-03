@@ -7,6 +7,8 @@ import {
   IRoom,
   IBathroom,
 } from '../../../core/services/apartments.service';
+import { ModalNova } from '../../../shared/components/modal-nova';
+import { AlertService } from '../../../shared/components/services/alert.service';
 import {
   LucideAngularModule,
   Refrigerator, Flame, Microwave, Zap,
@@ -23,7 +25,7 @@ type Tab = 'general' | 'rooms' | 'bathrooms' | 'equipment' | 'photos';
 
 @Component({
   selector: 'app-apartment-detail',
-  imports: [FormsModule, LucideAngularModule],
+  imports: [FormsModule, LucideAngularModule, ModalNova],
   templateUrl: './apartment-detail.html',
 })
 export class ApartmentDetailComponent implements OnInit {
@@ -60,6 +62,7 @@ export class ApartmentDetailComponent implements OnInit {
   private svc = inject(ApartmentsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private alert = inject(AlertService);
 
   apt = signal<IApartment | null>(null);
   loading = signal(true);
@@ -188,8 +191,9 @@ export class ApartmentDetailComponent implements OnInit {
         this.apt.set(updated);
         this.showRoomForm.set(false);
         this.saving.set(false);
+        this.alert.success('Habitación guardada');
       },
-      error: () => this.saving.set(false),
+      error: () => { this.saving.set(false); this.alert.error('Error al guardar habitación'); },
     });
   }
 
@@ -236,8 +240,9 @@ export class ApartmentDetailComponent implements OnInit {
         this.apt.set(updated);
         this.showBathForm.set(false);
         this.saving.set(false);
+        this.alert.success('Baño guardado');
       },
-      error: () => this.saving.set(false),
+      error: () => { this.saving.set(false); this.alert.error('Error al guardar baño'); },
     });
   }
 

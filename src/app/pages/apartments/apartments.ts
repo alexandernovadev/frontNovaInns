@@ -2,6 +2,8 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApartmentsService, IApartment } from '../../core/services/apartments.service';
+import { ModalNova } from '../../shared/components/modal-nova';
+import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, Building2 } from 'lucide-angular';
 
 const STATUS_LABEL: Record<string, string> = {
@@ -17,7 +19,7 @@ const STATUS_CLASS: Record<string, string> = {
 
 @Component({
   selector: 'app-apartments',
-  imports: [FormsModule, LucideAngularModule],
+  imports: [FormsModule, LucideAngularModule, ModalNova],
   templateUrl: './apartments.html',
 })
 export class ApartmentsComponent implements OnInit {
@@ -25,6 +27,7 @@ export class ApartmentsComponent implements OnInit {
 
   private svc = inject(ApartmentsService);
   private router = inject(Router);
+  private alert = inject(AlertService);
 
   apartments = signal<IApartment[]>([]);
   meta = signal({ total: 0, page: 1, limit: 20, totalPages: 1 });
@@ -86,6 +89,8 @@ export class ApartmentsComponent implements OnInit {
     this.showDelete.set(true);
   }
 
+  onDeleteClosed() { this.showDelete.set(false); }
+
   confirmDelete() {
     const id = this.selected()?._id;
     if (!id) return;
@@ -95,8 +100,9 @@ export class ApartmentsComponent implements OnInit {
         this.showDelete.set(false);
         this.saving.set(false);
         this.load(1);
+        this.alert.success('Apartamento eliminado');
       },
-      error: () => this.saving.set(false),
+      error: () => { this.saving.set(false); this.alert.error('Error al eliminar apartamento'); },
     });
   }
 

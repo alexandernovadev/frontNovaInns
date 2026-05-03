@@ -1,6 +1,8 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UsersService, IUser, UserQuery } from '../../core/services/users.service';
+import { ModalNova } from '../../shared/components/modal-nova';
+import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, Users } from 'lucide-angular';
 
 const ROLES = ['SUPER_ADMIN', 'ADMIN', 'STAFF', 'GUEST'] as const;
@@ -10,13 +12,14 @@ const ROLE_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-users',
-  imports: [FormsModule, LucideAngularModule],
+  imports: [FormsModule, LucideAngularModule, ModalNova],
   templateUrl: './users.html',
 })
 export class UsersComponent implements OnInit {
   readonly UsersIcon = Users;
 
-  private svc = inject(UsersService);
+  private svc   = inject(UsersService);
+  private alert = inject(AlertService);
 
   // tabla
   users    = signal<IUser[]>([]);
@@ -69,8 +72,8 @@ export class UsersComponent implements OnInit {
   submitCreate() {
     this.saving.set(true);
     this.svc.create(this.form).subscribe({
-      next: () => { this.showCreate.set(false); this.load(1); this.saving.set(false); },
-      error: (e) => { this.errorMsg.set(e.error?.message ?? 'Error al crear'); this.saving.set(false); },
+      next: () => { this.showCreate.set(false); this.load(1); this.saving.set(false); this.alert.success('Usuario creado'); },
+      error: (e) => { this.errorMsg.set(e.error?.message ?? 'Error al crear'); this.saving.set(false); this.alert.error('Error al crear usuario'); },
     });
   }
 
@@ -100,21 +103,23 @@ export class UsersComponent implements OnInit {
       identificationNumber: this.form.identificationNumber,
     };
     this.svc.update(id, payload).subscribe({
-      next: () => { this.showEdit.set(false); this.load(this.meta().page); this.saving.set(false); },
-      error: (e) => { this.errorMsg.set(e.error?.message ?? 'Error al actualizar'); this.saving.set(false); },
+      next: () => { this.showEdit.set(false); this.load(this.meta().page); this.saving.set(false); this.alert.success('Usuario actualizado'); },
+      error: (e) => { this.errorMsg.set(e.error?.message ?? 'Error al actualizar'); this.saving.set(false); this.alert.error('Error al actualizar usuario'); },
     });
   }
 
   // --- Delete ---
   openDelete(user: IUser) { this.selected.set(user); this.showDelete.set(true); }
 
+  onDeleteClosed() { this.showDelete.set(false); }
+
   confirmDelete() {
     const id = this.selected()?._id;
     if (!id) return;
     this.saving.set(true);
     this.svc.remove(id).subscribe({
-      next: () => { this.showDelete.set(false); this.load(1); this.saving.set(false); },
-      error: () => this.saving.set(false),
+      next: () => { this.showDelete.set(false); this.load(1); this.saving.set(false); this.alert.success('Usuario eliminado'); },
+      error: () => { this.saving.set(false); this.alert.error('Error al eliminar usuario'); },
     });
   }
 

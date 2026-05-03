@@ -113,7 +113,7 @@ export class BookingsService {
     return Math.round(ms / 86400000);
   }
 
-  pending(booking: IBooking): number {
-    return booking.billing.totalAmount - booking.billing.amountReceived;
+  pending(booking: IBooking | null): number {
+    return booking ? booking.billing.totalAmount - booking.billing.amountReceived : 0;
   }
 }

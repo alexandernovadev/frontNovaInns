@@ -2,11 +2,13 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BookingsService, IBooking, FinancialSummary } from '../../core/services/bookings.service';
+import { ModalNova } from '../../shared/components/modal-nova';
+import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, CalendarDays } from 'lucide-angular';
 
 @Component({
   selector: 'app-bookings',
-  imports: [FormsModule, LucideAngularModule],
+  imports: [FormsModule, LucideAngularModule, ModalNova],
   templateUrl: './bookings.html',
 })
 export class BookingsComponent implements OnInit {
@@ -14,6 +16,7 @@ export class BookingsComponent implements OnInit {
 
   private svc    = inject(BookingsService);
   private router = inject(Router);
+  private alert  = inject(AlertService);
 
   bookings  = signal<IBooking[]>([]);
   meta      = signal({ total: 0, page: 1, limit: 20, totalPages: 1 });
@@ -74,13 +77,17 @@ export class BookingsComponent implements OnInit {
     this.showDelete.set(true);
   }
 
+  onDeleteClosed() { this.showDelete.set(false); }
+
+  onPaymentClosed() { this.showPayment.set(false); }
+
   confirmDelete() {
     const id = this.selected()?._id;
     if (!id) return;
     this.saving.set(true);
     this.svc.delete(id).subscribe({
-      next: () => { this.showDelete.set(false); this.saving.set(false); this.load(1); this.loadSummary(); },
-      error: () => this.saving.set(false),
+      next: () => { this.showDelete.set(false); this.saving.set(false); this.load(1); this.loadSummary(); this.alert.success('Reserva eliminada'); },
+      error: () => { this.saving.set(false); this.alert.error('Error al eliminar reserva'); },
     });
   }
 
@@ -101,8 +108,9 @@ export class BookingsComponent implements OnInit {
         this.showPayment.set(false);
         this.saving.set(false);
         this.loadSummary();
+        this.alert.success('Pago registrado');
       },
-      error: () => this.saving.set(false),
+      error: () => { this.saving.set(false); this.alert.error('Error al registrar pago'); },
     });
   }
 

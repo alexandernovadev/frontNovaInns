@@ -1,4 +1,5 @@
 import { Component, input, output, HostListener, ElementRef, viewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { LucideAngularModule, X } from 'lucide-angular';
 
 const SIZE_MAP: Record<string, string> = {
@@ -10,11 +11,13 @@ const SIZE_MAP: Record<string, string> = {
 
 @Component({
   selector: 'modal-nova',
-  imports: [LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule],
   template: `
     @if (visible()) {
+      <!-- sass-disable -->
       <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
            (click)="onBackdrop()"
+           (keydown)="onKeydown($event)"
            #overlay>
         <div class="bg-surface border border-border rounded-2xl w-full overflow-hidden flex flex-col max-h-[90vh]"
              [class]="sizeClass()"
@@ -66,6 +69,12 @@ export class ModalNova {
 
   onBackdrop() {
     if (this.closable()) this.close();
+  }
+
+  onKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape' && this.closable()) {
+      this.close();
+    }
   }
 
   @HostListener('document:keydown.escape')
