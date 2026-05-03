@@ -230,14 +230,11 @@ export class BookingFormComponent implements OnInit {
   }
 
   uploadPhoto(file: File, key: string, type: IdType, target: GuestForm) {
-    console.log('uploadPhoto llamado', { key, type, target, fileSize: file?.size });
     this.uploading[key] = type;
     if (target) this.deleteOldPhoto(target, type);
     this.svc.uploadImage(file).subscribe({
       next: (res) => {
-        console.log('uploadImage next', { key, res });
         if (!target) {
-          console.warn('target undefined en next', key);
           this.uploading[key] = null;
           this.cdr.detectChanges();
           return;
@@ -245,18 +242,15 @@ export class BookingFormComponent implements OnInit {
         const url = res.url;
         const publicId = res.publicId;
         const idx = target.identifications.findIndex((i) => i.type === type);
-        console.log('findIndex result', { idx, type, targetUid: (target as any).uid });
         if (idx !== -1) {
           target.identifications[idx] = { url, publicId, type };
         } else {
           target.identifications = [...target.identifications, { url, publicId, type }];
         }
-        console.log('identifications after assign', target.identifications);
         this.uploading[key] = null;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('upload error', err);
+      error: () => {
         this.uploading[key] = null;
         this.cdr.detectChanges();
       },
@@ -287,8 +281,7 @@ export class BookingFormComponent implements OnInit {
   onMemberPhoto(e: Event, member: GuestForm, type: IdType) {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (file) {
-      const idx = this.members.indexOf(member);
-      this.uploadPhoto(file, `member-${idx}`, type, member);
+      this.uploadPhoto(file, member.uid, type, member);
     }
     (e.target as HTMLInputElement).value = '';
   }

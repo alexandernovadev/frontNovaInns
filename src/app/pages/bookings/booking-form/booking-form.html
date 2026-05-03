@@ -265,7 +265,7 @@
           <label class="flex flex-col items-center justify-center gap-1.5 border border-dashed border-border
                                 rounded-xl aspect-video cursor-pointer hover:border-brand transition-colors group">
             <input type="file" accept="image/*" class="hidden" (change)="onMemberPhoto($event, member, type)" />
-            @if (uploading['member-' + $index] === type) {
+            @if (uploading[member.uid] === type) {
             <span class="text-text-disabled text-xs">Subiendo...</span>
             } @else {
             <lucide-icon [img]="ScanLine" class="w-5 h-5 text-text-disabled group-hover:text-brand transition-colors"
