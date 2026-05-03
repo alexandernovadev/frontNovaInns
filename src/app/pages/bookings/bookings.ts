@@ -5,6 +5,7 @@ import { BookingsService, IBooking, FinancialSummary } from '../../core/services
 import { ModalNova } from '../../shared/components/modal-nova';
 import { StatusBadge } from '../../shared/components/status-badge';
 import { PlatformIcon } from '../../shared/components/platform-icon';
+import { PLATFORMS, PLATFORM_CLASS, STATUSES } from '../../shared/constants/booking.constants';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, CalendarDays } from 'lucide-angular';
 
@@ -35,19 +36,9 @@ export class BookingsComponent implements OnInit {
   selected    = signal<IBooking | null>(null);
   payAmount   = 0;
 
-  readonly PLATFORMS = ['Booking', 'AirBnB', 'Directo'] as const;
-  readonly STATUSES  = ['PAGADO', 'FALTA PAGO', 'NO SHOW'] as const;
-
-  readonly PLATFORM_CLASS: Record<string, string> = {
-    Booking: 'bg-blue-500/15 text-blue-400 border border-blue-500/30',
-    AirBnB:  'bg-rose-500/15 text-rose-400 border border-rose-500/30',
-    Directo: 'bg-brand/15 text-brand border border-brand/30',
-  };
-  readonly STATUS_CLASS: Record<string, string> = {
-    'PAGADO':     'bg-success/15 text-success',
-    'FALTA PAGO': 'bg-warning/15 text-warning',
-    'NO SHOW':    'bg-error/15 text-error',
-  };
+  readonly PLATFORMS = PLATFORMS;
+  readonly STATUSES  = STATUSES;
+  readonly PLATFORM_CLASS = PLATFORM_CLASS;
 
   ngOnInit() {
     this.load();

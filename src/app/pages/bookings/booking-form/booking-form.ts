@@ -5,6 +5,7 @@ import { BookingsService, IBooking } from '../../../core/services/bookings.servi
 import { ApartmentsService, IApartment } from '../../../core/services/apartments.service';
 import { COUNTRIES_DATA, CountryData } from './countries';
 import { PlatformIcon } from '../../../shared/components/platform-icon';
+import { PLATFORMS, METHODS, ID_TYPES, ID_LABELS, PLATFORM_CLASS } from '../../../shared/constants/booking.constants';
 import {
   LucideAngularModule,
   CalendarDays,
@@ -93,20 +94,11 @@ export class BookingFormComponent implements OnInit {
     { key: 'billing', label: 'Pagos', icon: CreditCard },
   ];
 
-  readonly PLATFORMS = ['Booking', 'AirBnB', 'Directo'] as const;
-  readonly METHODS = ['Efectivo', 'Nequi', 'Bancolombia', 'None'] as const;
-  readonly ID_TYPES: IdType[] = ['FRONT', 'BACK', 'SELFIE'];
-  readonly ID_LABELS: Record<IdType, string> = {
-    FRONT: 'Frontal',
-    BACK: 'Trasera',
-    SELFIE: 'Selfie',
-  };
-
-  readonly PLATFORM_CLASS: Record<string, string> = {
-    Booking: 'bg-blue-500/15 text-blue-400 border-2 border-blue-500/40',
-    AirBnB: 'bg-rose-500/15 text-rose-400 border-2 border-rose-500/40',
-    Directo: 'bg-brand/15 text-brand border-2 border-brand/40',
-  };
+  readonly PLATFORMS = PLATFORMS;
+  readonly METHODS = METHODS;
+  readonly ID_TYPES = ID_TYPES;
+  readonly ID_LABELS = ID_LABELS;
+  readonly PLATFORM_CLASS = PLATFORM_CLASS;
 
   ngOnInit() {
     this.aptSvc

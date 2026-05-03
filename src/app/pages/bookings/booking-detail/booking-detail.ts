@@ -6,6 +6,7 @@ import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
 import { ModalNova } from '../../../shared/components/modal-nova';
 import { StatusBadge } from '../../../shared/components/status-badge';
 import { PlatformIcon } from '../../../shared/components/platform-icon';
+import { PLATFORM_CLASS, ID_LABELS } from '../../../shared/constants/booking.constants';
 import { AlertService } from '../../../shared/components/services/alert.service';
 import {
   LucideAngularModule,
@@ -59,19 +60,8 @@ export class BookingDetailComponent implements OnInit {
     if (this.showPhoto()) this.showPhoto.set(null);
   }
 
-  readonly STATUS_CLASS: Record<string, string> = {
-    'PAGADO':     'bg-success/15 text-success',
-    'FALTA PAGO': 'bg-warning/15 text-warning',
-    'NO SHOW':    'bg-error/15 text-error',
-  };
-  readonly PLATFORM_CLASS: Record<string, string> = {
-    Booking: 'bg-blue-500/15 text-blue-400 border border-blue-500/30',
-    AirBnB:  'bg-rose-500/15 text-rose-400 border border-rose-500/30',
-    Directo: 'bg-brand/15 text-brand border border-brand/30',
-  };
-  readonly ID_LABELS: Record<string, string> = {
-    FRONT: 'Frontal', BACK: 'Trasera', SELFIE: 'Selfie',
-  };
+  readonly PLATFORM_CLASS = PLATFORM_CLASS;
+  readonly ID_LABELS = ID_LABELS;
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
