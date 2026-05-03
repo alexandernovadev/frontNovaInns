@@ -1,11 +1,12 @@
 import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
+import { AlertNova } from '../shared/components/alert-nova';
 import { LucideAngularModule, CalendarDays, Building2, Users, ArrowUpDown, Info, LogOut, Menu } from 'lucide-angular';
 
 @Component({
   selector: 'app-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule, AlertNova],
   templateUrl: './layout.html',
 })
 export class LayoutComponent {
