@@ -2,6 +2,7 @@ import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UsersService, IUser, UserQuery } from '../../core/services/users.service';
 import { ModalNova } from '../../shared/components/modal-nova';
+import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, Users } from 'lucide-angular';
 
@@ -12,7 +13,7 @@ const ROLE_LABELS: Record<string, string> = {
 
 @Component({
   selector: 'app-users',
-  imports: [FormsModule, LucideAngularModule, ModalNova],
+  imports: [FormsModule, LucideAngularModule, ModalNova, Pagination],
   templateUrl: './users.html',
 })
 export class UsersComponent implements OnInit {
@@ -123,5 +124,4 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  pages() { return Array.from({ length: this.meta().totalPages }, (_, i) => i + 1); }
 }

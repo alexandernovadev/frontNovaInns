@@ -352,21 +352,7 @@
         [class]="formBilling.paymentMethod === m
               ? 'bg-brand/10 text-brand border-brand/40'
               : 'border-border text-text-secondary hover:border-border/80 hover:text-text-primary'">
-        @if (m === 'Efectivo') {
-        <img src="/assets/images/dinero.png" class="w-10 h-10 object-contain" alt="Efectivo" />
-        }
-        @if (m === 'Nequi') {
-        <img src="/assets/images/nequi.svg" class="w-10 h-10 object-contain" alt="Nequi" />
-        }
-        @if (m === 'Bancolombia') {
-        <img src="/assets/images/bancolombia.svg" class="w-10 h-10 rounded-lg bg-white p-0.5 object-contain"
-          alt="Bancolombia" />
-        }
-        @if (m === 'None') {
-        <div class="w-10 h-10 rounded-xl bg-border/50 flex items-center justify-center">
-          <lucide-icon [img]="X" class="w-5 h-5 text-text-disabled" [strokeWidth]="2" />
-        </div>
-        }
+        <payment-method-icon [method]="m" size="md" />
         {{ m }}
       </button>
       }

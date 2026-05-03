@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ApartmentsService, IApartment } from '../../core/services/apartments.service';
 import { ModalNova } from '../../shared/components/modal-nova';
 import { StatusBadge } from '../../shared/components/status-badge';
+import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, Building2 } from 'lucide-angular';
 
@@ -20,7 +21,7 @@ const STATUS_CLASS: Record<string, string> = {
 
 @Component({
   selector: 'app-apartments',
-  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge],
+  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, Pagination],
   templateUrl: './apartments.html',
 })
 export class ApartmentsComponent implements OnInit {
@@ -107,7 +108,4 @@ export class ApartmentsComponent implements OnInit {
     });
   }
 
-  pages() {
-    return Array.from({ length: this.meta().totalPages }, (_, i) => i + 1);
-  }
 }

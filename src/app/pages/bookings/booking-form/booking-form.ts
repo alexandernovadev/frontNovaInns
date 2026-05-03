@@ -5,6 +5,7 @@ import { BookingsService, IBooking } from '../../../core/services/bookings.servi
 import { ApartmentsService, IApartment } from '../../../core/services/apartments.service';
 import { COUNTRIES_DATA, CountryData } from './countries';
 import { PlatformIcon } from '../../../shared/components/platform-icon';
+import { PaymentMethodIcon } from '../../../shared/components/payment-method-icon';
 import { PLATFORMS, METHODS, ID_TYPES, ID_LABELS, PLATFORM_CLASS } from '../../../shared/constants/booking.constants';
 import {
   LucideAngularModule,
@@ -46,7 +47,7 @@ interface GuestForm {
 
 @Component({
   selector: 'app-booking-form',
-  imports: [FormsModule, LucideAngularModule, PlatformIcon],
+  imports: [FormsModule, LucideAngularModule, PlatformIcon, PaymentMethodIcon],
   templateUrl: './booking-form.html',
 })
 export class BookingFormComponent implements OnInit {

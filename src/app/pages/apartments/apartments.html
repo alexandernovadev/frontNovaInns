@@ -81,28 +81,7 @@
     </div>
 
     <!-- Paginador -->
-    @if (meta().totalPages > 1) {
-      <div class="flex items-center justify-between px-5 py-3.5 border-t border-border">
-        <span class="text-text-disabled text-sm">Página {{ meta().page }} de {{ meta().totalPages }}</span>
-        <div class="flex gap-1">
-          <button (click)="load(meta().page - 1)" [disabled]="meta().page === 1"
-            class="px-3 py-1.5 rounded-lg text-sm text-text-secondary border border-border
-                   hover:border-brand hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">‹</button>
-          @for (p of pages(); track p) {
-            <button (click)="load(p)"
-              class="px-3 py-1.5 rounded-lg text-sm cursor-pointer transition-colors"
-              [class]="p === meta().page
-                ? 'bg-brand text-bg font-bold'
-                : 'text-text-secondary border border-border hover:border-brand hover:text-brand'">
-              {{ p }}
-            </button>
-          }
-          <button (click)="load(meta().page + 1)" [disabled]="meta().page === meta().totalPages"
-            class="px-3 py-1.5 rounded-lg text-sm text-text-secondary border border-border
-                   hover:border-brand hover:text-brand disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">›</button>
-        </div>
-      </div>
-    }
+    <app-pagination [page]="meta().page" [totalPages]="meta().totalPages" (pageChange)="load($event)" />
   </div>
 </div>
 

@@ -6,6 +6,8 @@ import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
 import { ModalNova } from '../../../shared/components/modal-nova';
 import { StatusBadge } from '../../../shared/components/status-badge';
 import { PlatformIcon } from '../../../shared/components/platform-icon';
+import { PaymentMethodIcon } from '../../../shared/components/payment-method-icon';
+import { PhotoViewer } from '../../../shared/components/photo-viewer';
 import { PLATFORM_CLASS, ID_LABELS } from '../../../shared/constants/booking.constants';
 import { AlertService } from '../../../shared/components/services/alert.service';
 import {
@@ -18,7 +20,7 @@ import {
 
 @Component({
   selector: 'app-booking-detail',
-  imports: [FormsModule, LucideAngularModule, DateEsPipe, ModalNova, StatusBadge, PlatformIcon],
+  imports: [FormsModule, LucideAngularModule, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer],
   templateUrl: './booking-detail.html',
 })
 export class BookingDetailComponent implements OnInit {
@@ -54,11 +56,6 @@ export class BookingDetailComponent implements OnInit {
   showPhoto   = signal<string | null>(null);
   payAmount   = 0;
   photoOverlay = viewChild<ElementRef<HTMLElement>>('photoOverlay');
-
-  @HostListener('document:keydown.escape')
-  onEscape() {
-    if (this.showPhoto()) this.showPhoto.set(null);
-  }
 
   readonly PLATFORM_CLASS = PLATFORM_CLASS;
   readonly ID_LABELS = ID_LABELS;

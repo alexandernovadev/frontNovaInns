@@ -188,15 +188,7 @@
             <lucide-icon [img]="Wallet" class="w-4 h-4 text-text-disabled shrink-0" [strokeWidth]="2"/>
             <span class="text-text-secondary text-sm">Método de pago</span>
             <div class="ml-auto flex items-center gap-2">
-              @if (b.billing.paymentMethod === 'Efectivo') {
-                <img src="/assets/images/dinero.png" class="w-7 h-7 object-contain" alt="Efectivo"/>
-              }
-              @if (b.billing.paymentMethod === 'Nequi') {
-                <img src="/assets/images/nequi.svg" class="w-7 h-7 object-contain" alt="Nequi"/>
-              }
-              @if (b.billing.paymentMethod === 'Bancolombia') {
-                <img src="/assets/images/bancolombia.svg" class="w-7 h-7 bg-white rounded-lg p-0.5 object-contain" alt="Bancolombia"/>
-              }
+              <payment-method-icon [method]="b.billing.paymentMethod" size="sm" />
               <span class="text-text-primary font-semibold text-sm">{{ b.billing.paymentMethod }}</span>
             </div>
           </div>
@@ -377,16 +369,7 @@
 </ng-template>
 
 <!-- ── Modal: Foto ── -->
-@if (showPhoto()) {
-  <div class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-    (click)="showPhoto.set(null)">
-    <button class="absolute top-4 right-4 p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer" (click)="showPhoto.set(null)">
-      <lucide-icon [img]="X" class="w-6 h-6" [strokeWidth]="2"/>
-    </button>
-    <img [src]="showPhoto()!" class="max-w-full max-h-[90vh] rounded-2xl object-contain shadow-2xl"
-      (click)="$event.stopPropagation()"/>
-  </div>
-}
+<photo-viewer [url]="showPhoto()" (closed)="showPhoto.set(null)" />
 
 <!-- ── Modal: Borrar ── -->
 <modal-nova [visible]="showDelete()" title="Borrar reserva" size="sm" (closed)="onDeleteClosed()" [footerTemplate]="deleteFooter">

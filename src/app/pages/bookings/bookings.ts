@@ -5,13 +5,14 @@ import { BookingsService, IBooking, FinancialSummary } from '../../core/services
 import { ModalNova } from '../../shared/components/modal-nova';
 import { StatusBadge } from '../../shared/components/status-badge';
 import { PlatformIcon } from '../../shared/components/platform-icon';
+import { Pagination } from '../../shared/components/pagination';
 import { PLATFORMS, PLATFORM_CLASS, STATUSES } from '../../shared/constants/booking.constants';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, CalendarDays } from 'lucide-angular';
 
 @Component({
   selector: 'app-bookings',
-  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, PlatformIcon],
+  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, PlatformIcon, Pagination],
   templateUrl: './bookings.html',
 })
 export class BookingsComponent implements OnInit {
@@ -125,5 +126,4 @@ export class BookingsComponent implements OnInit {
     return new Date(d).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
-  pages() { return Array.from({ length: this.meta().totalPages }, (_, i) => i + 1); }
 }
