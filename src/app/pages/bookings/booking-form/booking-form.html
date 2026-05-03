@@ -206,7 +206,7 @@
   </div>
 
   <!-- Members -->
-  @for (member of members; track $index) {
+  @for (member of members; track member.uid) {
   <div class="bg-surface border border-border rounded-2xl overflow-hidden">
     <div class="flex items-center justify-between px-4 py-3 border-b border-border">
       <div class="flex items-center gap-2">
@@ -264,7 +264,7 @@
           } @else {
           <label class="flex flex-col items-center justify-center gap-1.5 border border-dashed border-border
                                 rounded-xl aspect-video cursor-pointer hover:border-brand transition-colors group">
-            <input type="file" accept="image/*" class="hidden" (change)="onMemberPhoto($event, $index, type)" />
+            <input type="file" accept="image/*" class="hidden" (change)="onMemberPhoto($event, member, type)" />
             @if (uploading['member-' + $index] === type) {
             <span class="text-text-disabled text-xs">Subiendo...</span>
             } @else {

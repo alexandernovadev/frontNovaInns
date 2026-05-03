@@ -31,6 +31,7 @@ interface IdentPhoto {
   type: IdType;
 }
 interface GuestForm {
+  uid: string;
   fullName: string;
   idNumber: string;
   country: string;
@@ -137,6 +138,7 @@ export class BookingFormComponent implements OnInit {
       paymentMethod: b.billing.paymentMethod,
     };
     this.host = {
+      uid: 'host',
       fullName: b.group.host.fullName,
       idNumber: b.group.host.idNumber ?? '',
       country: b.group.host.country ?? '',
@@ -147,7 +149,8 @@ export class BookingFormComponent implements OnInit {
         type: i.type as IdType,
       })),
     };
-    this.members = b.group.members.map((m) => ({
+    this.members = b.group.members.map((m, i) => ({
+      uid: `g-${i}`,
       fullName: m.fullName,
       idNumber: m.idNumber ?? '',
       country: m.country ?? '',
@@ -221,24 +224,39 @@ export class BookingFormComponent implements OnInit {
     this.members.push(this.blankGuest());
   }
 
-  private deleteOldPhoto(guest: GuestForm, type: IdType) {
-    const old = guest.identifications.find((i) => i.type === type);
+  private deleteOldPhoto(guest: GuestForm | undefined, type: IdType) {
+    const old = guest?.identifications?.find((i) => i.type === type);
     if (old?.publicId) this.svc.deleteImage(old.publicId).subscribe();
   }
 
   uploadPhoto(file: File, key: string, type: IdType, target: GuestForm) {
+    console.log('uploadPhoto llamado', { key, type, target, fileSize: file?.size });
     this.uploading[key] = type;
-    this.deleteOldPhoto(target, type);
+    if (target) this.deleteOldPhoto(target, type);
     this.svc.uploadImage(file).subscribe({
       next: (res) => {
+        console.log('uploadImage next', { key, res });
+        if (!target) {
+          console.warn('target undefined en next', key);
+          this.uploading[key] = null;
+          this.cdr.detectChanges();
+          return;
+        }
+        const url = res.url;
+        const publicId = res.publicId;
         const idx = target.identifications.findIndex((i) => i.type === type);
-        if (idx !== -1)
-          target.identifications[idx] = { url: res.url, publicId: res.publicId, type };
-        else target.identifications.push({ url: res.url, publicId: res.publicId, type });
+        console.log('findIndex result', { idx, type, targetUid: (target as any).uid });
+        if (idx !== -1) {
+          target.identifications[idx] = { url, publicId, type };
+        } else {
+          target.identifications = [...target.identifications, { url, publicId, type }];
+        }
+        console.log('identifications after assign', target.identifications);
         this.uploading[key] = null;
         this.cdr.detectChanges();
       },
-      error: () => {
+      error: (err) => {
+        console.error('upload error', err);
         this.uploading[key] = null;
         this.cdr.detectChanges();
       },
@@ -252,10 +270,11 @@ export class BookingFormComponent implements OnInit {
 
   removeMember(i: number) {
     const member = this.members[i];
-    if (member)
+    if (member) {
       member.identifications.forEach((id) => {
         if (id.publicId) this.svc.deleteImage(id.publicId).subscribe();
       });
+    }
     this.members.splice(i, 1);
   }
 
@@ -265,9 +284,12 @@ export class BookingFormComponent implements OnInit {
     (e.target as HTMLInputElement).value = '';
   }
 
-  onMemberPhoto(e: Event, idx: number, type: IdType) {
+  onMemberPhoto(e: Event, member: GuestForm, type: IdType) {
     const file = (e.target as HTMLInputElement).files?.[0];
-    if (file) this.uploadPhoto(file, `member-${idx}`, type, this.members[idx]);
+    if (file) {
+      const idx = this.members.indexOf(member);
+      this.uploadPhoto(file, `member-${idx}`, type, member);
+    }
     (e.target as HTMLInputElement).value = '';
   }
 
@@ -325,7 +347,15 @@ export class BookingFormComponent implements OnInit {
   private blankBilling(): { basePrice: number; amountReceived: number; paymentMethod: string } {
     return { basePrice: 0, amountReceived: 0, paymentMethod: 'Efectivo' };
   }
+  private uidCounter = 0;
   private blankGuest(): GuestForm {
-    return { fullName: '', idNumber: '', country: '', city: '', identifications: [] };
+    return {
+      uid: `g-${++this.uidCounter}`,
+      fullName: '',
+      idNumber: '',
+      country: '',
+      city: '',
+      identifications: [],
+    };
   }
 }
