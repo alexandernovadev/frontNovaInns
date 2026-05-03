@@ -1,0 +1,50 @@
+<div class="p-6 space-y-6">
+  <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2">
+    <lucide-icon [img]="Info" class="w-6 h-6 text-brand" [strokeWidth]="2" />
+    Información del Sistema
+  </h1>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Frontend -->
+    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+      <div class="flex items-center gap-2 px-4 py-3 border-b border-border bg-bg/50">
+        <lucide-icon [img]="Globe" class="w-5 h-5 text-brand" [strokeWidth]="2" />
+        <span class="font-semibold text-text-primary text-sm">Frontend</span>
+      </div>
+      @if (frontInfo(); as f) {
+      <div class="p-4 space-y-3 text-sm">
+        <div class="flex justify-between"><span class="text-text-secondary">App</span><span class="text-text-primary font-medium">{{ f.name }}</span></div>
+        <div class="flex justify-between"><span class="text-text-secondary">Versión</span><span class="text-text-primary font-medium">{{ f.version }}</span></div>
+        <div class="flex justify-between"><span class="text-text-secondary">Entorno</span><span class="text-text-primary font-medium">{{ f.environment }}</span></div>
+        <div class="flex justify-between"><span class="text-text-secondary">Release</span><span class="text-text-primary font-medium">{{ f.releaseDate }}</span></div>
+        <div class="flex justify-between"><span class="text-text-secondary">Node</span><span class="text-text-primary font-medium">{{ f.nodeVersion }}</span></div>
+      </div>
+      } @else if (frontError(); as e) {
+      <div class="p-4 text-sm text-error">{{ e }}</div>
+      } @else {
+      <div class="p-4 text-sm text-text-disabled">Cargando...</div>
+      }
+    </div>
+
+    <!-- Backend -->
+    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+      <div class="flex items-center gap-2 px-4 py-3 border-b border-border bg-bg/50">
+        <lucide-icon [img]="Server" class="w-5 h-5 text-brand" [strokeWidth]="2" />
+        <span class="font-semibold text-text-primary text-sm">Backend</span>
+      </div>
+      @if (backInfo(); as b) {
+      <div class="p-4 space-y-3 text-sm">
+        <div class="flex justify-between"><span class="text-text-secondary">App</span><span class="text-text-primary font-medium">{{ b.name }}</span></div>
+        <div class="flex justify-between"><span class="text-text-secondary">Versión</span><span class="text-text-primary font-medium">{{ b.version }}</span></div>
+        <div class="flex justify-between"><span class="text-text-secondary">Entorno</span><span class="text-text-primary font-medium">{{ b.environment }}</span></div>
+        <div class="flex justify-between"><span class="text-text-secondary">Release</span><span class="text-text-primary font-medium">{{ b.releaseDate }}</span></div>
+        <div class="flex justify-between"><span class="text-text-secondary">Node</span><span class="text-text-primary font-medium">{{ b.nodeVersion }}</span></div>
+      </div>
+      } @else if (backError(); as e) {
+      <div class="p-4 text-sm text-error">{{ e }}</div>
+      } @else {
+      <div class="p-4 text-sm text-text-disabled">Cargando...</div>
+      }
+    </div>
+  </div>
+</div>

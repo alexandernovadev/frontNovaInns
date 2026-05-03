@@ -44,6 +44,10 @@ export const routes: Routes = [
         path: 'data',
         loadComponent: () => import('./pages/data/data').then(m => m.DataComponent),
       },
+      {
+        path: 'info',
+        loadComponent: () => import('./pages/info/info').then(m => m.InfoComponent),
+      },
     ],
   },
   { path: '**', redirectTo: 'bookings' },
