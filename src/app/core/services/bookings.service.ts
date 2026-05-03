@@ -6,6 +6,7 @@ const API = 'http://localhost:3000/api';
 export interface IGuest {
   fullName:  string;
   idNumber?: string;
+  birthDate?: string;
   country?:  string;
   city?:     string;
   identifications?: { url: string; publicId: string; type: string; uploadedAt: string }[];

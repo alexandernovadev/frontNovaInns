@@ -35,6 +35,7 @@ interface GuestForm {
   uid: string;
   fullName: string;
   idNumber: string;
+  birthDate: string;
   country: string;
   city: string;
   identifications: IdentPhoto[];
@@ -147,6 +148,7 @@ export class BookingFormComponent implements OnInit {
       uid: 'host',
       fullName: b.group.host.fullName,
       idNumber: b.group.host.idNumber ?? '',
+      birthDate: b.group.host.birthDate ?? '',
       country: b.group.host.country ?? '',
       city: b.group.host.city ?? '',
       identifications: (b.group.host.identifications ?? []).map((i) => ({
@@ -159,6 +161,7 @@ export class BookingFormComponent implements OnInit {
       uid: `g-${i}`,
       fullName: m.fullName,
       idNumber: m.idNumber ?? '',
+      birthDate: m.birthDate ?? '',
       country: m.country ?? '',
       city: m.city ?? '',
       identifications: (m.identifications ?? []).map((i) => ({
@@ -188,6 +191,7 @@ export class BookingFormComponent implements OnInit {
         host: {
           fullName: this.host.fullName,
           idNumber: this.host.idNumber,
+          birthDate: this.host.birthDate || undefined,
           country: this.host.country,
           city: this.host.city,
           identifications: this.host.identifications,
@@ -195,6 +199,7 @@ export class BookingFormComponent implements OnInit {
         members: this.members.map((m) => ({
           fullName: m.fullName,
           idNumber: m.idNumber,
+          birthDate: m.birthDate || undefined,
           country: m.country,
           city: m.city,
           identifications: m.identifications,
@@ -377,6 +382,7 @@ export class BookingFormComponent implements OnInit {
       uid: `g-${++this.uidCounter}`,
       fullName: '',
       idNumber: '',
+      birthDate: '',
       country: '',
       city: '',
       identifications: [],

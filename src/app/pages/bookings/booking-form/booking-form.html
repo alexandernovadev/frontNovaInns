@@ -148,13 +148,17 @@
     <div class="p-4 space-y-3">
       <input type="text" [(ngModel)]="host.fullName" placeholder="Nombre completo" autocomplete="off" class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
                  placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand" />
-      <div class="grid grid-cols-3 gap-3">
+      <div class="grid grid-cols-4 gap-3">
         <div class="relative">
           <lucide-icon [img]="IdCard"
             class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none"
             [strokeWidth]="1.8" />
           <input type="text" [(ngModel)]="host.idNumber" placeholder="N° de ID" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-10 pr-3 py-2.5 text-text-primary
                      placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand" />
+        </div>
+        <div class="relative">
+          <input type="date" [(ngModel)]="host.birthDate" class="w-full bg-input border border-border rounded-xl px-3 py-2.5 text-text-primary text-sm
+                     focus:outline-none focus:border-brand scheme-dark" />
         </div>
         <div class="relative" #hostCountryContainer>
           <lucide-icon [img]="MapPin"
@@ -233,13 +237,17 @@
     <div class="p-4 space-y-3">
       <input type="text" [(ngModel)]="member.fullName" placeholder="Nombre completo" autocomplete="off" class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
                    placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand" />
-      <div class="grid grid-cols-3 gap-3">
+      <div class="grid grid-cols-4 gap-3">
         <div class="relative">
           <lucide-icon [img]="IdCard"
             class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none"
             [strokeWidth]="1.8" />
           <input type="text" [(ngModel)]="member.idNumber" placeholder="N° de ID" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-10 pr-3 py-2.5 text-text-primary
                        placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand" />
+        </div>
+        <div class="relative">
+          <input type="date" [(ngModel)]="member.birthDate" class="w-full bg-input border border-border rounded-xl px-3 py-2.5 text-text-primary text-sm
+                     focus:outline-none focus:border-brand scheme-dark" />
         </div>
         <div class="relative">
           <lucide-icon [img]="MapPin"

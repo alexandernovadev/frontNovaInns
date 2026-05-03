@@ -253,13 +253,20 @@
 
           <p class="text-text-primary text-xl font-bold">{{ b.group.host.fullName }}</p>
 
-          <div class="grid grid-cols-3 gap-2">
+          <div class="grid grid-cols-4 gap-2">
             <div class="bg-bg rounded-xl p-3">
               <div class="flex items-center gap-1 mb-1.5">
                 <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
                 <span class="text-text-disabled text-xs">Nº ID</span>
               </div>
               <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.idNumber || '—' }}</p>
+            </div>
+            <div class="bg-bg rounded-xl p-3">
+              <div class="flex items-center gap-1 mb-1.5">
+                <lucide-icon [img]="CalendarDays" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                <span class="text-text-disabled text-xs">F. Nac.</span>
+              </div>
+              <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.birthDate || '—' }}</p>
             </div>
             <div class="bg-bg rounded-xl p-3">
               <div class="flex items-center gap-1 mb-1.5">
@@ -315,13 +322,20 @@
 
             <p class="text-text-primary text-xl font-bold">{{ member.fullName }}</p>
 
-            <div class="grid grid-cols-3 gap-2">
+            <div class="grid grid-cols-4 gap-2">
               <div class="bg-bg rounded-xl p-3">
                 <div class="flex items-center gap-1 mb-1.5">
                   <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
                   <span class="text-text-disabled text-xs">Nº ID</span>
                 </div>
                 <p class="text-text-primary text-sm font-semibold truncate">{{ member.idNumber || '—' }}</p>
+              </div>
+              <div class="bg-bg rounded-xl p-3">
+                <div class="flex items-center gap-1 mb-1.5">
+                  <lucide-icon [img]="CalendarDays" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
+                  <span class="text-text-disabled text-xs">F. Nac.</span>
+                </div>
+                <p class="text-text-primary text-sm font-semibold truncate">{{ member.birthDate || '—' }}</p>
               </div>
               <div class="bg-bg rounded-xl p-3">
                 <div class="flex items-center gap-1 mb-1.5">
