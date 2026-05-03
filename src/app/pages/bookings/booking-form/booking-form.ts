@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookingsService, IBooking } from '../../../core/services/bookings.service';
 import { ApartmentsService, IApartment } from '../../../core/services/apartments.service';
+import { COUNTRIES, searchCountries, Country } from './countries';
 import {
   LucideAngularModule,
   CalendarDays,
@@ -79,6 +80,11 @@ export class BookingFormComponent implements OnInit {
   host: GuestForm = this.blankGuest();
   members: GuestForm[] = [];
   uploading: Record<string, IdType | null> = {};
+
+  readonly COUNTRIES = COUNTRIES;
+  filteredCountries: Country[] = [];
+  showCountryDropdown = false;
+  countryTarget: GuestForm | null = null;
 
   readonly TABS: { key: FormTab; label: string; icon: any }[] = [
     { key: 'general', label: 'General', icon: Building2 },
@@ -217,6 +223,31 @@ export class BookingFormComponent implements OnInit {
       },
       error: () => this.saving.set(false),
     });
+  }
+
+  // ── Country search ──
+  onCountryInput(value: string, target: GuestForm) {
+    this.countryTarget = target;
+    this.filteredCountries = value.length >= 2 ? searchCountries(value) : [];
+    this.showCountryDropdown = this.filteredCountries.length > 0;
+  }
+
+  onCountryFocus(target: GuestForm) {
+    this.countryTarget = target;
+  }
+
+  onCountryBlur() {
+    setTimeout(() => {
+      this.showCountryDropdown = false;
+      this.countryTarget = null;
+    }, 200);
+  }
+
+  selectCountry(c: Country) {
+    if (this.countryTarget) {
+      this.countryTarget.country = `${c.flag} ${c.name}`;
+    }
+    this.showCountryDropdown = false;
   }
 
   // ── Guests ──

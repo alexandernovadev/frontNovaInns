@@ -291,7 +291,7 @@
                       </svg>
                     </div>
                     <span class="absolute bottom-1.5 left-1.5 text-xs font-bold bg-black/60 text-white px-2 py-0.5 rounded-lg">
-                      {{ ID_LABELS[photo.type] ?? photo.type }}
+                      {{ ID_LABELS[photo.type] || photo.type }}
                     </span>
                   </div>
                 }
@@ -353,7 +353,7 @@
                         </svg>
                       </div>
                       <div class="absolute bottom-1.5 left-1.5 right-1.5 flex items-end justify-between gap-1">
-                        <span class="text-xs font-bold bg-black/60 text-white px-2 py-0.5 rounded-lg">{{ ID_LABELS[photo.type] ?? photo.type }}</span>
+                        <span class="text-xs font-bold bg-black/60 text-white px-2 py-0.5 rounded-lg">{{ ID_LABELS[photo.type] || photo.type }}</span>
                         @if (photo.uploadedAt) {
                           <span class="text-xs bg-black/50 text-white/70 px-1.5 py-0.5 rounded-lg">{{ fmtDate(photo.uploadedAt) }}</span>
                         }

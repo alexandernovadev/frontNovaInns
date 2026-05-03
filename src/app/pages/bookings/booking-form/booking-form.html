@@ -153,21 +153,31 @@
           <lucide-icon [img]="IdCard"
             class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none"
             [strokeWidth]="1.8" />
-          <input type="text" [(ngModel)]="host.idNumber" placeholder="N° de ID" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
+          <input type="text" [(ngModel)]="host.idNumber" placeholder="N° de ID" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-10 pr-3 py-2.5 text-text-primary
                      placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand" />
+        </div>
+        <div class="relative" #hostCountryContainer>
+          <lucide-icon [img]="MapPin"
+            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none"
+            [strokeWidth]="1.8" />
+          <input type="text" [(ngModel)]="host.country" placeholder="País" autocomplete="off" (input)="onCountryInput($any($event.target).value, host)" (blur)="onCountryBlur()" (focus)="onCountryFocus(host)"
+            class="w-full bg-input border border-border rounded-xl pl-10 pr-3 py-2.5 text-text-primary
+                       placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand" />
+          @if (showCountryDropdown && countryTarget === host) {
+          <div class="absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto">
+            @for (c of filteredCountries; track c.code) {
+            <button type="button" (mousedown)="selectCountry(c)" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-bg text-left">
+              <span>{{ c.flag }}</span><span>{{ c.name }}</span>
+            </button>
+            }
+          </div>
+          }
         </div>
         <div class="relative">
           <lucide-icon [img]="MapPin"
             class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none"
             [strokeWidth]="1.8" />
-          <input type="text" [(ngModel)]="host.country" placeholder="País" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
-                     placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand" />
-        </div>
-        <div class="relative">
-          <lucide-icon [img]="MapPin"
-            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none"
-            [strokeWidth]="1.8" />
-          <input type="text" [(ngModel)]="host.city" placeholder="Ciudad" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
+          <input type="text" [(ngModel)]="host.city" placeholder="Ciudad" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-10 pr-3 py-2.5 text-text-primary
                      placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand" />
         </div>
       </div>
@@ -228,21 +238,31 @@
           <lucide-icon [img]="IdCard"
             class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none"
             [strokeWidth]="1.8" />
-          <input type="text" [(ngModel)]="member.idNumber" placeholder="N° de ID" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
+          <input type="text" [(ngModel)]="member.idNumber" placeholder="N° de ID" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-10 pr-3 py-2.5 text-text-primary
                        placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand" />
         </div>
         <div class="relative">
           <lucide-icon [img]="MapPin"
             class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none"
             [strokeWidth]="1.8" />
-          <input type="text" [(ngModel)]="member.country" placeholder="País" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
+          <input type="text" [(ngModel)]="member.country" placeholder="País" autocomplete="off" (input)="onCountryInput($any($event.target).value, member)" (blur)="onCountryBlur()" (focus)="onCountryFocus(member)"
+            class="w-full bg-input border border-border rounded-xl pl-10 pr-3 py-2.5 text-text-primary
                        placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand" />
+          @if (showCountryDropdown && countryTarget === member) {
+          <div class="absolute top-full left-0 right-0 mt-1 bg-surface border border-border rounded-xl shadow-lg z-50 max-h-48 overflow-y-auto">
+            @for (c of filteredCountries; track c.code) {
+            <button type="button" (mousedown)="selectCountry(c)" class="w-full flex items-center gap-2 px-3 py-2 text-sm text-text-primary hover:bg-bg text-left">
+              <span>{{ c.flag }}</span><span>{{ c.name }}</span>
+            </button>
+            }
+          </div>
+          }
         </div>
         <div class="relative">
           <lucide-icon [img]="MapPin"
             class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-disabled pointer-events-none"
             [strokeWidth]="1.8" />
-          <input type="text" [(ngModel)]="member.city" placeholder="Ciudad" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-9 pr-3 py-2.5 text-text-primary
+          <input type="text" [(ngModel)]="member.city" placeholder="Ciudad" autocomplete="off" class="w-full bg-input border border-border rounded-xl pl-10 pr-3 py-2.5 text-text-primary
                        placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand" />
         </div>
       </div>
