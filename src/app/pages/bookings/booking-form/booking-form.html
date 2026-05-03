@@ -104,19 +104,11 @@
     </div>
     <div class="p-4 flex gap-3">
       @for (p of PLATFORMS; track p) {
-      <button (click)="formGeneral.platform = p"
-        class="flex-1 py-3 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-center"
-        [class]="formGeneral.platform === p ? PLATFORM_CLASS[p] : 'border-border hover:border-border/60'">
-        @if (p === 'Booking') {
-        <img src="/assets/images/booking_logo.png" class="w-14 h-14 object-contain" alt="Booking" />
-        }
-        @if (p === 'AirBnB') {
-        <img src="/assets/images/airbnb_logo.png" class="w-14 h-14 object-contain" alt="AirBnB" />
-        }
-        @if (p === 'Directo') {
-        <img src="/assets/images/LogoNovaInns.png" class="w-14 h-14 object-contain" alt="Nova Inns" />
-        }
-      </button>
+       <button (click)="formGeneral.platform = p"
+         class="flex-1 py-3 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-center"
+         [class]="formGeneral.platform === p ? PLATFORM_CLASS[p] : 'border-border hover:border-border/60'">
+         <platform-icon [platform]="p" size="lg" />
+       </button>
       }
     </div>
   </div>

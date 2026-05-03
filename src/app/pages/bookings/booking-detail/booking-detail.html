@@ -13,15 +13,7 @@
     <div class="flex-1 min-w-0">
       <div class="flex items-center gap-2 flex-wrap">
         <span class="p-1.5 rounded-xl flex items-center shrink-0" [class]="PLATFORM_CLASS[b.billing.platform]">
-          @if (b.billing.platform === 'Booking') {
-            <img src="/assets/images/booking_logo.png" class="w-5 h-5 object-contain" alt="Booking"/>
-          }
-          @if (b.billing.platform === 'AirBnB') {
-            <img src="/assets/images/airbnb_logo.png" class="w-5 h-5 object-contain" alt="AirBnB"/>
-          }
-          @if (b.billing.platform === 'Directo') {
-            <img src="/assets/images/LogoNovaInns.png" class="w-5 h-5 object-contain" alt="Nova Inns"/>
-          }
+          <platform-icon [platform]="b.billing.platform" size="sm" />
         </span>
         <h1 class="text-text-primary text-xl sm:text-2xl font-bold truncate">{{ aptName() }}</h1>
         <status-badge [value]="b.billing.status" type="billing" />

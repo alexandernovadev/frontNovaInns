@@ -5,6 +5,7 @@ import { BookingsService, IBooking } from '../../../core/services/bookings.servi
 import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
 import { ModalNova } from '../../../shared/components/modal-nova';
 import { StatusBadge } from '../../../shared/components/status-badge';
+import { PlatformIcon } from '../../../shared/components/platform-icon';
 import { AlertService } from '../../../shared/components/services/alert.service';
 import {
   LucideAngularModule,
@@ -16,7 +17,7 @@ import {
 
 @Component({
   selector: 'app-booking-detail',
-  imports: [FormsModule, LucideAngularModule, DateEsPipe, ModalNova, StatusBadge],
+  imports: [FormsModule, LucideAngularModule, DateEsPipe, ModalNova, StatusBadge, PlatformIcon],
   templateUrl: './booking-detail.html',
 })
 export class BookingDetailComponent implements OnInit {

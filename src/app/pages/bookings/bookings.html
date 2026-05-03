@@ -74,15 +74,7 @@
           <div class="px-3 pt-3 pb-2 sm:px-5 sm:pt-4 sm:pb-3 flex items-center justify-between gap-2">
             <span class="p-1 sm:p-1.5 rounded-xl flex items-center shrink-0"
               [class]="PLATFORM_CLASS[b.billing.platform]">
-              @if (b.billing.platform === 'Booking') {
-                <img src="/assets/images/booking_logo.png" class="w-7 h-7 sm:w-10 sm:h-10 object-contain" alt="Booking"/>
-              }
-              @if (b.billing.platform === 'AirBnB') {
-                <img src="/assets/images/airbnb_logo.png" class="w-7 h-7 sm:w-10 sm:h-10 object-contain" alt="AirBnB"/>
-              }
-              @if (b.billing.platform === 'Directo') {
-                <img src="/assets/images/LogoNovaInns.png" class="w-7 h-7 sm:w-10 sm:h-10 object-contain" alt="Nova Inns"/>
-              }
+              <platform-icon [platform]="b.billing.platform" size="md" />
             </span>
 
             <div class="flex items-center gap-1 sm:gap-2 ml-auto">

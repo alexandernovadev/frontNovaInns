@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { BookingsService, IBooking } from '../../../core/services/bookings.service';
 import { ApartmentsService, IApartment } from '../../../core/services/apartments.service';
 import { COUNTRIES_DATA, CountryData } from './countries';
+import { PlatformIcon } from '../../../shared/components/platform-icon';
 import {
   LucideAngularModule,
   CalendarDays,
@@ -44,7 +45,7 @@ interface GuestForm {
 
 @Component({
   selector: 'app-booking-form',
-  imports: [FormsModule, LucideAngularModule],
+  imports: [FormsModule, LucideAngularModule, PlatformIcon],
   templateUrl: './booking-form.html',
 })
 export class BookingFormComponent implements OnInit {
