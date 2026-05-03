@@ -3,7 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookingsService, IBooking } from '../../../core/services/bookings.service';
 import { ApartmentsService, IApartment } from '../../../core/services/apartments.service';
-import { COUNTRIES, searchCountries, Country } from './countries';
+import { COUNTRIES_DATA, CountryData } from './countries';
+import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
 import {
   LucideAngularModule,
   CalendarDays,
@@ -36,14 +37,15 @@ interface GuestForm {
   fullName: string;
   idNumber: string;
   birthDate: string;
-  country: string;
+  countryCode: string;
+  department: string;
   city: string;
   identifications: IdentPhoto[];
 }
 
 @Component({
   selector: 'app-booking-form',
-  imports: [FormsModule, LucideAngularModule],
+  imports: [FormsModule, LucideAngularModule, DateEsPipe],
   templateUrl: './booking-form.html',
 })
 export class BookingFormComponent implements OnInit {
@@ -82,10 +84,8 @@ export class BookingFormComponent implements OnInit {
   members: GuestForm[] = [];
   uploading: Record<string, IdType | null> = {};
 
-  readonly COUNTRIES = COUNTRIES;
-  filteredCountries: Country[] = [];
-  showCountryDropdown = false;
-  countryTarget: GuestForm | null = null;
+  readonly COUNTRIES_DATA = COUNTRIES_DATA;
+  selectedCountry: CountryData | null = null;
 
   readonly TABS: { key: FormTab; label: string; icon: any }[] = [
     { key: 'general', label: 'General', icon: Building2 },
@@ -149,8 +149,9 @@ export class BookingFormComponent implements OnInit {
       fullName: b.group.host.fullName,
       idNumber: b.group.host.idNumber ?? '',
       birthDate: b.group.host.birthDate ?? '',
-      country: b.group.host.country ?? '',
-      city: b.group.host.city ?? '',
+      countryCode: b.group.host.location?.countryCode ?? '',
+      department: b.group.host.location?.department ?? '',
+      city: b.group.host.location?.city ?? '',
       identifications: (b.group.host.identifications ?? []).map((i) => ({
         url: i.url,
         publicId: i.publicId ?? '',
@@ -162,8 +163,9 @@ export class BookingFormComponent implements OnInit {
       fullName: m.fullName,
       idNumber: m.idNumber ?? '',
       birthDate: m.birthDate ?? '',
-      country: m.country ?? '',
-      city: m.city ?? '',
+      countryCode: m.location?.countryCode ?? '',
+      department: m.location?.department ?? '',
+      city: m.location?.city ?? '',
       identifications: (m.identifications ?? []).map((i) => ({
         url: i.url,
         publicId: i.publicId ?? '',
@@ -192,16 +194,18 @@ export class BookingFormComponent implements OnInit {
           fullName: this.host.fullName,
           idNumber: this.host.idNumber,
           birthDate: this.host.birthDate || undefined,
-          country: this.host.country,
-          city: this.host.city,
+          location: this.host.countryCode
+            ? { countryCode: this.host.countryCode, countryName: this.getCountryName(this.host.countryCode), department: this.host.department, city: this.host.city }
+            : undefined,
           identifications: this.host.identifications,
         },
         members: this.members.map((m) => ({
           fullName: m.fullName,
           idNumber: m.idNumber,
           birthDate: m.birthDate || undefined,
-          country: m.country,
-          city: m.city,
+          location: m.countryCode
+            ? { countryCode: m.countryCode, countryName: this.getCountryName(m.countryCode), department: m.department, city: m.city }
+            : undefined,
           identifications: m.identifications,
         })),
       },
@@ -230,29 +234,30 @@ export class BookingFormComponent implements OnInit {
     });
   }
 
-  // ── Country search ──
-  onCountryInput(value: string, target: GuestForm) {
-    this.countryTarget = target;
-    this.filteredCountries = value.length >= 2 ? searchCountries(value) : [];
-    this.showCountryDropdown = this.filteredCountries.length > 0;
+  // ── Cascade selects ──
+  onCountryChange(target: GuestForm) {
+    target.department = '';
+    target.city = '';
+    this.selectedCountry = this.COUNTRIES_DATA.find((c) => c.code === target.countryCode) ?? null;
   }
 
-  onCountryFocus(target: GuestForm) {
-    this.countryTarget = target;
+  onDepartmentChange(target: GuestForm) {
+    target.city = '';
   }
 
-  onCountryBlur() {
-    setTimeout(() => {
-      this.showCountryDropdown = false;
-      this.countryTarget = null;
-    }, 200);
+  getDepartments(countryCode: string): { name: string; cities: string[] }[] {
+    const country = this.COUNTRIES_DATA.find((c) => c.code === countryCode);
+    return country ? country.departments : [];
   }
 
-  selectCountry(c: Country) {
-    if (this.countryTarget) {
-      this.countryTarget.country = `${c.flag} ${c.name}`;
-    }
-    this.showCountryDropdown = false;
+  getCities(countryCode: string, department: string): string[] {
+    const country = this.COUNTRIES_DATA.find((c) => c.code === countryCode);
+    const dept = country?.departments.find((d) => d.name === department);
+    return dept ? dept.cities : [];
+  }
+
+  getCountryName(code: string): string {
+    return this.COUNTRIES_DATA.find((c) => c.code === code)?.name ?? '';
   }
 
   // ── Guests ──
@@ -383,7 +388,8 @@ export class BookingFormComponent implements OnInit {
       fullName: '',
       idNumber: '',
       birthDate: '',
-      country: '',
+      countryCode: '',
+      department: '',
       city: '',
       identifications: [],
     };

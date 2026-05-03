@@ -253,35 +253,25 @@
 
           <p class="text-text-primary text-xl font-bold">{{ b.group.host.fullName }}</p>
 
-          <div class="grid grid-cols-4 gap-2">
-            <div class="bg-bg rounded-xl p-3">
-              <div class="flex items-center gap-1 mb-1.5">
-                <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                <span class="text-text-disabled text-xs">Nº ID</span>
-              </div>
-              <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.idNumber || '—' }}</p>
-            </div>
-            <div class="bg-bg rounded-xl p-3">
-              <div class="flex items-center gap-1 mb-1.5">
-                <lucide-icon [img]="CalendarDays" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                <span class="text-text-disabled text-xs">F. Nac.</span>
-              </div>
-              <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.birthDate || '—' }}</p>
-            </div>
-            <div class="bg-bg rounded-xl p-3">
-              <div class="flex items-center gap-1 mb-1.5">
-                <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                <span class="text-text-disabled text-xs">País</span>
-              </div>
-              <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.country || '—' }}</p>
-            </div>
-            <div class="bg-bg rounded-xl p-3">
-              <div class="flex items-center gap-1 mb-1.5">
-                <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                <span class="text-text-disabled text-xs">Ciudad</span>
-              </div>
-              <p class="text-text-primary text-sm font-semibold truncate">{{ b.group.host.city || '—' }}</p>
-            </div>
+          <div class="flex flex-wrap gap-2">
+            @if (b.group.host.idNumber) {
+            <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
+              <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
+              <span class="text-text-primary font-medium">{{ b.group.host.idNumber }}</span>
+            </span>
+            }
+            @if (b.group.host.birthDate) {
+            <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
+              <lucide-icon [img]="CalendarDays" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
+              <span class="text-text-primary font-medium">{{ b.group.host.birthDate | dateEs }}</span>
+            </span>
+            }
+            @if (b.group.host.location?.countryName) {
+            <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
+              <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
+              <span class="text-text-primary font-medium">{{ b.group.host.location?.countryName }}{{ b.group.host.location?.department ? ' · ' + b.group.host.location?.department : '' }}{{ b.group.host.location?.city ? ' · ' + b.group.host.location?.city : '' }}</span>
+            </span>
+            }
           </div>
 
           @if (b.group.host.identifications?.length) {
@@ -322,35 +312,25 @@
 
             <p class="text-text-primary text-xl font-bold">{{ member.fullName }}</p>
 
-            <div class="grid grid-cols-4 gap-2">
-              <div class="bg-bg rounded-xl p-3">
-                <div class="flex items-center gap-1 mb-1.5">
-                  <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                  <span class="text-text-disabled text-xs">Nº ID</span>
-                </div>
-                <p class="text-text-primary text-sm font-semibold truncate">{{ member.idNumber || '—' }}</p>
-              </div>
-              <div class="bg-bg rounded-xl p-3">
-                <div class="flex items-center gap-1 mb-1.5">
-                  <lucide-icon [img]="CalendarDays" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                  <span class="text-text-disabled text-xs">F. Nac.</span>
-                </div>
-                <p class="text-text-primary text-sm font-semibold truncate">{{ member.birthDate || '—' }}</p>
-              </div>
-              <div class="bg-bg rounded-xl p-3">
-                <div class="flex items-center gap-1 mb-1.5">
-                  <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                  <span class="text-text-disabled text-xs">País</span>
-                </div>
-                <p class="text-text-primary text-sm font-semibold truncate">{{ member.country || '—' }}</p>
-              </div>
-              <div class="bg-bg rounded-xl p-3">
-                <div class="flex items-center gap-1 mb-1.5">
-                  <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled" [strokeWidth]="1.8"/>
-                  <span class="text-text-disabled text-xs">Ciudad</span>
-                </div>
-                <p class="text-text-primary text-sm font-semibold truncate">{{ member.city || '—' }}</p>
-              </div>
+            <div class="flex flex-wrap gap-2">
+              @if (member.idNumber) {
+              <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
+                <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
+                <span class="text-text-primary font-medium">{{ member.idNumber }}</span>
+              </span>
+              }
+              @if (member.birthDate) {
+              <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
+                <lucide-icon [img]="CalendarDays" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
+                <span class="text-text-primary font-medium">{{ member.birthDate | dateEs }}</span>
+              </span>
+              }
+              @if (member.location?.countryName) {
+              <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
+                <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
+                <span class="text-text-primary font-medium">{{ member.location?.countryName }}{{ member.location?.department ? ' · ' + member.location?.department : '' }}{{ member.location?.city ? ' · ' + member.location?.city : '' }}</span>
+              </span>
+              }
             </div>
 
             @if (member.identifications?.length) {

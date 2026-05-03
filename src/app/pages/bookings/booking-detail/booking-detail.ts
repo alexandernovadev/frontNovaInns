@@ -2,6 +2,7 @@ import { Component, HostListener, effect, ElementRef, inject, signal, viewChild,
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookingsService, IBooking } from '../../../core/services/bookings.service';
+import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
 import {
   LucideAngularModule,
   CalendarDays, Building2, LogIn, LogOut,
@@ -12,7 +13,7 @@ import {
 
 @Component({
   selector: 'app-booking-detail',
-  imports: [FormsModule, LucideAngularModule],
+  imports: [FormsModule, LucideAngularModule, DateEsPipe],
   templateUrl: './booking-detail.html',
 })
 export class BookingDetailComponent implements OnInit {
