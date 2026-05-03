@@ -3,12 +3,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BookingsService, IBooking, FinancialSummary } from '../../core/services/bookings.service';
 import { ModalNova } from '../../shared/components/modal-nova';
+import { StatusBadge } from '../../shared/components/status-badge';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, CalendarDays } from 'lucide-angular';
 
 @Component({
   selector: 'app-bookings',
-  imports: [FormsModule, LucideAngularModule, ModalNova],
+  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge],
   templateUrl: './bookings.html',
 })
 export class BookingsComponent implements OnInit {

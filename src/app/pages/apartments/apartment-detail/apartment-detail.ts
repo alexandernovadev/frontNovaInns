@@ -8,6 +8,7 @@ import {
   IBathroom,
 } from '../../../core/services/apartments.service';
 import { ModalNova } from '../../../shared/components/modal-nova';
+import { StatusBadge } from '../../../shared/components/status-badge';
 import { AlertService } from '../../../shared/components/services/alert.service';
 import {
   LucideAngularModule,
@@ -25,7 +26,7 @@ type Tab = 'general' | 'rooms' | 'bathrooms' | 'equipment' | 'photos';
 
 @Component({
   selector: 'app-apartment-detail',
-  imports: [FormsModule, LucideAngularModule, ModalNova],
+  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge],
   templateUrl: './apartment-detail.html',
 })
 export class ApartmentDetailComponent implements OnInit {
@@ -93,17 +94,6 @@ export class ApartmentDetailComponent implements OnInit {
     { key: 'equipment', label: 'Equipamiento',   icon: Package     },
     { key: 'photos',    label: 'Fotos',          icon: Camera      },
   ];
-
-  readonly STATUS_LABEL: Record<string, string> = {
-    ACTIVE: 'Activo',
-    MAINTENANCE: 'Mantenimiento',
-    INACTIVE: 'Inactivo',
-  };
-  readonly STATUS_CLASS: Record<string, string> = {
-    ACTIVE: 'bg-success/10 text-success',
-    MAINTENANCE: 'bg-warning/10 text-warning',
-    INACTIVE: 'bg-error/10 text-error',
-  };
   readonly STATUSES = ['ACTIVE', 'MAINTENANCE', 'INACTIVE'] as const;
 
   ngOnInit() {

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApartmentsService, IApartment } from '../../core/services/apartments.service';
 import { ModalNova } from '../../shared/components/modal-nova';
+import { StatusBadge } from '../../shared/components/status-badge';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, Building2 } from 'lucide-angular';
 
@@ -19,7 +20,7 @@ const STATUS_CLASS: Record<string, string> = {
 
 @Component({
   selector: 'app-apartments',
-  imports: [FormsModule, LucideAngularModule, ModalNova],
+  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge],
   templateUrl: './apartments.html',
 })
 export class ApartmentsComponent implements OnInit {

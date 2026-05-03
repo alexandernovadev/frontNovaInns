@@ -1039,6 +1039,9 @@
   .bg-surface {
     background-color: var(--color-surface);
   }
+  .bg-text-disabled {
+    background-color: var(--color-text-disabled);
+  }
   .bg-warning {
     background-color: var(--color-warning);
   }

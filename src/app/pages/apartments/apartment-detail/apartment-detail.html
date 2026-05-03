@@ -11,9 +11,7 @@
     </button>
     <div class="flex-1">
       <h1 class="text-text-primary text-2xl font-bold">{{ apt()!.internalName }}</h1>
-      <span class="px-2.5 py-1 rounded-lg text-xs font-medium mt-1 inline-block" [class]="STATUS_CLASS[apt()!.status]">
-        {{ STATUS_LABEL[apt()!.status] }}
-      </span>
+      <status-badge [value]="apt()!.status" type="apartment" />
     </div>
   </div>
 

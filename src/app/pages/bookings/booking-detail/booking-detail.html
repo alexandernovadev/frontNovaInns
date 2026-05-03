@@ -24,13 +24,7 @@
           }
         </span>
         <h1 class="text-text-primary text-xl sm:text-2xl font-bold truncate">{{ aptName() }}</h1>
-        <span class="px-2.5 py-1 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0"
-          [class]="STATUS_CLASS[b.billing.status]">
-          <span class="w-1.5 h-1.5 rounded-full shrink-0"
-            [class]="b.billing.status === 'PAGADO' ? 'bg-success' : b.billing.status === 'NO SHOW' ? 'bg-error' : 'bg-warning'">
-          </span>
-          {{ b.billing.status }}
-        </span>
+        <status-badge [value]="b.billing.status" type="billing" />
       </div>
       <div class="flex items-center gap-2 mt-1 flex-wrap">
         <span class="text-text-disabled text-xs flex items-center gap-1">
