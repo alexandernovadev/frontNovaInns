@@ -8,6 +8,7 @@ import { PlatformIcon } from '../../../shared/components/platform-icon';
 import { PaymentMethodIcon } from '../../../shared/components/payment-method-icon';
 import { CurrencyCopPipe } from '../../../shared/pipes/currency-cop.pipe';
 import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
+import { fmtNumber } from '../../../shared/utils/number.util';
 import { PLATFORMS, METHODS, ID_TYPES, ID_LABELS, PLATFORM_CLASS } from '../../../shared/constants/booking.constants';
 import {
   LucideAngularModule,
@@ -337,16 +338,11 @@ export class BookingFormComponent implements OnInit {
       : '';
   }
 
-  fmtNumber(n: number) {
-    return n ? new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(n) : '';
-  }
+  fmtNumber = fmtNumber;
 
   formPaidPct() {
     if (!this.formBilling.basePrice) return 0;
-    return Math.min(
-      100,
-      Math.round((this.formBilling.amountReceived / this.formBilling.basePrice) * 100),
-    );
+    return Math.min(100, Math.round((this.formBilling.amountReceived / this.formBilling.basePrice) * 100));
   }
 
   private blankGeneral(): {

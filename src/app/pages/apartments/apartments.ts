@@ -7,6 +7,8 @@ import { StatusBadge } from '../../shared/components/status-badge';
 import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, Building2 } from 'lucide-angular';
+import { loadList } from '../../shared/utils/list.util';
+import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delete.util';
 
 const STATUS_LABEL: Record<string, string> = {
   ACTIVE: 'Activo',
@@ -38,9 +40,12 @@ export class ApartmentsComponent implements OnInit {
   statusFilter = '';
 
   showCreate = signal(false);
-  showDelete = signal(false);
-  selected = signal<IApartment | null>(null);
   saving = signal(false);
+  deleteState: DeleteState<IApartment> = {
+    selected: signal<IApartment | null>(null),
+    show: signal(false),
+    saving: signal(false),
+  };
   newName = '';
 
   statusLabel = STATUS_LABEL;
@@ -52,15 +57,12 @@ export class ApartmentsComponent implements OnInit {
   }
 
   load(page = 1) {
-    this.loading.set(true);
-    this.svc.findAll({ search: this.search, status: this.statusFilter, page }).subscribe({
-      next: (res) => {
-        this.apartments.set(res.data);
-        this.meta.set(res.meta);
-        this.loading.set(false);
-      },
-      error: () => this.loading.set(false),
-    });
+    loadList(
+      this.loading,
+      this.apartments,
+      this.meta,
+      this.svc.findAll({ search: this.search, status: this.statusFilter, page }),
+    );
   }
 
   openDetail(apt: IApartment) {
@@ -87,25 +89,15 @@ export class ApartmentsComponent implements OnInit {
 
   openDelete(apt: IApartment, e: Event) {
     e.stopPropagation();
-    this.selected.set(apt);
-    this.showDelete.set(true);
+    openDelete(this.deleteState, apt);
   }
 
-  onDeleteClosed() { this.showDelete.set(false); }
+  onDeleteClosed() { this.deleteState.show.set(false); }
 
   confirmDelete() {
-    const id = this.selected()?._id;
-    if (!id) return;
-    this.saving.set(true);
-    this.svc.remove(id).subscribe({
-      next: () => {
-        this.showDelete.set(false);
-        this.saving.set(false);
-        this.load(1);
-        this.alert.success('Apartamento eliminado');
-      },
-      error: () => { this.saving.set(false); this.alert.error('Error al eliminar apartamento'); },
-    });
+    confirmDelete(this.deleteState, id => this.svc.remove(id), this.alert, () => {
+      this.load(1);
+    }, { success: 'Apartamento eliminado', error: 'Error al eliminar apartamento' });
   }
 
 }

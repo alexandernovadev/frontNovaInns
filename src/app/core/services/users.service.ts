@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { API } from '../../shared/constants/api.constant';
+import { buildParams } from '../../shared/utils/http-params.util';
 
-const API = 'http://localhost:3000/api/users';
+const BASE = `${API}/users`;
 
 export interface IUser {
   _id: string;
@@ -29,24 +31,18 @@ export class UsersService {
   private http = inject(HttpClient);
 
   findAll(query: UserQuery = {}) {
-    let params = new HttpParams();
-    if (query.search)   params = params.set('search',   query.search);
-    if (query.role)     params = params.set('role',     query.role);
-    if (query.isActive) params = params.set('isActive', query.isActive);
-    if (query.page)     params = params.set('page',     query.page);
-    if (query.limit)    params = params.set('limit',    query.limit);
-    return this.http.get<UserPage>(API, { params });
+    return this.http.get<UserPage>(BASE, { params: buildParams(query) });
   }
 
   create(data: any) {
-    return this.http.post<IUser>(API, data);
+    return this.http.post<IUser>(BASE, data);
   }
 
   update(id: string, data: any) {
-    return this.http.patch<IUser>(`${API}/${id}`, data);
+    return this.http.patch<IUser>(`${BASE}/${id}`, data);
   }
 
   remove(id: string) {
-    return this.http.delete(`${API}/${id}`);
+    return this.http.delete(`${BASE}/${id}`);
   }
 }

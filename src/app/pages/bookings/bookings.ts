@@ -11,6 +11,8 @@ import { DateEsPipe } from '../../shared/pipes/date-es.pipe';
 import { PLATFORMS, PLATFORM_CLASS, STATUSES } from '../../shared/constants/booking.constants';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, CalendarDays } from 'lucide-angular';
+import { loadList } from '../../shared/utils/list.util';
+import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delete.util';
 
 @Component({
   selector: 'app-bookings',
@@ -35,9 +37,14 @@ export class BookingsComponent implements OnInit {
   platformFilter = '';
 
   showPayment = signal(false);
-  showDelete  = signal(false);
-  selected    = signal<IBooking | null>(null);
+  paymentSelected = signal<IBooking | null>(null);
   payAmount   = 0;
+
+  deleteState: DeleteState<IBooking> = {
+    selected: signal<IBooking | null>(null),
+    show: signal(false),
+    saving: signal(false),
+  };
 
   readonly PLATFORMS = PLATFORMS;
   readonly STATUSES  = STATUSES;
@@ -49,11 +56,12 @@ export class BookingsComponent implements OnInit {
   }
 
   load(page = 1) {
-    this.loading.set(true);
-    this.svc.findAll({ search: this.search, status: this.statusFilter, platform: this.platformFilter, page }).subscribe({
-      next: res => { this.bookings.set(res.data); this.meta.set(res.meta); this.loading.set(false); },
-      error: () => this.loading.set(false),
-    });
+    loadList(
+      this.loading,
+      this.bookings,
+      this.meta,
+      this.svc.findAll({ search: this.search, status: this.statusFilter, platform: this.platformFilter, page }),
+    );
   }
 
   loadSummary() {
@@ -69,33 +77,29 @@ export class BookingsComponent implements OnInit {
 
   openDeleteConfirm(b: IBooking, e: Event) {
     e.stopPropagation();
-    this.selected.set(b);
-    this.showDelete.set(true);
+    openDelete(this.deleteState, b);
   }
 
-  onDeleteClosed() { this.showDelete.set(false); }
+  onDeleteClosed() { this.deleteState.show.set(false); }
 
   onPaymentClosed() { this.showPayment.set(false); }
 
   confirmDelete() {
-    const id = this.selected()?._id;
-    if (!id) return;
-    this.saving.set(true);
-    this.svc.delete(id).subscribe({
-      next: () => { this.showDelete.set(false); this.saving.set(false); this.load(1); this.loadSummary(); this.alert.success('Reserva eliminada'); },
-      error: () => { this.saving.set(false); this.alert.error('Error al eliminar reserva'); },
-    });
+    confirmDelete(this.deleteState, id => this.svc.delete(id), this.alert, () => {
+      this.load(1);
+      this.loadSummary();
+    }, { success: 'Reserva eliminada', error: 'Error al eliminar reserva' });
   }
 
   openPayment(b: IBooking, e: Event) {
     e.stopPropagation();
-    this.selected.set(b);
+    this.paymentSelected.set(b);
     this.payAmount = 0;
     this.showPayment.set(true);
   }
 
   confirmPayment() {
-    const id = this.selected()?._id;
+    const id = this.paymentSelected()?._id;
     if (!id || !this.payAmount) return;
     this.saving.set(true);
     this.svc.registerPayment(id, this.payAmount).subscribe({
@@ -110,14 +114,11 @@ export class BookingsComponent implements OnInit {
     });
   }
 
-  totalGuests(b: IBooking) { return 1 + b.group.members.length; }
+  totalGuests(b: IBooking) { return this.svc.totalGuests(b); }
   nights(b: IBooking)      { return this.svc.nights(b); }
   pending(b: IBooking)     { return this.svc.pending(b); }
   aptName(b: IBooking)     { return this.svc.aptName(b); }
 
-  paidPct(b: IBooking) {
-    if (!b.billing.totalAmount) return 0;
-    return Math.min(100, Math.round((b.billing.amountReceived / b.billing.totalAmount) * 100));
-  }
+  paidPct(b: IBooking) { return this.svc.paidPct(b); }
 
 }

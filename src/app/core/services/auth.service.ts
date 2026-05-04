@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 
-const API = 'http://localhost:3000/api';
+import { API } from '../../shared/constants/api.constant';
 const TOKEN_KEY = 'nova_token';
 
 @Injectable({ providedIn: 'root' })

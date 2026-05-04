@@ -189,7 +189,7 @@
 </ng-template>
 
 <!-- ======= MODAL ELIMINAR ======= -->
-<modal-nova [visible]="showDelete()" title="Eliminar usuario" size="sm" (closed)="onDeleteClosed()" [footerTemplate]="deleteFooter">
+<modal-nova [visible]="deleteState.show()" title="Eliminar usuario" size="sm" (closed)="onDeleteClosed()" [footerTemplate]="deleteFooter">
   <div class="flex flex-col items-center gap-3 py-2">
     <div class="w-12 h-12 bg-error/10 rounded-full flex items-center justify-center">
       <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -197,17 +197,17 @@
       </svg>
     </div>
     <p class="text-text-secondary text-sm text-center">
-      Se eliminará <strong class="text-text-primary">{{ selected()?.profile?.fullName }}</strong> de forma permanente.
+      Se eliminará <strong class="text-text-primary">{{ deleteState.selected()?.profile?.fullName }}</strong> de forma permanente.
     </p>
   </div>
 </modal-nova>
 <ng-template #deleteFooter>
   <div class="flex gap-3">
-    <button (click)="showDelete.set(false)"
+    <button (click)="deleteState.show.set(false)"
       class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancelar</button>
-    <button (click)="confirmDelete()" [disabled]="saving()"
+    <button (click)="confirmDelete()" [disabled]="deleteState.saving()"
       class="flex-1 bg-error hover:bg-error/80 text-white font-bold py-2.5 rounded-xl text-sm transition-colors disabled:opacity-50 cursor-pointer">
-      {{ saving() ? 'Eliminando...' : 'Eliminar' }}
+      {{ deleteState.saving() ? 'Eliminando...' : 'Eliminar' }}
     </button>
   </div>
 </ng-template>

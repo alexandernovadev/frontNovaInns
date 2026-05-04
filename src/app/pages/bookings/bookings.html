@@ -198,20 +198,20 @@
 </div>
 
 <!-- =============== MODAL BORRAR =============== -->
-<modal-nova [visible]="showDelete()" title="Borrar reserva" size="sm" (closed)="onDeleteClosed()" [footerTemplate]="deleteFooter">
+<modal-nova [visible]="deleteState.show()" title="Borrar reserva" size="sm" (closed)="onDeleteClosed()" [footerTemplate]="deleteFooter">
   <p class="text-text-secondary text-sm">
     ¿Seguro que quieres borrar la reserva de
-    <span class="text-text-primary font-semibold">{{ selected()?.group?.host?.fullName }}</span>?
+    <span class="text-text-primary font-semibold">{{ deleteState.selected()?.group?.host?.fullName }}</span>?
     Esta acción no se puede deshacer.
   </p>
 </modal-nova>
 <ng-template #deleteFooter>
   <div class="flex gap-3">
-    <button (click)="showDelete.set(false)"
+    <button (click)="deleteState.show.set(false)"
       class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">Cancelar</button>
-    <button (click)="confirmDelete()" [disabled]="saving()"
+    <button (click)="confirmDelete()" [disabled]="deleteState.saving()"
       class="flex-1 bg-error hover:bg-error/80 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
-      {{ saving() ? 'Borrando...' : 'Borrar' }}
+      {{ deleteState.saving() ? 'Borrando...' : 'Borrar' }}
     </button>
   </div>
 </ng-template>
@@ -219,7 +219,7 @@
 <!-- =============== MODAL PAGO =============== -->
 <modal-nova [visible]="showPayment()" title="Registrar pago" size="sm" (closed)="onPaymentClosed()" [footerTemplate]="paymentFooter">
   <p class="text-text-secondary text-sm mb-3">
-    Pendiente: <span class="text-warning font-bold">{{ pending(selected()!) | currencyCop }}</span>
+    Pendiente: <span class="text-warning font-bold">{{ pending(paymentSelected()!) | currencyCop }}</span>
   </p>
   <label class="block text-text-secondary text-sm mb-1.5">Monto a registrar</label>
   <input type="number" min="0" [(ngModel)]="payAmount" placeholder="0" autocomplete="off"

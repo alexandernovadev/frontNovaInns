@@ -1,6 +1,7 @@
-import { Component, HostListener, effect, ElementRef, inject, signal, viewChild, OnInit } from '@angular/core';
+import { Component, inject, signal, viewChild, ElementRef, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { BookingsService, IBooking } from '../../../core/services/bookings.service';
 import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
 import { ModalNova } from '../../../shared/components/modal-nova';
@@ -9,19 +10,19 @@ import { PlatformIcon } from '../../../shared/components/platform-icon';
 import { PaymentMethodIcon } from '../../../shared/components/payment-method-icon';
 import { PhotoViewer } from '../../../shared/components/photo-viewer';
 import { CurrencyCopPipe } from '../../../shared/pipes/currency-cop.pipe';
-import { PLATFORM_CLASS, ID_LABELS } from '../../../shared/constants/booking.constants';
-import { AlertService } from '../../../shared/components/services/alert.service';
-import {
-  LucideAngularModule,
-  CalendarDays, Building2, LogIn, LogOut,
+import { CalendarDays, Building2, LogIn, LogOut,
   User, Users, CreditCard, Banknote, Wallet,
   ArrowLeft, Pencil, Trash2, MapPin, IdCard,
   MessageSquare, Moon, X, Hash,
 } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
+import { AlertService } from '../../../shared/components/services/alert.service';
+import { PLATFORM_CLASS, ID_LABELS } from '../../../shared/constants/booking.constants';
+import { DeleteState, openDelete, confirmDelete } from '../../../shared/utils/delete.util';
 
 @Component({
   selector: 'app-booking-detail',
-  imports: [FormsModule, LucideAngularModule, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer, CurrencyCopPipe],
+  imports: [FormsModule, LucideAngularModule, DatePipe, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer, CurrencyCopPipe],
   templateUrl: './booking-detail.html',
 })
 export class BookingDetailComponent implements OnInit {
@@ -53,10 +54,14 @@ export class BookingDetailComponent implements OnInit {
   loading     = signal(true);
   saving      = signal(false);
   showPayment = signal(false);
-  showDelete  = signal(false);
-  showPhoto   = signal<string | null>(null);
   payAmount   = 0;
+  photoUrl    = signal<string | null>(null);
   photoOverlay = viewChild<ElementRef<HTMLElement>>('photoOverlay');
+  deleteState: DeleteState<IBooking> = {
+    selected: signal<IBooking | null>(null),
+    show: signal(false),
+    saving: signal(false),
+  };
 
   readonly PLATFORM_CLASS = PLATFORM_CLASS;
   readonly ID_LABELS = ID_LABELS;
@@ -76,7 +81,18 @@ export class BookingDetailComponent implements OnInit {
 
   onPaymentClosed() { this.showPayment.set(false); }
 
-  onDeleteClosed() { this.showDelete.set(false); }
+  onDeleteClick(e: Event) {
+    const b = this.booking();
+    if (b) openDelete(this.deleteState, b, e);
+  }
+
+  onDeleteClosed() { this.deleteState.show.set(false); }
+
+  confirmDelete() {
+    confirmDelete(this.deleteState, id => this.svc.delete(id), this.alert, () => {
+      this.router.navigate(['/bookings']);
+    }, { success: 'Reserva eliminada', error: 'Error al eliminar reserva' });
+  }
 
   confirmPayment() {
     const id = this.booking()?._id;
@@ -88,36 +104,13 @@ export class BookingDetailComponent implements OnInit {
     });
   }
 
-  confirmDelete() {
-    const id = this.booking()?._id;
-    if (!id) return;
-    this.saving.set(true);
-    this.svc.delete(id).subscribe({
-      next: () => { this.saving.set(false); this.alert.success('Reserva eliminada'); this.router.navigate(['/bookings']); },
-      error: () => { this.saving.set(false); this.alert.error('Error al eliminar reserva'); },
-    });
-  }
-
   nights()      { const b = this.booking(); return b ? this.svc.nights(b) : 0; }
   pending()     { const b = this.booking(); return b ? this.svc.pending(b) : 0; }
   aptName()     { const b = this.booking(); return b ? this.svc.aptName(b) : ''; }
-  totalGuests() { const b = this.booking(); return b ? 1 + b.group.members.length : 0; }
-
-  onPhotoKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') {
-      this.showPhoto.set(null);
-    }
-  }
+  totalGuests() { const b = this.booking(); return b ? this.svc.totalGuests(b) : 0; }
 
   paidPct() {
     const b = this.booking();
-    if (!b || !b.billing.totalAmount) return 0;
-    return Math.min(100, Math.round(b.billing.amountReceived / b.billing.totalAmount * 100));
-  }
-
-  fmtCreatedAt(d: string) {
-    return new Date(d).toLocaleDateString('es-CO', {
-      day: '2-digit', month: 'long', year: 'numeric',
-    });
+    return b ? this.svc.paidPct(b) : 0;
   }
 }

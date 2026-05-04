@@ -6,6 +6,8 @@ import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, Users } from 'lucide-angular';
 import { ROLES, ROLE_LABELS } from '../../shared/constants/user.constants';
+import { loadList } from '../../shared/utils/list.util';
+import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delete.util';
 
 @Component({
   selector: 'app-users',
@@ -31,8 +33,12 @@ export class UsersComponent implements OnInit {
   // modales
   showCreate = signal(false);
   showEdit   = signal(false);
-  showDelete = signal(false);
-  selected   = signal<IUser | null>(null);
+  editSelected = signal<IUser | null>(null);
+  deleteState: DeleteState<IUser> = {
+    selected: signal<IUser | null>(null),
+    show: signal(false),
+    saving: signal(false),
+  };
   saving     = signal(false);
   errorMsg   = signal('');
 
@@ -45,16 +51,8 @@ export class UsersComponent implements OnInit {
   ngOnInit() { this.load(); }
 
   load(page = 1) {
-    this.loading.set(true);
-    const q: UserQuery = { page, limit: 10 };
-    if (this.search)      q.search   = this.search;
-    if (this.roleFilter)  q.role     = this.roleFilter;
-    if (this.activeFilter) q.isActive = this.activeFilter;
-
-    this.svc.findAll(q).subscribe({
-      next: res => { this.users.set(res.data); this.meta.set(res.meta); this.loading.set(false); },
-      error: ()  => this.loading.set(false),
-    });
+    const q: UserQuery = { page, limit: 10, search: this.search || undefined, role: this.roleFilter || undefined, isActive: this.activeFilter || undefined };
+    loadList(this.loading, this.users, this.meta, this.svc.findAll(q));
   }
 
   onSearch() { this.load(1); }
@@ -76,7 +74,7 @@ export class UsersComponent implements OnInit {
 
   // --- Edit ---
   openEdit(user: IUser) {
-    this.selected.set(user);
+    this.editSelected.set(user);
     this.form = {
       fullName: user.profile.fullName,
       email: user.auth.email,
@@ -90,7 +88,7 @@ export class UsersComponent implements OnInit {
   }
 
   submitEdit() {
-    const id = this.selected()?._id;
+    const id = this.editSelected()?._id;
     if (!id) return;
     this.saving.set(true);
     const payload: any = {
@@ -106,18 +104,14 @@ export class UsersComponent implements OnInit {
   }
 
   // --- Delete ---
-  openDelete(user: IUser) { this.selected.set(user); this.showDelete.set(true); }
+  openDelete(user: IUser) { openDelete(this.deleteState, user); }
 
-  onDeleteClosed() { this.showDelete.set(false); }
+  onDeleteClosed() { this.deleteState.show.set(false); }
 
   confirmDelete() {
-    const id = this.selected()?._id;
-    if (!id) return;
-    this.saving.set(true);
-    this.svc.remove(id).subscribe({
-      next: () => { this.showDelete.set(false); this.load(1); this.saving.set(false); this.alert.success('Usuario eliminado'); },
-      error: () => { this.saving.set(false); this.alert.error('Error al eliminar usuario'); },
-    });
+    confirmDelete(this.deleteState, id => this.svc.remove(id), this.alert, () => {
+      this.load(1);
+    }, { success: 'Usuario eliminado', error: 'Error al eliminar usuario' });
   }
 
 }

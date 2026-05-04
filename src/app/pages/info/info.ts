@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, Info, Server, Globe } from 'lucide-angular';
 
-const API = 'http://localhost:3000/api';
+import { API } from '../../shared/constants/api.constant';
 
 interface AppInfo {
   name: string;

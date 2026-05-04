@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-const API = 'http://localhost:3000/api';
+import { API } from '../../shared/constants/api.constant';
 
 @Injectable({ providedIn: 'root' })
 export class DataService {

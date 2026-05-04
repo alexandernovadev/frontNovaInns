@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { UploadService } from '../../shared/services/upload.service';
-
-const API = 'http://localhost:3000/api';
+import { API } from '../../shared/constants/api.constant';
+import { buildParams } from '../../shared/utils/http-params.util';
 
 export interface IGuest {
   fullName:  string;
@@ -62,12 +62,7 @@ export class BookingsService {
   private http = inject(HttpClient);
 
   findAll(query: { search?: string; status?: string; platform?: string; page?: number } = {}) {
-    let params = new HttpParams();
-    if (query.search)   params = params.set('search',   query.search);
-    if (query.status)   params = params.set('status',   query.status);
-    if (query.platform) params = params.set('platform', query.platform);
-    if (query.page)     params = params.set('page',     query.page);
-    return this.http.get<BookingPage>(`${API}/bookings`, { params });
+    return this.http.get<BookingPage>(`${API}/bookings`, { params: buildParams(query) });
   }
 
   findById(id: string) {
@@ -114,5 +109,14 @@ export class BookingsService {
 
   pending(booking: IBooking | null): number {
     return booking ? booking.billing.totalAmount - booking.billing.amountReceived : 0;
+  }
+
+  paidPct(booking: IBooking): number {
+    if (!booking.billing.totalAmount) return 0;
+    return Math.min(100, Math.round((booking.billing.amountReceived / booking.billing.totalAmount) * 100));
+  }
+
+  totalGuests(booking: IBooking): number {
+    return 1 + booking.group.members.length;
   }
 }
