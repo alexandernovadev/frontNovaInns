@@ -48,6 +48,10 @@ export const routes: Routes = [
         path: 'info',
         loadComponent: () => import('./pages/info/info').then(m => m.InfoComponent),
       },
+      {
+        path: 'analytics',
+        loadComponent: () => import('./pages/analytics/analytics').then(m => m.AnalyticsComponent),
+      },
     ],
   },
   { path: '**', redirectTo: 'bookings' },

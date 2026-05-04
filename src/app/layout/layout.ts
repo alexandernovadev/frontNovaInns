@@ -2,7 +2,7 @@ import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 import { AlertNova } from '../shared/components/alert-nova';
-import { LucideAngularModule, CalendarDays, Building2, Users, ArrowUpDown, Info, LogOut, Menu } from 'lucide-angular';
+import { LucideAngularModule, CalendarDays, Building2, Users, ArrowUpDown, Info, BarChart3, LogOut, Menu } from 'lucide-angular';
 
 @Component({
   selector: 'app-layout',
@@ -17,6 +17,7 @@ export class LayoutComponent {
   readonly Building2 = Building2;
   readonly Users = Users;
   readonly ArrowUpDown = ArrowUpDown;
+  readonly BarChart3 = BarChart3;
   readonly Info = Info;
   readonly LogOut = LogOut;
   readonly Menu = Menu;
@@ -29,6 +30,7 @@ export class LayoutComponent {
     { label: 'Apartamentos', route: '/apartments', icon: Building2 },
     { label: 'Usuarios', route: '/users', icon: Users },
     { label: 'Import / Export', route: '/data', icon: ArrowUpDown },
+    { label: 'Analítica', route: '/analytics', icon: BarChart3 },
     { label: 'Info Sistema', route: '/info', icon: Info },
   ];
 }
