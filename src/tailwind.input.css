@@ -48,3 +48,54 @@ html, body {
 ::-webkit-scrollbar-track  { background: #0B0B0C; }
 ::-webkit-scrollbar-thumb  { background: #2A2A2E; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #F2C200; }
+
+/* Leaflet tooltip dark theme */
+.leaflet-tooltip-dark {
+  background: rgba(21,21,24,0.95) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: #FFFFFF !important;
+  font-size: 12px !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+}
+.leaflet-tooltip-dark::before {
+  border-top-color: rgba(255,255,255,0.1) !important;
+}
+.leaflet-tooltip-dark strong {
+  color: #F2C200 !important;
+  font-size: 13px;
+}
+
+/* Guest count label on department areas */
+.leaflet-label-guestcount {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #FFFFFF !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.5) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Map fade-in animation */
+@keyframes mapFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+#leaflet-map {
+  animation: mapFadeIn 0.6s ease-out;
+}
+
+/* City overlay slide-up */
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+[id^="city-overlay"] {
+  animation: slideUp 0.3s ease-out;
+}

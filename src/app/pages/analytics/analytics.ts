@@ -2,9 +2,10 @@ import { Component, inject, signal, OnInit, OnDestroy, HostListener } from '@ang
 import { HttpClient } from '@angular/common/http';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts';
+import * as L from 'leaflet';
 import { AnalyticsService, DashboardData } from '../../core/services/analytics.service';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
-import { LucideAngularModule, BarChart3, TrendingUp, PieChart, Globe, Building2, CalendarDays, Hash, DollarSign, ArrowLeft, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, BarChart3, TrendingUp, PieChart, Globe, Building2, CalendarDays, Hash, DollarSign, ArrowLeft } from 'lucide-angular';
 
 @Component({
   selector: 'app-analytics',
@@ -22,7 +23,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   readonly Hash = Hash;
   readonly DollarSign = DollarSign;
   readonly ArrowLeft = ArrowLeft;
-  readonly ChevronRight = ChevronRight;
 
   private svc = inject(AnalyticsService);
   private http = inject(HttpClient);
@@ -30,18 +30,23 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   data = signal<DashboardData | null>(null);
   loading = signal(true);
   error = signal<string | null>(null);
-  mapReady = signal(false);
 
   tab = signal<'dashboard' | 'map'>('dashboard');
 
   // drill-down state
-  viewLevel = signal<'world' | 'country'>('world');
-  selectedCountry = signal<{ code: string; name: string } | null>(null);
   departmentData = signal<{ department: string; guests: number; revenue: number }[] | null>(null);
   cityData = signal<{ department: string; city: string; guests: number; revenue: number }[] | null>(null);
   selectedDept = signal<string | null>(null);
-  deptGeoReady = signal(false);
+  selectedDeptInfo = signal<{ guests: number; revenue: number } | null>(null);
+  selectedMapCountry = signal('CO');
+  leafletReady = signal(false);
 
+  availableCountries = [
+    { code: 'CO', name: 'Colombia' },
+    { code: 'EC', name: 'Ecuador' },
+  ];
+
+  // ECharts options (dashboard)
   monthlyOptions: any = {};
   platformOptions: any = {};
   paymentOptions: any = {};
@@ -49,7 +54,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   dayOfWeekOptions: any = {};
   extraServicesOptions: any = {};
   topAptOptions: any = {};
-  mapOptions: any = {};
+
+  // Leaflet map
+  private map: L.Map | null = null;
+  private geoLayer: L.GeoJSON | null = null;
+  private mapInitialized = false;
 
   private deptNameMap: Record<string, Record<string, string>> = {
     CO: { 'Bogotá': 'Bogota' },
@@ -60,44 +69,16 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     if (countryCode && this.deptNameMap[countryCode]?.[name]) return this.deptNameMap[countryCode][name];
     return name;
   }
-  private mapRegistered = false;
-  private loadedDeptCountries: Set<string> = new Set();
 
   ngOnInit() {
-    this.loadGeoJson();
     this.loadData();
   }
 
   ngOnDestroy() {
-    this.selectedCountry.set(null);
+    this.destroyMap();
   }
 
-  private loadGeoJson() {
-    this.http.get('/assets/geo/world.json', { responseType: 'json' }).subscribe({
-      next: geo => {
-        echarts.registerMap('world', geo as any);
-        this.mapRegistered = true;
-        this.mapReady.set(true);
-        if (this.data()) this.buildWorldMapOptions();
-      },
-      error: () => this.mapReady.set(false),
-    });
-  }
-
-  private loadDeptGeo(countryCode: string) {
-    const countryMap: Record<string, string> = { CO: 'colombia', EC: 'ecuador', PE: 'peru', MX: 'mexico' };
-    const file = countryMap[countryCode];
-    if (!file || this.loadedDeptCountries.has(countryCode)) return;
-    this.http.get(`/assets/geo/${file}_departments.json`, { responseType: 'json' }).subscribe({
-      next: geo => {
-        echarts.registerMap('country_dept', geo as any);
-        this.loadedDeptCountries.add(countryCode);
-        this.deptGeoReady.set(true);
-        this.buildDeptMapOptions();
-      },
-    });
-  }
-
+  // ── Data loading ──
   loadData() {
     this.loading.set(true);
     this.error.set(null);
@@ -114,6 +95,172 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ── Tab switch ──
+  onTabChange(t: 'dashboard' | 'map') {
+    this.tab.set(t);
+    if (t === 'map') {
+      setTimeout(() => this.initMap(), 100);
+    }
+  }
+
+  // ── Leaflet map ──
+  private initMap() {
+    if (this.mapInitialized) return;
+    const el = document.getElementById('leaflet-map');
+    if (!el) {
+      setTimeout(() => this.initMap(), 300);
+      return;
+    }
+
+    try {
+      this.map = L.map(el, {
+        center: [4.5, -74],
+        zoom: 7,
+        zoomControl: true,
+        attributionControl: false,
+      });
+
+      const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+      });
+      tileLayer.addTo(this.map);
+
+      tileLayer.on('tileerror', () => {
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 19,
+        }).addTo(this.map!);
+      });
+
+      setTimeout(() => this.map?.invalidateSize(), 300);
+      this.mapInitialized = true;
+      this.leafletReady.set(true);
+      this.loadDeptLayer(this.selectedMapCountry());
+    } catch {
+      setTimeout(() => this.initMap(), 500);
+    }
+  }
+
+  private destroyMap() {
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+      this.mapInitialized = false;
+      this.leafletReady.set(false);
+    }
+  }
+
+  switchCountry(code: string) {
+    this.selectedMapCountry.set(code);
+    this.selectedDept.set(null);
+    this.cityData.set(null);
+    this.departmentData.set(null);
+    this.loadDeptLayer(code);
+  }
+
+  private loadDeptLayer(countryCode: string) {
+    const fileMap: Record<string, string> = { CO: 'colombia', EC: 'ecuador', PE: 'peru', MX: 'mexico' };
+    const file = fileMap[countryCode];
+    if (!file || !this.map) return;
+
+    // Load both GeoJSON and department data, then draw
+    this.http.get(`/assets/geo/${file}_departments.json`, { responseType: 'json' }).subscribe({
+      next: (geo: any) => {
+        this.svc.regions(countryCode, 'department').subscribe(r => {
+          this.departmentData.set(r);
+          this.drawDeptLayer(geo, countryCode);
+        });
+      },
+    });
+  }
+
+  private drawDeptLayer(geo: any, countryCode: string) {
+    if (!this.map) return;
+    if (this.geoLayer) {
+      this.map.removeLayer(this.geoLayer);
+      this.geoLayer = null;
+    }
+
+    const deptList = this.departmentData();
+    const maxGuests = Math.max(...(deptList?.map(d => d.guests) ?? [1]), 1);
+
+    this.geoLayer = L.geoJSON(geo, {
+      style: (feature: any) => {
+        const name = feature?.properties?.name ?? '';
+        const dept = deptList?.find(d => this.normalizeDeptName(d.department, countryCode) === name);
+        const guests = dept?.guests ?? 0;
+        const intensity = maxGuests > 0 ? guests / maxGuests : 0;
+        if (guests > 0) {
+          return {
+            color: 'rgba(242,194,0,0.6)',
+            weight: 2,
+            fillColor: `rgba(242,194,0,${0.15 + intensity * 0.6})`,
+            fillOpacity: 0.85,
+          };
+        }
+        return {
+          color: 'rgba(255,255,255,0.08)',
+          weight: 1,
+          fillColor: 'rgba(255,255,255,0.02)',
+          fillOpacity: 0.5,
+        };
+      },
+      onEachFeature: (feature: any, layer: L.Layer) => {
+        const name = feature?.properties?.name ?? '';
+        const dept = deptList?.find(d => this.normalizeDeptName(d.department, countryCode) === name);
+        const guests = dept?.guests ?? 0;
+        const revenue = dept?.revenue ?? 0;
+
+        if (guests > 0) {
+          layer.bindTooltip(`<strong>${guests}</strong>`, {
+            permanent: true,
+            direction: 'center',
+            className: 'leaflet-label-guestcount',
+          });
+        }
+
+        layer.on({
+          click: () => {
+            this.onDeptClick(name, countryCode);
+          },
+          mouseover: (e: any) => {
+            const target = e.target;
+            target.setStyle({
+              weight: 3,
+              color: guests > 0 ? '#F2C200' : 'rgba(255,255,255,0.3)',
+              fillOpacity: guests > 0 ? 0.95 : 0.3,
+            });
+            target.bringToFront();
+          },
+          mouseout: (e: any) => {
+            this.geoLayer?.resetStyle(e.target);
+          },
+        });
+      },
+    }).addTo(this.map);
+
+    this.map.fitBounds((this.geoLayer as any).getBounds(), { padding: [30, 30], maxZoom: 7 });
+    setTimeout(() => this.map?.invalidateSize(), 200);
+  }
+
+  // ── Drill-down ──
+  onDeptClick(deptName: string, countryCode: string) {
+    this.selectedDept.set(deptName);
+    const dept = this.departmentData()?.find(d => this.normalizeDeptName(d.department, countryCode) === deptName);
+    this.selectedDeptInfo.set(dept ? { guests: dept.guests, revenue: dept.revenue } : null);
+    this.cityData.set(null);
+    this.svc.regions(countryCode).subscribe({
+      next: r => this.cityData.set(r.filter(c => this.normalizeDeptName(c.department, countryCode) === deptName)),
+      error: () => this.cityData.set([]),
+    });
+  }
+
+  closeDeptDetail() {
+    this.selectedDept.set(null);
+    this.selectedDeptInfo.set(null);
+    this.cityData.set(null);
+  }
+
+  // ── Chart builders (same as before) ──
   private buildCharts(d: DashboardData) {
     this.buildMonthlyOptions(d);
     this.buildPlatformOptions(d);
@@ -122,7 +269,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.buildDayOfWeekOptions(d);
     this.buildExtraServicesOptions(d);
     this.buildTopAptOptions(d);
-    if (this.mapRegistered) this.buildWorldMapOptions(d);
   }
 
   private buildMonthlyOptions(d: DashboardData) {
@@ -218,85 +364,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     };
   }
 
-  // ── World map ──
-  private buildWorldMapOptions(d?: DashboardData) {
-    const data = d ?? this.data();
-    if (!data) return;
-    this.mapOptions = {
-      tooltip: { trigger: 'item', formatter: (p: any) => `${p.name}<br/>Huéspedes: ${p.value ?? 0}<br/>Ingresos: $${(data.countries.find(c => c.name === p.name)?.revenue ?? 0).toLocaleString('es-CO')}` },
-      visualMap: { min: 0, max: Math.max(...data.countries.map(c => c.guests), 1), left: 'left', top: 'bottom', text: ['Alto', 'Bajo'], textStyle: { color: '#6E6E73' }, inRange: { color: ['rgba(242,194,0,0.1)', 'rgba(242,194,0,0.4)', '#F2C200'] } },
-      series: [{
-        type: 'map', map: 'world', nameProperty: 'ADMIN', roam: true,
-        label: { show: false },
-        emphasis: { label: { show: true, color: '#fff' }, itemStyle: { areaColor: '#F2C200' } },
-        itemStyle: { areaColor: '#151518', borderColor: '#2A2A2E' },
-        data: data.countries.map(c => ({ name: c.name, value: c.guests })),
-      }],
-    };
-  }
-
-  // ── Departmental map ──
-  private buildDeptMapOptions() {
-    const deptList = this.departmentData();
-    const countryCode = this.selectedCountry()?.code;
-    if (!deptList || !countryCode) return;
-    const max = Math.max(...deptList.map(d => d.guests), 1);
-    this.mapOptions = {
-      tooltip: { trigger: 'item', formatter: (p: any) => `${p.name}<br/>Huéspedes: ${p.value ?? 0}<br/>Ingresos: $${(deptList.find(d => this.normalizeDeptName(d.department, countryCode) === p.name)?.revenue ?? 0).toLocaleString('es-CO')}` },
-      visualMap: { min: 0, max, left: 'left', top: 'bottom', text: ['Alto', 'Bajo'], textStyle: { color: '#6E6E73' }, inRange: { color: ['rgba(59,130,246,0.1)', 'rgba(59,130,246,0.4)', '#3B82F6'] } },
-      series: [{
-        type: 'map', map: 'country_dept', nameProperty: 'name', roam: true,
-        label: { show: true, color: '#B3B3B8', fontSize: 9 },
-        emphasis: { label: { show: true, color: '#fff', fontSize: 12 }, itemStyle: { areaColor: '#3B82F6' } },
-        itemStyle: { areaColor: '#151518', borderColor: '#2A2A2E' },
-        data: deptList.map(d => ({ name: this.normalizeDeptName(d.department, countryCode), value: d.guests })),
-      }],
-    };
-  }
-
-  // ── Click handlers ──
-  onMapClick(e: any) {
-    const country = this.data()?.countries.find(c => c.name === e.name);
-    if (!country) return;
-    this.selectedCountry.set({ code: country.code, name: country.name });
-    this.viewLevel.set('country');
-    this.departmentData.set(null);
-    this.cityData.set(null);
-    this.selectedDept.set(null);
-
-    this.loadDeptGeo(country.code);
-    this.svc.regions(country.code, 'department').subscribe({
-      next: r => {
-        this.departmentData.set(r);
-        this.buildDeptMapOptions();
-      },
-    });
-  }
-
-  onDeptClick(e: any) {
-    const deptName = e.name;
-    const countryCode = this.selectedCountry()?.code;
-    if (!countryCode || !deptName) return;
-    this.selectedDept.set(deptName);
-    this.svc.regions(countryCode).subscribe({
-      next: r => this.cityData.set(r.filter(c => this.normalizeDeptName(c.department, countryCode) === deptName)),
-    });
-  }
-
-  goBackToWorld() {
-    this.viewLevel.set('world');
-    this.selectedCountry.set(null);
-    this.departmentData.set(null);
-    this.cityData.set(null);
-    this.selectedDept.set(null);
-    if (this.data()) this.buildWorldMapOptions();
-  }
-
-  closeDeptDetail() {
-    this.selectedDept.set(null);
-    this.cityData.set(null);
-  }
-
   pct(v: number) {
     const d = this.data();
     if (!d || !d.summary.totalExpected) return 0;
@@ -304,5 +371,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize')
-  onResize() {}
+  onResize() {
+    this.map?.invalidateSize();
+  }
 }
