@@ -93,12 +93,19 @@ export class ApartmentsComponent implements OnInit {
     openDelete(this.deleteState, apartment);
   }
 
-  onDeleteClosed() { this.deleteState.show.set(false); }
-
-  confirmDelete() {
-    confirmDelete(this.deleteState, id => this.apartmentsService.remove(id), this.alert, () => {
-      this.load(1);
-    }, { success: 'Apartamento eliminado', error: 'Error al eliminar apartamento' });
+  onDeleteClosed() {
+    this.deleteState.show.set(false);
   }
 
+  confirmDelete() {
+    confirmDelete(
+      this.deleteState,
+      (id) => this.apartmentsService.remove(id),
+      this.alert,
+      () => {
+        this.load(1);
+      },
+      { success: 'Apartamento eliminado', error: 'Error al eliminar apartamento' },
+    );
+  }
 }

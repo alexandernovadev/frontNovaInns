@@ -1,8 +1,34 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-const MONTHS_SHORT = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-const WEEKDAYS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const MONTHS = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
+];
+const MONTHS_SHORT = [
+  'Ene',
+  'Feb',
+  'Mar',
+  'Abr',
+  'May',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dic',
+];
+const WEEKDAYS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
 function parseDate(value: string): Date | null {
   const parts = value.split('T')[0].split('-');
@@ -17,7 +43,9 @@ export class DateEsPipe implements PipeTransform {
     const date = parseDate(value);
     if (!date) return value;
 
-    const d = date.getDate(), m = date.getMonth(), y = date.getFullYear();
+    const d = date.getDate(),
+      m = date.getMonth(),
+      y = date.getFullYear();
 
     switch (format) {
       case 'short':

@@ -21,7 +21,7 @@ export function loadList<T>(
 ) {
   loading.set(true);
   observable.subscribe({
-    next: res => {
+    next: (res) => {
       dataSignal.set(res.data);
       metaSignal.set(res.meta);
       loading.set(false);

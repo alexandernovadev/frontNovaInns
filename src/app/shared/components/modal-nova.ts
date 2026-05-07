@@ -15,20 +15,26 @@ const SIZE_MAP: Record<string, string> = {
   template: `
     @if (visible()) {
       <!-- sass-disable -->
-      <div class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
-           (click)="onBackdrop()"
-           (keydown)="onKeydown($event)"
-           #overlay>
-        <div class="bg-surface border border-border rounded-2xl w-full overflow-hidden flex flex-col max-h-[90vh]"
-             [class]="sizeClass()"
-             (click)="$event.stopPropagation()"
-             tabindex="0"
-             #modalRef>
+      <div
+        class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+        (click)="onBackdrop()"
+        (keydown)="onKeydown($event)"
+        #overlay
+      >
+        <div
+          class="bg-surface border border-border rounded-2xl w-full overflow-hidden flex flex-col max-h-[90vh]"
+          [class]="sizeClass()"
+          (click)="$event.stopPropagation()"
+          tabindex="0"
+          #modalRef
+        >
           <div class="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
             <h2 class="text-text-primary font-bold text-lg truncate">{{ title() }}</h2>
             @if (closable()) {
-              <button (click)="close()"
-                class="p-1.5 text-text-secondary hover:text-text-primary hover:bg-hover rounded-lg transition-colors cursor-pointer shrink-0">
+              <button
+                (click)="close()"
+                class="p-1.5 text-text-secondary hover:text-text-primary hover:bg-hover rounded-lg transition-colors cursor-pointer shrink-0"
+              >
                 <lucide-icon [img]="X" class="w-5 h-5" [strokeWidth]="2" />
               </button>
             }

@@ -1,22 +1,41 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import {
-  ApartmentsService,
-} from '../../../core/services/apartments.service';
+import { ApartmentsService } from '../../../core/services/apartments.service';
 import { IApartment, IRoom, IBathroom } from '../../../core/interfaces';
 import { ModalNova } from '../../../shared/components/modal-nova';
 import { StatusBadge } from '../../../shared/components/status-badge';
 import { AlertService } from '../../../shared/components/services/alert.service';
 import {
   LucideAngularModule,
-  Refrigerator, Flame, Microwave, Zap,
-  ChefHat, Utensils, UtensilsCrossed,
-  Tv, Shirt, Wind,
-  Sofa, Bed, LayoutGrid, Car, Armchair,
-  Package, Lamp, Layers, ShowerHead, Droplets, CloudRain,
-  CheckCircle2, AlertTriangle, XCircle,
-  Building2, ArrowLeft, Pencil, Trash2,
+  Refrigerator,
+  Flame,
+  Microwave,
+  Zap,
+  ChefHat,
+  Utensils,
+  UtensilsCrossed,
+  Tv,
+  Shirt,
+  Wind,
+  Sofa,
+  Bed,
+  LayoutGrid,
+  Car,
+  Armchair,
+  Package,
+  Lamp,
+  Layers,
+  ShowerHead,
+  Droplets,
+  CloudRain,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  Building2,
+  ArrowLeft,
+  Pencil,
+  Trash2,
   Camera,
 } from 'lucide-angular';
 
@@ -28,35 +47,35 @@ type Tab = 'general' | 'rooms' | 'bathrooms' | 'equipment' | 'photos';
   templateUrl: './apartment-detail.html',
 })
 export class ApartmentDetailComponent implements OnInit {
-  readonly Refrigerator    = Refrigerator;
-  readonly Flame           = Flame;
-  readonly Microwave       = Microwave;
-  readonly Zap             = Zap;
-  readonly ChefHat         = ChefHat;
-  readonly Utensils        = Utensils;
+  readonly Refrigerator = Refrigerator;
+  readonly Flame = Flame;
+  readonly Microwave = Microwave;
+  readonly Zap = Zap;
+  readonly ChefHat = ChefHat;
+  readonly Utensils = Utensils;
   readonly UtensilsCrossed = UtensilsCrossed;
-  readonly Tv              = Tv;
-  readonly Shirt           = Shirt;
-  readonly Wind            = Wind;
-  readonly Sofa            = Sofa;
-  readonly Bed             = Bed;
-  readonly LayoutGrid      = LayoutGrid;
-  readonly Car             = Car;
-  readonly Armchair        = Armchair;
-  readonly Package         = Package;
-  readonly Lamp            = Lamp;
-  readonly Layers          = Layers;
-  readonly ShowerHead      = ShowerHead;
-  readonly Droplets        = Droplets;
-  readonly CloudRain       = CloudRain;
-  readonly CheckCircle2    = CheckCircle2;
-  readonly AlertTriangle   = AlertTriangle;
-  readonly XCircle         = XCircle;
-  readonly Building2       = Building2;
-  readonly ArrowLeft       = ArrowLeft;
-  readonly Pencil          = Pencil;
-  readonly Trash2          = Trash2;
-  readonly Camera          = Camera;
+  readonly Tv = Tv;
+  readonly Shirt = Shirt;
+  readonly Wind = Wind;
+  readonly Sofa = Sofa;
+  readonly Bed = Bed;
+  readonly LayoutGrid = LayoutGrid;
+  readonly Car = Car;
+  readonly Armchair = Armchair;
+  readonly Package = Package;
+  readonly Lamp = Lamp;
+  readonly Layers = Layers;
+  readonly ShowerHead = ShowerHead;
+  readonly Droplets = Droplets;
+  readonly CloudRain = CloudRain;
+  readonly CheckCircle2 = CheckCircle2;
+  readonly AlertTriangle = AlertTriangle;
+  readonly XCircle = XCircle;
+  readonly Building2 = Building2;
+  readonly ArrowLeft = ArrowLeft;
+  readonly Pencil = Pencil;
+  readonly Trash2 = Trash2;
+  readonly Camera = Camera;
 
   private apartmentsService = inject(ApartmentsService);
   private route = inject(ActivatedRoute);
@@ -86,11 +105,11 @@ export class ApartmentDetailComponent implements OnInit {
   uploadingPhoto = signal(false);
 
   readonly TABS: { key: Tab; label: string; icon: any }[] = [
-    { key: 'general',   label: 'General',        icon: Building2   },
-    { key: 'rooms',     label: 'Habitaciones',   icon: Bed         },
-    { key: 'bathrooms', label: 'Baños',          icon: ShowerHead  },
-    { key: 'equipment', label: 'Equipamiento',   icon: Package     },
-    { key: 'photos',    label: 'Fotos',          icon: Camera      },
+    { key: 'general', label: 'General', icon: Building2 },
+    { key: 'rooms', label: 'Habitaciones', icon: Bed },
+    { key: 'bathrooms', label: 'Baños', icon: ShowerHead },
+    { key: 'equipment', label: 'Equipamiento', icon: Package },
+    { key: 'photos', label: 'Fotos', icon: Camera },
   ];
   readonly STATUSES = ['ACTIVE', 'MAINTENANCE', 'INACTIVE'] as const;
 
@@ -131,13 +150,15 @@ export class ApartmentDetailComponent implements OnInit {
     const id = this.apartment()?._id;
     if (!id) return;
     this.saving.set(true);
-    this.apartmentsService.update(id, { internalName: this.editName.trim(), status: this.editStatus }).subscribe({
-      next: (apt) => {
-        this.apartment.set(apt);
-        this.saving.set(false);
-      },
-      error: () => this.saving.set(false),
-    });
+    this.apartmentsService
+      .update(id, { internalName: this.editName.trim(), status: this.editStatus })
+      .subscribe({
+        next: (apt) => {
+          this.apartment.set(apt);
+          this.saving.set(false);
+        },
+        error: () => this.saving.set(false),
+      });
   }
 
   // ---- Rooms ----
@@ -181,7 +202,10 @@ export class ApartmentDetailComponent implements OnInit {
         this.saving.set(false);
         this.alert.success('Habitación guardada');
       },
-      error: () => { this.saving.set(false); this.alert.error('Error al guardar habitación'); },
+      error: () => {
+        this.saving.set(false);
+        this.alert.error('Error al guardar habitación');
+      },
     });
   }
 
@@ -230,7 +254,10 @@ export class ApartmentDetailComponent implements OnInit {
         this.saving.set(false);
         this.alert.success('Baño guardado');
       },
-      error: () => { this.saving.set(false); this.alert.error('Error al guardar baño'); },
+      error: () => {
+        this.saving.set(false);
+        this.alert.error('Error al guardar baño');
+      },
     });
   }
 
@@ -248,13 +275,15 @@ export class ApartmentDetailComponent implements OnInit {
     const apt = this.apartment();
     if (!apt) return;
     this.saving.set(true);
-    this.apartmentsService.update(apt._id, { equipment: apt.equipment, parking: apt.parking }).subscribe({
-      next: (updated) => {
-        this.apartment.set(updated);
-        this.saving.set(false);
-      },
-      error: () => this.saving.set(false),
-    });
+    this.apartmentsService
+      .update(apt._id, { equipment: apt.equipment, parking: apt.parking })
+      .subscribe({
+        next: (updated) => {
+          this.apartment.set(updated);
+          this.saving.set(false);
+        },
+        error: () => this.saving.set(false),
+      });
   }
 
   // ---- Photos ----
@@ -267,13 +296,15 @@ export class ApartmentDetailComponent implements OnInit {
     this.uploadingPhoto.set(true);
     this.apartmentsService.uploadImage(file).subscribe({
       next: (res) => {
-        this.apartmentsService.addPhoto(apt._id, { url: res.url, publicId: res.publicId }).subscribe({
-          next: (updated) => {
-            this.apartment.set(updated);
-            this.uploadingPhoto.set(false);
-          },
-          error: () => this.uploadingPhoto.set(false),
-        });
+        this.apartmentsService
+          .addPhoto(apt._id, { url: res.url, publicId: res.publicId })
+          .subscribe({
+            next: (updated) => {
+              this.apartment.set(updated);
+              this.uploadingPhoto.set(false);
+            },
+            error: () => this.uploadingPhoto.set(false),
+          });
       },
       error: () => this.uploadingPhoto.set(false),
     });

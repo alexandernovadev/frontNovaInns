@@ -6,7 +6,18 @@ import * as L from 'leaflet';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { DashboardData } from '../../core/interfaces';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
-import { LucideAngularModule, BarChart3, TrendingUp, PieChart, Globe, Building2, CalendarDays, Hash, DollarSign, ArrowLeft } from 'lucide-angular';
+import {
+  LucideAngularModule,
+  BarChart3,
+  TrendingUp,
+  PieChart,
+  Globe,
+  Building2,
+  CalendarDays,
+  Hash,
+  DollarSign,
+  ArrowLeft,
+} from 'lucide-angular';
 
 @Component({
   selector: 'app-analytics',
@@ -36,7 +47,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   // drill-down state
   departmentData = signal<{ department: string; guests: number; revenue: number }[] | null>(null);
-  cityData = signal<{ department: string; city: string; guests: number; revenue: number }[] | null>(null);
+  cityData = signal<{ department: string; city: string; guests: number; revenue: number }[] | null>(
+    null,
+  );
   selectedDept = signal<string | null>(null);
   selectedDeptInfo = signal<{ guests: number; revenue: number } | null>(null);
   selectedMapCountry = signal('CO');
@@ -62,12 +75,13 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   private mapInitialized = false;
 
   private deptNameMap: Record<string, Record<string, string>> = {
-    CO: { 'Bogotá': 'Bogota' },
-    EC: { 'Bolívar': 'Bolivar', 'Los Ríos': 'Los Rios', 'Manabí': 'Manabi', 'Sucumbíos': 'Sucumbios' },
+    CO: { Bogotá: 'Bogota' },
+    EC: { Bolívar: 'Bolivar', 'Los Ríos': 'Los Rios', Manabí: 'Manabi', Sucumbíos: 'Sucumbios' },
   };
 
   private normalizeDeptName(name: string, countryCode?: string): string {
-    if (countryCode && this.deptNameMap[countryCode]?.[name]) return this.deptNameMap[countryCode][name];
+    if (countryCode && this.deptNameMap[countryCode]?.[name])
+      return this.deptNameMap[countryCode][name];
     return name;
   }
 
@@ -84,7 +98,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     this.error.set(null);
     this.analytics.dashboard().subscribe({
-      next: d => {
+      next: (d) => {
         this.data.set(d);
         this.buildCharts(d);
         this.loading.set(false);
@@ -121,9 +135,12 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         attributionControl: false,
       });
 
-      const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19,
-      });
+      const tileLayer = L.tileLayer(
+        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+        {
+          maxZoom: 19,
+        },
+      );
       tileLayer.addTo(this.map);
 
       tileLayer.on('tileerror', () => {
@@ -159,14 +176,19 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   private loadDeptLayer(countryCode: string) {
-    const fileMap: Record<string, string> = { CO: 'colombia', EC: 'ecuador', PE: 'peru', MX: 'mexico' };
+    const fileMap: Record<string, string> = {
+      CO: 'colombia',
+      EC: 'ecuador',
+      PE: 'peru',
+      MX: 'mexico',
+    };
     const file = fileMap[countryCode];
     if (!file || !this.map) return;
 
     // Load both GeoJSON and department data, then draw
     this.http.get(`/assets/geo/${file}_departments.json`, { responseType: 'json' }).subscribe({
       next: (geo: any) => {
-        this.analytics.regions(countryCode, 'department').subscribe(r => {
+        this.analytics.regions(countryCode, 'department').subscribe((r) => {
           this.departmentData.set(r);
           this.drawDeptLayer(geo, countryCode);
         });
@@ -182,12 +204,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     }
 
     const deptList = this.departmentData();
-    const maxGuests = Math.max(...(deptList?.map(d => d.guests) ?? [1]), 1);
+    const maxGuests = Math.max(...(deptList?.map((d) => d.guests) ?? [1]), 1);
 
     this.geoLayer = L.geoJSON(geo, {
       style: (feature: any) => {
         const name = feature?.properties?.name ?? '';
-        const dept = deptList?.find(d => this.normalizeDeptName(d.department, countryCode) === name);
+        const dept = deptList?.find(
+          (d) => this.normalizeDeptName(d.department, countryCode) === name,
+        );
         const guests = dept?.guests ?? 0;
         const intensity = maxGuests > 0 ? guests / maxGuests : 0;
         if (guests > 0) {
@@ -207,7 +231,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       },
       onEachFeature: (feature: any, layer: L.Layer) => {
         const name = feature?.properties?.name ?? '';
-        const dept = deptList?.find(d => this.normalizeDeptName(d.department, countryCode) === name);
+        const dept = deptList?.find(
+          (d) => this.normalizeDeptName(d.department, countryCode) === name,
+        );
         const guests = dept?.guests ?? 0;
         const revenue = dept?.revenue ?? 0;
 
@@ -246,11 +272,16 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   // ── Drill-down ──
   onDeptClick(deptName: string, countryCode: string) {
     this.selectedDept.set(deptName);
-    const dept = this.departmentData()?.find(d => this.normalizeDeptName(d.department, countryCode) === deptName);
+    const dept = this.departmentData()?.find(
+      (d) => this.normalizeDeptName(d.department, countryCode) === deptName,
+    );
     this.selectedDeptInfo.set(dept ? { guests: dept.guests, revenue: dept.revenue } : null);
     this.cityData.set(null);
     this.analytics.regions(countryCode).subscribe({
-      next: r => this.cityData.set(r.filter(c => this.normalizeDeptName(c.department, countryCode) === deptName)),
+      next: (r) =>
+        this.cityData.set(
+          r.filter((c) => this.normalizeDeptName(c.department, countryCode) === deptName),
+        ),
       error: () => this.cityData.set([]),
     });
   }
@@ -273,16 +304,39 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   private buildMonthlyOptions(d: DashboardData) {
-    const months = d.monthly.map(m => m.month.slice(-2) + '/' + m.month.slice(2, 4));
+    const months = d.monthly.map((m) => m.month.slice(-2) + '/' + m.month.slice(2, 4));
     this.monthlyOptions = {
       tooltip: { trigger: 'axis' },
       legend: { data: ['Esperado', 'Recibido'], textStyle: { color: '#B3B3B8' } },
       grid: { left: 60, right: 20, top: 40, bottom: 30 },
-      xAxis: { type: 'category', data: months, axisLabel: { color: '#6E6E73' }, axisLine: { lineStyle: { color: '#2A2A2E' } } },
-      yAxis: { type: 'value', axisLabel: { color: '#6E6E73', formatter: (v: number) => v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k` }, splitLine: { lineStyle: { color: '#2A2A2E' } } },
+      xAxis: {
+        type: 'category',
+        data: months,
+        axisLabel: { color: '#6E6E73' },
+        axisLine: { lineStyle: { color: '#2A2A2E' } },
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          color: '#6E6E73',
+          formatter: (v: number) =>
+            v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`,
+        },
+        splitLine: { lineStyle: { color: '#2A2A2E' } },
+      },
       series: [
-        { name: 'Esperado', type: 'bar', data: d.monthly.map(m => m.expected), itemStyle: { color: '#F2C200', borderRadius: [4, 4, 0, 0] } },
-        { name: 'Recibido', type: 'bar', data: d.monthly.map(m => m.received), itemStyle: { color: '#22C55E', borderRadius: [4, 4, 0, 0] } },
+        {
+          name: 'Esperado',
+          type: 'bar',
+          data: d.monthly.map((m) => m.expected),
+          itemStyle: { color: '#F2C200', borderRadius: [4, 4, 0, 0] },
+        },
+        {
+          name: 'Recibido',
+          type: 'bar',
+          data: d.monthly.map((m) => m.received),
+          itemStyle: { color: '#22C55E', borderRadius: [4, 4, 0, 0] },
+        },
       ],
     };
   }
@@ -290,43 +344,88 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   private buildPlatformOptions(d: DashboardData) {
     this.platformOptions = {
       tooltip: { trigger: 'item', formatter: '{b}: ${c}' },
-      series: [{
-        type: 'pie', radius: ['45%', '70%'], center: ['50%', '50%'],
-        label: { color: '#B3B3B8', fontSize: 11 },
-        data: d.platforms.map(p => ({ value: p.total, name: p.platform })),
-        itemStyle: { borderRadius: 4 },
-        color: ['#F2C200', '#3B82F6', '#22C55E'],
-      }],
+      series: [
+        {
+          type: 'pie',
+          radius: ['45%', '70%'],
+          center: ['50%', '50%'],
+          label: { color: '#B3B3B8', fontSize: 11 },
+          data: d.platforms.map((p) => ({ value: p.total, name: p.platform })),
+          itemStyle: { borderRadius: 4 },
+          color: ['#F2C200', '#3B82F6', '#22C55E'],
+        },
+      ],
     };
   }
 
   private buildPaymentOptions(d: DashboardData) {
     this.paymentOptions = {
       tooltip: { trigger: 'item', formatter: '{b}: ${c}' },
-      series: [{
-        type: 'pie', radius: ['45%', '70%'], center: ['50%', '50%'],
-        label: { color: '#B3B3B8', fontSize: 11 },
-        data: d.payments.map(p => ({ value: p.total, name: p.method })),
-        itemStyle: { borderRadius: 4 },
-        color: ['#22C55E', '#FACC15', '#3B82F6', '#6E6E73'],
-      }],
+      series: [
+        {
+          type: 'pie',
+          radius: ['45%', '70%'],
+          center: ['50%', '50%'],
+          label: { color: '#B3B3B8', fontSize: 11 },
+          data: d.payments.map((p) => ({ value: p.total, name: p.method })),
+          itemStyle: { borderRadius: 4 },
+          color: ['#22C55E', '#FACC15', '#3B82F6', '#6E6E73'],
+        },
+      ],
     };
   }
 
   private buildOccupancyOptions(d: DashboardData) {
-    const months = d.occupancy.map(m => m.month.slice(-2) + '/' + m.month.slice(2, 4));
+    const months = d.occupancy.map((m) => m.month.slice(-2) + '/' + m.month.slice(2, 4));
     this.occupancyOptions = {
       tooltip: { trigger: 'axis' },
       legend: { data: ['% Ocupación', 'Ingresos'], textStyle: { color: '#B3B3B8' } },
       grid: { left: 60, right: 60, top: 40, bottom: 30 },
-      xAxis: { type: 'category', data: months, axisLabel: { color: '#6E6E73' }, axisLine: { lineStyle: { color: '#2A2A2E' } } },
+      xAxis: {
+        type: 'category',
+        data: months,
+        axisLabel: { color: '#6E6E73' },
+        axisLine: { lineStyle: { color: '#2A2A2E' } },
+      },
       yAxis: [
-        { type: 'value', name: '%', nameTextStyle: { color: '#6E6E73' }, axisLabel: { color: '#6E6E73' }, splitLine: { lineStyle: { color: '#2A2A2E' } }, max: 100 },
-        { type: 'value', name: 'Ingresos', nameTextStyle: { color: '#6E6E73' }, axisLabel: { color: '#6E6E73', formatter: (v: number) => v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k` }, splitLine: { show: false } },
+        {
+          type: 'value',
+          name: '%',
+          nameTextStyle: { color: '#6E6E73' },
+          axisLabel: { color: '#6E6E73' },
+          splitLine: { lineStyle: { color: '#2A2A2E' } },
+          max: 100,
+        },
+        {
+          type: 'value',
+          name: 'Ingresos',
+          nameTextStyle: { color: '#6E6E73' },
+          axisLabel: {
+            color: '#6E6E73',
+            formatter: (v: number) =>
+              v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`,
+          },
+          splitLine: { show: false },
+        },
       ],
       series: [
-        { name: '% Ocupación', type: 'line', data: d.occupancy.map(m => m.occupancyPct), yAxisIndex: 0, lineStyle: { color: '#F2C200' }, itemStyle: { color: '#F2C200' }, areaStyle: { color: 'rgba(242,194,0,0.1)' }, smooth: true },
-        { name: 'Ingresos', type: 'bar', data: d.occupancy.map(m => m.revenue), yAxisIndex: 1, itemStyle: { color: '#3B82F6', borderRadius: [4, 4, 0, 0] } },
+        {
+          name: '% Ocupación',
+          type: 'line',
+          data: d.occupancy.map((m) => m.occupancyPct),
+          yAxisIndex: 0,
+          lineStyle: { color: '#F2C200' },
+          itemStyle: { color: '#F2C200' },
+          areaStyle: { color: 'rgba(242,194,0,0.1)' },
+          smooth: true,
+        },
+        {
+          name: 'Ingresos',
+          type: 'bar',
+          data: d.occupancy.map((m) => m.revenue),
+          yAxisIndex: 1,
+          itemStyle: { color: '#3B82F6', borderRadius: [4, 4, 0, 0] },
+        },
       ],
     };
   }
@@ -335,9 +434,24 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.dayOfWeekOptions = {
       tooltip: { trigger: 'axis' },
       grid: { left: 50, right: 20, top: 20, bottom: 30 },
-      xAxis: { type: 'category', data: d.dayOfWeek.map(dw => dw.day), axisLabel: { color: '#6E6E73' }, axisLine: { lineStyle: { color: '#2A2A2E' } } },
-      yAxis: { type: 'value', axisLabel: { color: '#6E6E73' }, splitLine: { lineStyle: { color: '#2A2A2E' } } },
-      series: [{ type: 'bar', data: d.dayOfWeek.map(dw => dw.count), itemStyle: { color: '#F2C200', borderRadius: [4, 4, 0, 0] } }],
+      xAxis: {
+        type: 'category',
+        data: d.dayOfWeek.map((dw) => dw.day),
+        axisLabel: { color: '#6E6E73' },
+        axisLine: { lineStyle: { color: '#2A2A2E' } },
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: { color: '#6E6E73' },
+        splitLine: { lineStyle: { color: '#2A2A2E' } },
+      },
+      series: [
+        {
+          type: 'bar',
+          data: d.dayOfWeek.map((dw) => dw.count),
+          itemStyle: { color: '#F2C200', borderRadius: [4, 4, 0, 0] },
+        },
+      ],
     };
   }
 
@@ -345,23 +459,50 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     const labels: Record<string, string> = { CAR: 'Auto', MOTORCYCLE: 'Moto', OTHER: 'Otro' };
     this.extraServicesOptions = {
       tooltip: { trigger: 'item', formatter: '{b}: ${c}' },
-      series: [{
-        type: 'pie', radius: ['45%', '70%'], center: ['50%', '50%'],
-        label: { color: '#B3B3B8', fontSize: 11 },
-        data: d.extraServices.map(s => ({ value: s.total, name: labels[s.type] || s.type })),
-        itemStyle: { borderRadius: 4 },
-        color: ['#3B82F6', '#F59E0B', '#8B5CF6'],
-      }],
+      series: [
+        {
+          type: 'pie',
+          radius: ['45%', '70%'],
+          center: ['50%', '50%'],
+          label: { color: '#B3B3B8', fontSize: 11 },
+          data: d.extraServices.map((s) => ({ value: s.total, name: labels[s.type] || s.type })),
+          itemStyle: { borderRadius: 4 },
+          color: ['#3B82F6', '#F59E0B', '#8B5CF6'],
+        },
+      ],
     };
   }
 
   private buildTopAptOptions(d: DashboardData) {
     this.topAptOptions = {
-      tooltip: { trigger: 'axis', formatter: (p: any) => `${p[0].name}<br/>${p[0].marker} $${p[0].value.toLocaleString('es-CO')}` },
+      tooltip: {
+        trigger: 'axis',
+        formatter: (p: any) =>
+          `${p[0].name}<br/>${p[0].marker} $${p[0].value.toLocaleString('es-CO')}`,
+      },
       grid: { left: 120, right: 30, top: 10, bottom: 20 },
-      xAxis: { type: 'value', axisLabel: { color: '#6E6E73', formatter: (v: number) => v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k` }, splitLine: { lineStyle: { color: '#2A2A2E' } } },
-      yAxis: { type: 'category', data: d.topApartments.map(a => a.name).reverse(), axisLabel: { color: '#B3B3B8', fontSize: 11 }, axisLine: { lineStyle: { color: '#2A2A2E' } } },
-      series: [{ type: 'bar', data: d.topApartments.map(a => a.total).reverse(), itemStyle: { color: '#F2C200', borderRadius: [0, 4, 4, 0] } }],
+      xAxis: {
+        type: 'value',
+        axisLabel: {
+          color: '#6E6E73',
+          formatter: (v: number) =>
+            v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`,
+        },
+        splitLine: { lineStyle: { color: '#2A2A2E' } },
+      },
+      yAxis: {
+        type: 'category',
+        data: d.topApartments.map((a) => a.name).reverse(),
+        axisLabel: { color: '#B3B3B8', fontSize: 11 },
+        axisLine: { lineStyle: { color: '#2A2A2E' } },
+      },
+      series: [
+        {
+          type: 'bar',
+          data: d.topApartments.map((a) => a.total).reverse(),
+          itemStyle: { color: '#F2C200', borderRadius: [0, 4, 4, 0] },
+        },
+      ],
     };
   }
 

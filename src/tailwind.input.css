@@ -3,38 +3,41 @@
 
 @theme {
   /* --- Base / Fondos --- */
-  --color-bg:               #0B0B0C;
-  --color-surface:          #151518;
-  --color-elevated:         #1F1F23;
+  --color-bg: #0B0B0C;
+  --color-surface: #151518;
+  --color-elevated: #1F1F23;
 
   /* --- Texto --- */
-  --color-text-primary:     #FFFFFF;
-  --color-text-secondary:   #B3B3B8;
-  --color-text-disabled:    #6E6E73;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #B3B3B8;
+  --color-text-disabled: #6E6E73;
 
   /* --- Branding --- */
-  --color-brand:            #F2C200;
-  --color-brand-accent:     #FFD21A;
-  --color-brand-pressed:    #C99A00;
+  --color-brand: #F2C200;
+  --color-brand-accent: #FFD21A;
+  --color-brand-pressed: #C99A00;
 
   /* --- Neutrales UI --- */
-  --color-border:           #2A2A2E;
-  --color-input:            #121214;
-  --color-hover:            #1C1C20;
+  --color-border: #2A2A2E;
+  --color-input: #121214;
+  --color-hover: #1C1C20;
 
   /* --- Estados --- */
-  --color-success:          #22C55E;
-  --color-warning:          #FACC15;
-  --color-error:            #EF4444;
-  --color-info:             #3B82F6;
+  --color-success: #22C55E;
+  --color-warning: #FACC15;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
 }
 
 /* Reset base */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   background-color: #0B0B0C;
   color: #FFFFFF;
   font-family: system-ui, -apple-system, sans-serif;
@@ -44,24 +47,38 @@ html, body {
 }
 
 /* Scrollbar dark */
-::-webkit-scrollbar        { width: 6px; }
-::-webkit-scrollbar-track  { background: #0B0B0C; }
-::-webkit-scrollbar-thumb  { background: #2A2A2E; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #F2C200; }
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0B0B0C;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A2A2E;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #F2C200;
+}
 
 /* Leaflet tooltip dark theme */
 .leaflet-tooltip-dark {
-  background: rgba(21,21,24,0.95) !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
+  background: rgba(21, 21, 24, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   color: #FFFFFF !important;
   font-size: 12px !important;
   padding: 8px 12px !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
 }
+
 .leaflet-tooltip-dark::before {
-  border-top-color: rgba(255,255,255,0.1) !important;
+  border-top-color: rgba(255, 255, 255, 0.1) !important;
 }
+
 .leaflet-tooltip-dark strong {
   color: #F2C200 !important;
   font-size: 13px;
@@ -75,7 +92,7 @@ html, body {
   color: #FFFFFF !important;
   font-size: 16px !important;
   font-weight: 800 !important;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.5) !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.5) !important;
   padding: 0 !important;
   margin: 0 !important;
   white-space: nowrap;
@@ -84,18 +101,32 @@ html, body {
 
 /* Map fade-in animation */
 @keyframes mapFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
+
 #leaflet-map {
   animation: mapFadeIn 0.6s ease-out;
 }
 
 /* City overlay slide-up */
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
+
 [id^="city-overlay"] {
   animation: slideUp 0.3s ease-out;
 }

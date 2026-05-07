@@ -4,16 +4,15 @@
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2">
-        <lucide-icon [img]="Building2" class="w-6 h-6 text-brand" [strokeWidth]="2"/>
+        <lucide-icon [img]="Building2" class="w-6 h-6 text-brand" [strokeWidth]="2" />
         Apartamentos
       </h1>
       <p class="text-text-secondary text-sm mt-0.5">{{ meta().total }} apartamentos registrados</p>
     </div>
-    <button (click)="openCreate()"
-      class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
+    <button (click)="openCreate()" class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
              px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
       </svg>
       Nuevo apartamento
     </button>
@@ -21,12 +20,10 @@
 
   <!-- Filtros -->
   <div class="flex flex-wrap gap-3">
-    <input [(ngModel)]="search" (ngModelChange)="load(1)" placeholder="Buscar por nombre..."
-      class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
+    <input [(ngModel)]="search" (ngModelChange)="load(1)" placeholder="Buscar por nombre..." class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
              text-text-primary placeholder:text-text-disabled text-sm
-             focus:outline-none focus:border-brand transition-colors"/>
-    <select [(ngModel)]="statusFilter" (ngModelChange)="load(1)"
-      class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+             focus:outline-none focus:border-brand transition-colors" />
+    <select [(ngModel)]="statusFilter" (ngModelChange)="load(1)" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
              text-sm focus:outline-none focus:border-brand transition-colors cursor-pointer">
       <option value="">Todos los estados</option>
       @for (s of statuses; track s) { <option [value]="s">{{ statusLabel[s] }}</option> }
@@ -49,32 +46,37 @@
         </thead>
         <tbody>
           @if (loading()) {
-            <tr><td colspan="6" class="text-center py-12 text-text-disabled">Cargando...</td></tr>
+          <tr>
+            <td colspan="6" class="text-center py-12 text-text-disabled">Cargando...</td>
+          </tr>
           } @else if (apartments().length === 0) {
-            <tr><td colspan="6" class="text-center py-12 text-text-disabled">Sin resultados</td></tr>
+          <tr>
+            <td colspan="6" class="text-center py-12 text-text-disabled">Sin resultados</td>
+          </tr>
           } @else {
-            @for (apartment of apartments(); track apartment._id) {
-              <tr (click)="openDetail(apartment)"
-                class="border-b border-border last:border-0 hover:bg-hover transition-colors cursor-pointer">
-                <td class="px-5 py-4 text-text-primary font-medium">{{ apartment.internalName }}</td>
-                <td class="px-5 py-4">
-                  <status-badge [value]="apartment.status" type="apartment" />
-                </td>
-                <td class="px-5 py-4 text-text-secondary">{{ apartment.rooms.length }}</td>
-                <td class="px-5 py-4 text-text-secondary">{{ apartment.bathrooms.length }}</td>
-                <td class="px-5 py-4 text-text-secondary">{{ apartment.parking.totalSpots }} spots</td>
-                <td class="px-5 py-4">
-                  <div class="flex items-center gap-2 justify-end">
-                    <button (click)="openDelete(apartment, $event)"
-                      class="p-2 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                      </svg>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            }
+          @for (apartment of apartments(); track apartment._id) {
+          <tr (click)="openDetail(apartment)"
+            class="border-b border-border last:border-0 hover:bg-hover transition-colors cursor-pointer">
+            <td class="px-5 py-4 text-text-primary font-medium">{{ apartment.internalName }}</td>
+            <td class="px-5 py-4">
+              <status-badge [value]="apartment.status" type="apartment" />
+            </td>
+            <td class="px-5 py-4 text-text-secondary">{{ apartment.rooms.length }}</td>
+            <td class="px-5 py-4 text-text-secondary">{{ apartment.bathrooms.length }}</td>
+            <td class="px-5 py-4 text-text-secondary">{{ apartment.parking.totalSpots }} spots</td>
+            <td class="px-5 py-4">
+              <div class="flex items-center gap-2 justify-end">
+                <button (click)="openDelete(apartment, $event)"
+                  class="p-2 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          }
           }
         </tbody>
       </table>
@@ -86,11 +88,12 @@
 </div>
 
 <!-- ======= MODAL CREAR ======= -->
-<modal-nova [visible]="showCreate()" title="Nuevo apartamento" size="sm" (closed)="showCreate.set(false)" [footerTemplate]="createFooter">
+<modal-nova [visible]="showCreate()" title="Nuevo apartamento" size="sm" (closed)="showCreate.set(false)"
+  [footerTemplate]="createFooter">
   <div>
     <label class="block text-text-secondary text-sm mb-1.5">Nombre interno</label>
     <input type="text" [(ngModel)]="newName" placeholder="Ej: Apto 301 - Torre A" autocomplete="off"
-      class="w-full glass-sm rounded-xl px-4 py-2.5 text-text-primary placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand transition-colors"/>
+      class="w-full glass-sm rounded-xl px-4 py-2.5 text-text-primary placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand transition-colors" />
   </div>
 </modal-nova>
 <ng-template #createFooter>
@@ -105,15 +108,18 @@
 </ng-template>
 
 <!-- ======= MODAL ELIMINAR ======= -->
-<modal-nova [visible]="deleteState.show()" title="Eliminar apartamento" size="sm" (closed)="onDeleteClosed()" [footerTemplate]="deleteFooter">
+<modal-nova [visible]="deleteState.show()" title="Eliminar apartamento" size="sm" (closed)="onDeleteClosed()"
+  [footerTemplate]="deleteFooter">
   <div class="flex flex-col items-center gap-3 py-2">
     <div class="w-12 h-12 bg-error/10 rounded-full flex items-center justify-center">
       <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
       </svg>
     </div>
     <p class="text-text-secondary text-sm text-center">
-      Se eliminará <strong class="text-text-primary">{{ deleteState.selected()?.internalName }}</strong> de forma permanente.
+      Se eliminará <strong class="text-text-primary">{{ deleteState.selected()?.internalName }}</strong> de forma
+      permanente.
     </p>
   </div>
 </modal-nova>

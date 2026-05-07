@@ -13,8 +13,14 @@ const IMAGES: Record<string, string> = {
       <img [src]="img()" [class]="imgClass()" [alt]="method()" />
     } @else {
       <div class="w-10 h-10 rounded-xl bg-border/50 flex items-center justify-center">
-        <svg class="w-5 h-5 text-text-disabled" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        <svg
+          class="w-5 h-5 text-text-disabled"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </div>
     }

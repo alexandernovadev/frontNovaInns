@@ -4,12 +4,13 @@
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2">
-        <lucide-icon [img]="BarChart3" class="w-6 h-6 text-brand" [strokeWidth]="2"/>
+        <lucide-icon [img]="BarChart3" class="w-6 h-6 text-brand" [strokeWidth]="2" />
         Analítica
       </h1>
       <p class="text-text-secondary text-sm mt-0.5">Panel de métricas y rendimiento</p>
     </div>
-    <button (click)="loadData()" class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
+    <button (click)="loadData()"
+      class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
       Actualizar
     </button>
   </div>
@@ -19,224 +20,229 @@
     <button (click)="onTabChange('dashboard')"
       class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
       [class]="tab() === 'dashboard' ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
-      <lucide-icon [img]="BarChart3" class="w-4 h-4" [strokeWidth]="2"/>
+      <lucide-icon [img]="BarChart3" class="w-4 h-4" [strokeWidth]="2" />
       Dashboard
     </button>
     <button (click)="onTabChange('map')"
       class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
       [class]="tab() === 'map' ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
-      <lucide-icon [img]="Globe" class="w-4 h-4" [strokeWidth]="2"/>
+      <lucide-icon [img]="Globe" class="w-4 h-4" [strokeWidth]="2" />
       Mapa
     </button>
   </div>
 
   @if (loading()) {
-    <div class="text-center py-16 text-text-disabled">Cargando datos...</div>
+  <div class="text-center py-16 text-text-disabled">Cargando datos...</div>
   } @else if (error(); as err) {
-    <div class="text-center py-16 text-error">{{ err }}</div>
+  <div class="text-center py-16 text-error">{{ err }}</div>
   } @else if (data(); as d) {
 
-    <!-- ════════ TAB: DASHBOARD ════════ -->
-    @if (tab() === 'dashboard') {
+  <!-- ════════ TAB: DASHBOARD ════════ -->
+  @if (tab() === 'dashboard') {
 
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <div class="glass rounded-2xl p-4 text-center">
-          <lucide-icon [img]="DollarSign" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2"/>
-          <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Esperado</p>
-          <p class="text-text-primary text-lg font-bold">{{ d.summary.totalExpected | currencyCop }}</p>
-        </div>
-        <div class="glass rounded-2xl p-4 text-center">
-          <lucide-icon [img]="TrendingUp" class="w-5 h-5 text-success mx-auto mb-1" [strokeWidth]="2"/>
-          <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Recibido</p>
-          <p class="text-success text-lg font-bold">{{ d.summary.totalReceived | currencyCop }}</p>
-        </div>
-        <div class="glass rounded-2xl p-4 text-center">
-          <lucide-icon [img]="Hash" class="w-5 h-5 text-warning mx-auto mb-1" [strokeWidth]="2"/>
-          <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Pendiente</p>
-          <p class="text-warning text-lg font-bold">{{ d.summary.totalPending | currencyCop }}</p>
-        </div>
-        <div class="glass rounded-2xl p-4 text-center">
-          <lucide-icon [img]="CalendarDays" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2"/>
-          <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Reservas</p>
-          <p class="text-text-primary text-lg font-bold">{{ d.summary.bookingCount }}</p>
-        </div>
-        <div class="glass rounded-2xl p-4 text-center">
-          <lucide-icon [img]="Building2" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2"/>
-          <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Prom. estadía</p>
-          <p class="text-text-primary text-lg font-bold">{{ d.summary.avgNights }}n</p>
-        </div>
-        <div class="glass rounded-2xl p-4 text-center">
-          <lucide-icon [img]="PieChart" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2"/>
-          <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Cobrado</p>
-          <p class="text-success text-lg font-bold">{{ pct(d.summary.totalReceived) }}%</p>
-        </div>
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div class="glass rounded-2xl p-4 text-center">
+      <lucide-icon [img]="DollarSign" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2" />
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Esperado</p>
+      <p class="text-text-primary text-lg font-bold">{{ d.summary.totalExpected | currencyCop }}</p>
+    </div>
+    <div class="glass rounded-2xl p-4 text-center">
+      <lucide-icon [img]="TrendingUp" class="w-5 h-5 text-success mx-auto mb-1" [strokeWidth]="2" />
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Recibido</p>
+      <p class="text-success text-lg font-bold">{{ d.summary.totalReceived | currencyCop }}</p>
+    </div>
+    <div class="glass rounded-2xl p-4 text-center">
+      <lucide-icon [img]="Hash" class="w-5 h-5 text-warning mx-auto mb-1" [strokeWidth]="2" />
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Pendiente</p>
+      <p class="text-warning text-lg font-bold">{{ d.summary.totalPending | currencyCop }}</p>
+    </div>
+    <div class="glass rounded-2xl p-4 text-center">
+      <lucide-icon [img]="CalendarDays" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2" />
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Reservas</p>
+      <p class="text-text-primary text-lg font-bold">{{ d.summary.bookingCount }}</p>
+    </div>
+    <div class="glass rounded-2xl p-4 text-center">
+      <lucide-icon [img]="Building2" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2" />
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Prom. estadía</p>
+      <p class="text-text-primary text-lg font-bold">{{ d.summary.avgNights }}n</p>
+    </div>
+    <div class="glass rounded-2xl p-4 text-center">
+      <lucide-icon [img]="PieChart" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2" />
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Cobrado</p>
+      <p class="text-success text-lg font-bold">{{ pct(d.summary.totalReceived) }}%</p>
+    </div>
+  </div>
+
+  <div class="glass rounded-2xl p-5">
+    <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
+      <lucide-icon [img]="TrendingUp" class="w-4 h-4 text-brand" [strokeWidth]="2" />
+      Ingresos mensuales
+    </h3>
+    <div echarts [options]="monthlyOptions" class="w-full" style="height:300px"></div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <div class="glass rounded-2xl p-5">
+      <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
+        <lucide-icon [img]="PieChart" class="w-4 h-4 text-brand" [strokeWidth]="2" />
+        Plataformas
+      </h3>
+      <div echarts [options]="platformOptions" class="w-full" style="height:260px"></div>
+    </div>
+    <div class="glass rounded-2xl p-5">
+      <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
+        <lucide-icon [img]="PieChart" class="w-4 h-4 text-brand" [strokeWidth]="2" />
+        Métodos de pago
+      </h3>
+      <div echarts [options]="paymentOptions" class="w-full" style="height:260px"></div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <div class="glass rounded-2xl p-5">
+      <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
+        <lucide-icon [img]="CalendarDays" class="w-4 h-4 text-brand" [strokeWidth]="2" />
+        Ocupación mensual
+      </h3>
+      <div echarts [options]="occupancyOptions" class="w-full" style="height:280px"></div>
+    </div>
+    <div class="glass rounded-2xl p-5">
+      <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
+        <lucide-icon [img]="Hash" class="w-4 h-4 text-brand" [strokeWidth]="2" />
+        Check-ins por día de semana
+      </h3>
+      <div echarts [options]="dayOfWeekOptions" class="w-full" style="height:280px"></div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <div class="glass rounded-2xl p-5">
+      <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
+        <lucide-icon [img]="PieChart" class="w-4 h-4 text-brand" [strokeWidth]="2" />
+        Servicios extra
+      </h3>
+      <div echarts [options]="extraServicesOptions" class="w-full" style="height:260px"></div>
+    </div>
+    <div class="glass rounded-2xl p-5">
+      <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
+        <lucide-icon [img]="Building2" class="w-4 h-4 text-brand" [strokeWidth]="2" />
+        Top apartamentos
+      </h3>
+      <div echarts [options]="topAptOptions" class="w-full" style="height:280px"></div>
+    </div>
+  </div>
+
+  <div class="glass rounded-2xl p-5">
+    <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
+      <lucide-icon [img]="Building2" class="w-4 h-4 text-brand" [strokeWidth]="2" />
+      Inventario
+    </h3>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div class="glass-sm rounded-xl p-3 text-center">
+        <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Total aptos</p>
+        <p class="text-text-primary text-xl font-bold">{{ d.inventory.totalApts }}</p>
       </div>
-
-      <div class="glass rounded-2xl p-5">
-        <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-          <lucide-icon [img]="TrendingUp" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
-          Ingresos mensuales
-        </h3>
-        <div echarts [options]="monthlyOptions" class="w-full" style="height:300px"></div>
+      <div class="glass-sm rounded-xl p-3 text-center">
+        <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Activos</p>
+        <p class="text-success text-xl font-bold">{{ d.inventory.activeApts }}</p>
       </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div class="glass rounded-2xl p-5">
-          <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-            <lucide-icon [img]="PieChart" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
-            Plataformas
-          </h3>
-          <div echarts [options]="platformOptions" class="w-full" style="height:260px"></div>
-        </div>
-        <div class="glass rounded-2xl p-5">
-          <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-            <lucide-icon [img]="PieChart" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
-            Métodos de pago
-          </h3>
-          <div echarts [options]="paymentOptions" class="w-full" style="height:260px"></div>
-        </div>
+      <div class="glass-sm rounded-xl p-3 text-center">
+        <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Mantenimiento</p>
+        <p class="text-warning text-xl font-bold">{{ d.inventory.maintenanceApts }}</p>
       </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div class="glass rounded-2xl p-5">
-          <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-            <lucide-icon [img]="CalendarDays" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
-            Ocupación mensual
-          </h3>
-          <div echarts [options]="occupancyOptions" class="w-full" style="height:280px"></div>
-        </div>
-        <div class="glass rounded-2xl p-5">
-          <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-            <lucide-icon [img]="Hash" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
-            Check-ins por día de semana
-          </h3>
-          <div echarts [options]="dayOfWeekOptions" class="w-full" style="height:280px"></div>
-        </div>
+      <div class="glass-sm rounded-xl p-3 text-center">
+        <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Camas</p>
+        <p class="text-text-primary text-xl font-bold">{{ d.inventory.totalBeds }}</p>
       </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <div class="glass rounded-2xl p-5">
-          <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-            <lucide-icon [img]="PieChart" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
-            Servicios extra
-          </h3>
-          <div echarts [options]="extraServicesOptions" class="w-full" style="height:260px"></div>
-        </div>
-        <div class="glass rounded-2xl p-5">
-          <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-            <lucide-icon [img]="Building2" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
-            Top apartamentos
-          </h3>
-          <div echarts [options]="topAptOptions" class="w-full" style="height:280px"></div>
-        </div>
+      <div class="glass-sm rounded-xl p-3 text-center">
+        <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Habitaciones</p>
+        <p class="text-text-primary text-xl font-bold">{{ d.inventory.totalRooms }}</p>
       </div>
-
-      <div class="glass rounded-2xl p-5">
-        <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-          <lucide-icon [img]="Building2" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
-          Inventario
-        </h3>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <div class="glass-sm rounded-xl p-3 text-center">
-            <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Total aptos</p>
-            <p class="text-text-primary text-xl font-bold">{{ d.inventory.totalApts }}</p>
-          </div>
-          <div class="glass-sm rounded-xl p-3 text-center">
-            <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Activos</p>
-            <p class="text-success text-xl font-bold">{{ d.inventory.activeApts }}</p>
-          </div>
-          <div class="glass-sm rounded-xl p-3 text-center">
-            <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Mantenimiento</p>
-            <p class="text-warning text-xl font-bold">{{ d.inventory.maintenanceApts }}</p>
-          </div>
-          <div class="glass-sm rounded-xl p-3 text-center">
-            <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Camas</p>
-            <p class="text-text-primary text-xl font-bold">{{ d.inventory.totalBeds }}</p>
-          </div>
-          <div class="glass-sm rounded-xl p-3 text-center">
-            <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Habitaciones</p>
-            <p class="text-text-primary text-xl font-bold">{{ d.inventory.totalRooms }}</p>
-          </div>
-          <div class="glass-sm rounded-xl p-3 text-center">
-            <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Baños</p>
-            <p class="text-text-primary text-xl font-bold">{{ d.inventory.totalBathrooms }}</p>
-          </div>
-        </div>
+      <div class="glass-sm rounded-xl p-3 text-center">
+        <p class="text-text-disabled text-xs uppercase tracking-wider mb-1">Baños</p>
+        <p class="text-text-primary text-xl font-bold">{{ d.inventory.totalBathrooms }}</p>
       </div>
+    </div>
+  </div>
 
+  }
+
+  <!-- ════════ TAB: MAPA ════════ -->
+  @if (tab() === 'map') {
+
+  <!-- Country selector -->
+  <div class="flex items-center gap-3">
+    <span class="text-text-secondary text-sm font-medium">País:</span>
+    <div class="flex gap-1">
+      @for (c of availableCountries; track c.code) {
+      <button (click)="switchCountry(c.code)"
+        class="px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer"
+        [class]="selectedMapCountry() === c.code ? 'bg-brand text-bg' : 'glass text-text-secondary hover:text-text-primary'">
+        {{ c.name }}
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Map (full height) -->
+  <div class="glass rounded-2xl p-1 overflow-hidden relative" style="height: calc(100vh - 220px); min-height: 400px;">
+    @if (!leafletReady()) {
+    <div class="absolute inset-0 flex items-center justify-center bg-bg/80 z-10 rounded-2xl">
+      <div class="text-center text-text-disabled">
+        <div class="animate-spin w-6 h-6 border-2 border-brand border-t-transparent rounded-full mx-auto mb-2"></div>
+        <p class="text-sm">Cargando mapa...</p>
+      </div>
+    </div>
     }
+    <div id="leaflet-map" class="absolute inset-0 rounded-2xl"></div>
 
-    <!-- ════════ TAB: MAPA ════════ -->
-    @if (tab() === 'map') {
-
-      <!-- Country selector -->
-      <div class="flex items-center gap-3">
-        <span class="text-text-secondary text-sm font-medium">País:</span>
-        <div class="flex gap-1">
-          @for (c of availableCountries; track c.code) {
-            <button (click)="switchCountry(c.code)"
-              class="px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer"
-              [class]="selectedMapCountry() === c.code ? 'bg-brand text-bg' : 'glass text-text-secondary hover:text-text-primary'">
-              {{ c.name }}
-            </button>
+    <!-- City detail overlay -->
+    @if (selectedDept(); as deptName) {
+    <div id="city-overlay"
+      class="absolute bottom-3 left-3 right-3 rounded-2xl p-4 max-h-[50%] overflow-y-auto shadow-2xl"
+      style="z-index: 1000; background: rgba(11,11,12,0.92); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1);">
+      <div class="flex items-start justify-between mb-4">
+        <div>
+          <h3 class="text-text-primary text-lg font-bold">{{ deptName }}</h3>
+          @if (selectedDeptInfo(); as info) {
+          <div class="flex items-center gap-4 mt-1">
+            <span class="text-brand font-semibold text-sm">{{ info.guests }} {{ info.guests === 1 ? 'huésped' :
+              'huéspedes' }}</span>
+            <span class="text-text-secondary text-sm">{{ info.revenue | currencyCop }}</span>
+          </div>
           }
         </div>
+        <button (click)="closeDeptDetail()"
+          class="text-text-disabled hover:text-text-primary cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-1.5 rounded-lg transition-colors text-sm">✕
+          Cerrar</button>
       </div>
-
-      <!-- Map (full height) -->
-      <div class="glass rounded-2xl p-1 overflow-hidden relative" style="height: calc(100vh - 220px); min-height: 400px;">
-        @if (!leafletReady()) {
-          <div class="absolute inset-0 flex items-center justify-center bg-bg/80 z-10 rounded-2xl">
-            <div class="text-center text-text-disabled">
-              <div class="animate-spin w-6 h-6 border-2 border-brand border-t-transparent rounded-full mx-auto mb-2"></div>
-              <p class="text-sm">Cargando mapa...</p>
-            </div>
-          </div>
-        }
-        <div id="leaflet-map" class="absolute inset-0 rounded-2xl"></div>
-
-        <!-- City detail overlay -->
-        @if (selectedDept(); as deptName) {
-          <div id="city-overlay" class="absolute bottom-3 left-3 right-3 rounded-2xl p-4 max-h-[50%] overflow-y-auto shadow-2xl" style="z-index: 1000; background: rgba(11,11,12,0.92); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1);">
-            <div class="flex items-start justify-between mb-4">
-              <div>
-                <h3 class="text-text-primary text-lg font-bold">{{ deptName }}</h3>
-                @if (selectedDeptInfo(); as info) {
-                  <div class="flex items-center gap-4 mt-1">
-                    <span class="text-brand font-semibold text-sm">{{ info.guests }} {{ info.guests === 1 ? 'huésped' : 'huéspedes' }}</span>
-                    <span class="text-text-secondary text-sm">{{ info.revenue | currencyCop }}</span>
-                  </div>
-                }
-              </div>
-              <button (click)="closeDeptDetail()" class="text-text-disabled hover:text-text-primary cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-1.5 rounded-lg transition-colors text-sm">✕ Cerrar</button>
-            </div>
-            @if (cityData(); as cities) {
-              <table class="w-full text-sm">
-                <thead>
-                  <tr class="text-text-disabled text-xs uppercase border-b" style="border-color: rgba(255,255,255,0.06)">
-                    <th class="text-left py-1.5 pr-4 font-medium">Ciudad</th>
-                    <th class="text-right py-1.5 pr-4 font-medium">Huéspedes</th>
-                    <th class="text-right py-1.5 font-medium">Ingresos</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (c of cities; track c.city) {
-                    <tr class="border-b last:border-0" style="border-color: rgba(255,255,255,0.04)">
-                      <td class="py-1.5 pr-4 text-text-primary">{{ c.city }}</td>
-                      <td class="py-1.5 pr-4 text-right text-text-primary font-medium">{{ c.guests }}</td>
-                      <td class="py-1.5 text-right text-text-primary">{{ c.revenue | currencyCop }}</td>
-                    </tr>
-                  }
-                </tbody>
-              </table>
-            } @else {
-              <div class="text-center py-4 text-text-disabled text-sm">Cargando ciudades...</div>
-            }
-          </div>
-        }
-      </div>
-
+      @if (cityData(); as cities) {
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-text-disabled text-xs uppercase border-b" style="border-color: rgba(255,255,255,0.06)">
+            <th class="text-left py-1.5 pr-4 font-medium">Ciudad</th>
+            <th class="text-right py-1.5 pr-4 font-medium">Huéspedes</th>
+            <th class="text-right py-1.5 font-medium">Ingresos</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of cities; track c.city) {
+          <tr class="border-b last:border-0" style="border-color: rgba(255,255,255,0.04)">
+            <td class="py-1.5 pr-4 text-text-primary">{{ c.city }}</td>
+            <td class="py-1.5 pr-4 text-right text-text-primary font-medium">{{ c.guests }}</td>
+            <td class="py-1.5 text-right text-text-primary">{{ c.revenue | currencyCop }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+      } @else {
+      <div class="text-center py-4 text-text-disabled text-sm">Cargando ciudades...</div>
+      }
+    </div>
     }
+  </div>
+
+  }
 
   }
 </div>
