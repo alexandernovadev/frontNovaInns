@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { UsersService } from '../../core/services/users.service';
 import { IUser, UserQuery } from '../../core/interfaces';
@@ -12,6 +12,7 @@ import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delet
 
 @Component({
   selector: 'app-users',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule, ModalNova, Pagination],
   templateUrl: './users.html',
 })

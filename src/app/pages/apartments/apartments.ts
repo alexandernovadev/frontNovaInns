@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApartmentsService } from '../../core/services/apartments.service';
@@ -24,6 +24,7 @@ const STATUS_CLASS: Record<string, string> = {
 
 @Component({
   selector: 'app-apartments',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, Pagination],
   templateUrl: './apartments.html',
 })

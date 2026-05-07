@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 const MAPS: Record<string, Record<string, { cls: string; dot: string; label: string }>> = {
   billing: {
@@ -15,6 +15,7 @@ const MAPS: Record<string, Record<string, { cls: string; dot: string; label: str
 
 @Component({
   selector: 'status-badge',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <span
       class="px-2.5 py-1 rounded-lg text-xs font-medium inline-flex items-center gap-1.5"

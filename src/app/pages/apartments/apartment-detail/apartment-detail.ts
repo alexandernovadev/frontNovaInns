@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApartmentsService } from '../../../core/services/apartments.service';
@@ -43,6 +43,7 @@ type Tab = 'general' | 'rooms' | 'bathrooms' | 'equipment' | 'photos';
 
 @Component({
   selector: 'app-apartment-detail',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge],
   templateUrl: './apartment-detail.html',
 })

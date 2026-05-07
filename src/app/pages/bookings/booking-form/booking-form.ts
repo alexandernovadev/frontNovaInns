@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, inject, signal, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookingsService } from '../../../core/services/bookings.service';
@@ -51,6 +51,7 @@ interface GuestForm {
 
 @Component({
   selector: 'app-booking-form',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule, PlatformIcon, PaymentMethodIcon, CurrencyCopPipe, DateEsPipe],
   templateUrl: './booking-form.html',
 })

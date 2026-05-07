@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
 import { LucideAngularModule, ArrowUpDown } from 'lucide-angular';
 
@@ -9,6 +9,7 @@ interface ImportState  { loading: boolean; result: ImportResult | null; error: s
 
 @Component({
   selector: 'app-data',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LucideAngularModule],
   templateUrl: './data.html',
 })

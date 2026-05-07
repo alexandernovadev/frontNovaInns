@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts';
@@ -21,6 +21,7 @@ import {
 
 @Component({
   selector: 'app-analytics',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgxEchartsDirective, LucideAngularModule, CurrencyCopPipe],
   providers: [provideEchartsCore({ echarts })],
   templateUrl: './analytics.html',

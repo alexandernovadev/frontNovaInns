@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 const SIZES: Record<string, string> = {
   sm: 'w-5 h-5',
@@ -14,6 +14,7 @@ const IMAGES: Record<string, string> = {
 
 @Component({
   selector: 'platform-icon',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (img()) {
       <img [src]="img()" [class]="imgClass()" [alt]="platform()" />

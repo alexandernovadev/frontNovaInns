@@ -4,16 +4,15 @@
   <div class="flex items-center justify-between">
     <div>
       <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2">
-        <lucide-icon [img]="CalendarDays" class="w-6 h-6 text-brand" [strokeWidth]="2"/>
+        <lucide-icon [img]="CalendarDays" class="w-6 h-6 text-brand" [strokeWidth]="2" />
         Reservas
       </h1>
       <p class="text-text-secondary text-sm mt-0.5">{{ meta().total }} reservas</p>
     </div>
-    <button (click)="openCreate()"
-      class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
+    <button (click)="openCreate()" class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
              px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
       </svg>
       <span class="hidden sm:inline">Nueva reserva</span>
       <span class="sm:hidden">Nueva</span>
@@ -27,7 +26,8 @@
         <span class="hidden sm:inline">Total esperado</span>
         <span class="sm:hidden">Esperado</span>
       </p>
-      <p class="text-text-primary text-sm sm:text-2xl font-bold truncate">{{ summary().totalExpected | currencyCop }}</p>
+      <p class="text-text-primary text-sm sm:text-2xl font-bold truncate">{{ summary().totalExpected | currencyCop }}
+      </p>
     </div>
     <div class="bg-surface border border-border rounded-2xl p-3 sm:p-5">
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1 sm:mb-2">Recibido</p>
@@ -41,18 +41,15 @@
 
   <!-- Filtros -->
   <div class="flex flex-wrap gap-3">
-    <input [(ngModel)]="search" (ngModelChange)="load(1)" placeholder="Buscar por huésped..."
-      class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
+    <input [(ngModel)]="search" (ngModelChange)="load(1)" placeholder="Buscar por huésped..." class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
              text-text-primary placeholder:text-text-disabled text-sm
-             focus:outline-none focus:border-brand transition-colors"/>
-    <select [(ngModel)]="platformFilter" (ngModelChange)="load(1)"
-      class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+             focus:outline-none focus:border-brand transition-colors" />
+    <select [(ngModel)]="platformFilter" (ngModelChange)="load(1)" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
              text-sm focus:outline-none focus:border-brand cursor-pointer">
       <option value="">Todas las plataformas</option>
       @for (p of PLATFORMS; track p) { <option [value]="p">{{ p }}</option> }
     </select>
-    <select [(ngModel)]="statusFilter" (ngModelChange)="load(1)"
-      class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+    <select [(ngModel)]="statusFilter" (ngModelChange)="load(1)" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
              text-sm focus:outline-none focus:border-brand cursor-pointer">
       <option value="">Todos los estados</option>
       @for (s of STATUSES; track s) { <option [value]="s">{{ s }}</option> }
@@ -61,144 +58,150 @@
 
   <!-- Cards -->
   @if (loading()) {
-    <div class="text-center py-16 text-text-disabled">Cargando...</div>
+  <div class="text-center py-16 text-text-disabled">Cargando...</div>
   } @else if (bookings().length === 0) {
-    <div class="text-center py-16 text-text-disabled">Sin reservas</div>
+  <div class="text-center py-16 text-text-disabled">Sin reservas</div>
   } @else {
-    <div class="grid gap-4 grid-cols-2 xl:grid-cols-4">
-      @for (b of bookings(); track b._id) {
-        <div class="bg-surface border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all cursor-pointer"
-          (click)="openDetail(b)">
+  <div class="grid gap-4 grid-cols-2 xl:grid-cols-4">
+    @for (b of bookings(); track b._id) {
+    <div
+      class="bg-surface border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all cursor-pointer"
+      (click)="openDetail(b)">
 
-          <!-- Top: platform + status + actions -->
-          <div class="px-3 pt-3 pb-2 sm:px-5 sm:pt-4 sm:pb-3 flex items-center justify-between gap-2">
-            <span class="p-1 sm:p-1.5 rounded-xl flex items-center shrink-0"
-              [class]="PLATFORM_CLASS[b.billing.platform]">
-              <platform-icon [platform]="b.billing.platform" size="md" />
-            </span>
+      <!-- Top: platform + status + actions -->
+      <div class="px-3 pt-3 pb-2 sm:px-5 sm:pt-4 sm:pb-3 flex items-center justify-between gap-2">
+        <span class="p-1 sm:p-1.5 rounded-xl flex items-center shrink-0" [class]="PLATFORM_CLASS[b.billing.platform]">
+          <platform-icon [platform]="b.billing.platform" size="md" />
+        </span>
 
-            <div class="flex items-center gap-1 sm:gap-2 ml-auto">
-              <!-- Status: dot only on mobile, full pill on sm+ -->
-              <span class="sm:hidden w-2 h-2 rounded-full shrink-0"
-                [class]="b.billing.status === 'PAGADO' ? 'bg-success' : b.billing.status === 'NO SHOW' ? 'bg-error' : 'bg-warning'">
-              </span>
-              <span class="hidden sm:flex"><status-badge [value]="b.billing.status" type="billing" /></span>
-              <button (click)="openEdit(b, $event)" title="Editar"
-                class="p-1 sm:p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
-                <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
-                </svg>
-              </button>
-              <button (click)="openDeleteConfirm(b, $event)" title="Borrar"
-                class="p-1 sm:p-1.5 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
-                <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <!-- Apt name + host -->
-          <div class="px-3 pb-2 sm:px-5 sm:pb-3 space-y-1">
-            <h2 class="text-text-primary text-sm sm:text-lg font-bold leading-tight truncate">{{ aptName(b) }}</h2>
-            <div class="flex items-center gap-1.5 min-w-0">
-              <svg class="w-3 h-3 sm:w-4 sm:h-4 text-text-disabled shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-              </svg>
-              <span class="text-text-secondary text-xs sm:text-sm font-medium truncate">{{ b.group.host.fullName }}</span>
-              <span class="text-text-disabled text-xs shrink-0 ml-auto hidden sm:inline">
-                {{ totalGuests(b) }}p
-              </span>
-            </div>
-          </div>
-
-          <!-- Dates: row on sm+, compact stacked on mobile -->
-          <div class="mx-3 mb-3 sm:mx-5 sm:mb-4 bg-bg rounded-xl px-3 py-2 sm:px-4 sm:py-3">
-            <!-- Mobile: compact single line -->
-            <div class="flex items-center justify-between sm:hidden">
-              <div>
-                <p class="text-text-disabled text-xs leading-none mb-0.5">Entrada</p>
-                <p class="text-text-primary font-bold text-xs">{{ b.stay.checkIn | dateEs:'short' }}</p>
-              </div>
-              <span class="text-brand text-xs font-bold px-2 py-0.5 bg-brand/10 rounded-lg">{{ nights(b) }}n</span>
-              <div class="text-right">
-                <p class="text-text-disabled text-xs leading-none mb-0.5">Salida</p>
-                <p class="text-text-primary font-bold text-xs">{{ b.stay.checkOut | dateEs:'short' }}</p>
-              </div>
-            </div>
-            <!-- sm+: original layout -->
-            <div class="hidden sm:flex items-center justify-between">
-              <div class="text-center">
-                <p class="text-text-disabled text-xs mb-0.5">Check-in</p>
-                <p class="text-text-primary font-bold text-sm">{{ b.stay.checkIn | dateEs:'short' }}</p>
-              </div>
-              <div class="flex flex-col items-center gap-1">
-                <div class="flex items-center gap-1">
-                  <div class="w-8 h-px bg-border"></div>
-                  <svg class="w-3.5 h-3.5 text-brand" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                  </svg>
-                  <div class="w-8 h-px bg-border"></div>
-                </div>
-                <span class="text-brand text-xs font-bold">{{ nights(b) }}n</span>
-              </div>
-              <div class="text-center">
-                <p class="text-text-disabled text-xs mb-0.5">Check-out</p>
-                <p class="text-text-primary font-bold text-sm">{{ b.stay.checkOut | dateEs:'short' }}</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Billing -->
-          <div class="border-t border-border px-3 py-3 sm:px-5 sm:py-4">
-            <!-- Mobile: total + pending in 2 cols -->
-            <div class="flex items-center justify-between mb-2 sm:mb-3">
-              <div>
-                <p class="text-text-disabled text-xs mb-0.5">Total</p>
-                <p class="text-text-primary text-sm sm:text-xl font-bold">{{ b.billing.totalAmount | currencyCop }}</p>
-              </div>
-              @if (pending(b) > 0) {
-                <div class="text-right">
-                  <p class="text-text-disabled text-xs mb-0.5">Pendiente</p>
-                  <p class="text-warning text-sm sm:text-xl font-bold">{{ pending(b) | currencyCop }}</p>
-                </div>
-              } @else {
-                <div class="text-right">
-                  <p class="text-text-disabled text-xs mb-0.5">Recibido</p>
-                  <p class="text-success text-sm sm:text-base font-bold">{{ b.billing.amountReceived | currencyCop }}</p>
-                </div>
-              }
-            </div>
-
-            <div class="h-1.5 bg-bg rounded-full overflow-hidden mb-2 sm:mb-3">
-              <div class="h-full rounded-full transition-all"
-                [style.width.%]="paidPct(b)"
-                [class]="paidPct(b) === 100 ? 'bg-success' : 'bg-warning'">
-              </div>
-            </div>
-
-            <div class="flex items-center justify-between">
-              <span class="text-text-disabled text-xs">{{ b.billing.paymentMethod }}</span>
-              @if (b.billing.status !== 'PAGADO' && b.billing.status !== 'NO SHOW') {
-                <button (click)="openPayment(b, $event)"
-                  class="text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-brand/10 text-brand
-                         hover:bg-brand/20 transition-colors cursor-pointer">
-                  + Pago
-                </button>
-              }
-            </div>
-          </div>
-
+        <div class="flex items-center gap-1 sm:gap-2 ml-auto">
+          <!-- Status: dot only on mobile, full pill on sm+ -->
+          <span class="sm:hidden w-2 h-2 rounded-full shrink-0"
+            [class]="b.billing.status === 'PAGADO' ? 'bg-success' : b.billing.status === 'NO SHOW' ? 'bg-error' : 'bg-warning'">
+          </span>
+          <span class="hidden sm:flex"><status-badge [value]="b.billing.status" type="billing" /></span>
+          <button (click)="openEdit(b, $event)" title="Editar"
+            class="p-1 sm:p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
+            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+            </svg>
+          </button>
+          <button (click)="openDeleteConfirm(b, $event)" title="Borrar"
+            class="p-1 sm:p-1.5 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
+            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+            </svg>
+          </button>
         </div>
-      }
-    </div>
+      </div>
 
-    <app-pagination [page]="meta().page" [totalPages]="meta().totalPages" (pageChange)="load($event)" />
+      <!-- Apt name + host -->
+      <div class="px-3 pb-2 sm:px-5 sm:pb-3 space-y-1">
+        <h2 class="text-text-primary text-sm sm:text-lg font-bold leading-tight truncate">{{ aptName(b) }}</h2>
+        <div class="flex items-center gap-1.5 min-w-0">
+          <svg class="w-3 h-3 sm:w-4 sm:h-4 text-text-disabled shrink-0" fill="none" stroke="currentColor"
+            stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          <span class="text-text-secondary text-xs sm:text-sm font-medium truncate">{{ b.group.host.fullName }}</span>
+          <span class="text-text-disabled text-xs shrink-0 ml-auto hidden sm:inline">
+            {{ totalGuests(b) }}p
+          </span>
+        </div>
+      </div>
+
+      <!-- Dates: row on sm+, compact stacked on mobile -->
+      <div class="mx-3 mb-3 sm:mx-5 sm:mb-4 bg-bg rounded-xl px-3 py-2 sm:px-4 sm:py-3">
+        <!-- Mobile: compact single line -->
+        <div class="flex items-center justify-between sm:hidden">
+          <div>
+            <p class="text-text-disabled text-xs leading-none mb-0.5">Entrada</p>
+            <p class="text-text-primary font-bold text-xs">{{ b.stay.checkIn | dateEs:'short' }}</p>
+          </div>
+          <span class="text-brand text-xs font-bold px-2 py-0.5 bg-brand/10 rounded-lg">{{ nights(b) }}n</span>
+          <div class="text-right">
+            <p class="text-text-disabled text-xs leading-none mb-0.5">Salida</p>
+            <p class="text-text-primary font-bold text-xs">{{ b.stay.checkOut | dateEs:'short' }}</p>
+          </div>
+        </div>
+        <!-- sm+: original layout -->
+        <div class="hidden sm:flex items-center justify-between">
+          <div class="text-center">
+            <p class="text-text-disabled text-xs mb-0.5">Check-in</p>
+            <p class="text-text-primary font-bold text-sm">{{ b.stay.checkIn | dateEs:'short' }}</p>
+          </div>
+          <div class="flex flex-col items-center gap-1">
+            <div class="flex items-center gap-1">
+              <div class="w-8 h-px bg-border"></div>
+              <svg class="w-3.5 h-3.5 text-brand" fill="none" stroke="currentColor" stroke-width="2.5"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+              <div class="w-8 h-px bg-border"></div>
+            </div>
+            <span class="text-brand text-xs font-bold">{{ nights(b) }}n</span>
+          </div>
+          <div class="text-center">
+            <p class="text-text-disabled text-xs mb-0.5">Check-out</p>
+            <p class="text-text-primary font-bold text-sm">{{ b.stay.checkOut | dateEs:'short' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Billing -->
+      <div class="border-t border-border px-3 py-3 sm:px-5 sm:py-4">
+        <!-- Mobile: total + pending in 2 cols -->
+        <div class="flex items-center justify-between mb-2 sm:mb-3">
+          <div>
+            <p class="text-text-disabled text-xs mb-0.5">Total</p>
+            <p class="text-text-primary text-sm sm:text-xl font-bold">{{ b.billing.totalAmount | currencyCop }}</p>
+          </div>
+          @if (pending(b) > 0) {
+          <div class="text-right">
+            <p class="text-text-disabled text-xs mb-0.5">Pendiente</p>
+            <p class="text-warning text-sm sm:text-xl font-bold">{{ pending(b) | currencyCop }}</p>
+          </div>
+          } @else {
+          <div class="text-right">
+            <p class="text-text-disabled text-xs mb-0.5">Recibido</p>
+            <p class="text-success text-sm sm:text-base font-bold">{{ b.billing.amountReceived | currencyCop }}</p>
+          </div>
+          }
+        </div>
+
+        <div class="h-1.5 bg-bg rounded-full overflow-hidden mb-2 sm:mb-3">
+          <div class="h-full rounded-full transition-all" [style.width.%]="paidPct(b)"
+            [class]="paidPct(b) === 100 ? 'bg-success' : 'bg-warning'">
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="text-text-disabled text-xs">{{ b.billing.paymentMethod }}</span>
+          @if (b.billing.status !== 'PAGADO' && b.billing.status !== 'NO SHOW') {
+          <button (click)="openPayment(b, $event)" class="text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-brand/10 text-brand
+                         hover:bg-brand/20 transition-colors cursor-pointer">
+            + Pago
+          </button>
+          }
+        </div>
+      </div>
+
+    </div>
+    }
+  </div>
+
+  <app-pagination [page]="meta().page" [totalPages]="meta().totalPages" (pageChange)="load($event)" />
   }
 </div>
 
 <!-- =============== MODAL BORRAR =============== -->
-<modal-nova [visible]="deleteState.show()" title="Borrar reserva" size="sm" (closed)="onDeleteClosed()" [footerTemplate]="deleteFooter">
+<modal-nova [visible]="deleteState.show()" title="Borrar reserva" size="sm" (closed)="onDeleteClosed()"
+  [footerTemplate]="deleteFooter">
   <p class="text-text-secondary text-sm">
     ¿Seguro que quieres borrar la reserva de
     <span class="text-text-primary font-semibold">{{ deleteState.selected()?.group?.host?.fullName }}</span>?
@@ -217,14 +220,14 @@
 </ng-template>
 
 <!-- =============== MODAL PAGO =============== -->
-<modal-nova [visible]="showPayment()" title="Registrar pago" size="sm" (closed)="onPaymentClosed()" [footerTemplate]="paymentFooter">
+<modal-nova [visible]="showPayment()" title="Registrar pago" size="sm" (closed)="onPaymentClosed()"
+  [footerTemplate]="paymentFooter">
   <p class="text-text-secondary text-sm mb-3">
     Pendiente: <span class="text-warning font-bold">{{ pending(paymentSelected()!) | currencyCop }}</span>
   </p>
   <label class="block text-text-secondary text-sm mb-1.5">Monto a registrar</label>
-  <input type="number" min="0" [(ngModel)]="payAmount" placeholder="0" autocomplete="off"
-    class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
-           focus:outline-none focus:border-brand transition-colors"/>
+  <input type="number" min="0" [(ngModel)]="payAmount" placeholder="0" autocomplete="off" class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
+           focus:outline-none focus:border-brand transition-colors" />
 </modal-nova>
 <ng-template #paymentFooter>
   <div class="flex gap-3">

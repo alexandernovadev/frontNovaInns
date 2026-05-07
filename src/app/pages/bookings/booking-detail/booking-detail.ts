@@ -1,4 +1,4 @@
-import { Component, inject, signal, viewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, inject, signal, viewChild, ElementRef, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
@@ -23,6 +23,7 @@ import { DeleteState, openDelete, confirmDelete } from '../../../shared/utils/de
 
 @Component({
   selector: 'app-booking-detail',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule, DatePipe, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer, CurrencyCopPipe],
   templateUrl: './booking-detail.html',
 })

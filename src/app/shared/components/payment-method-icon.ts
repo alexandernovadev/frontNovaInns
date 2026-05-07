@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 const IMAGES: Record<string, string> = {
   Efectivo: '/assets/images/dinero.png',
@@ -8,6 +8,7 @@ const IMAGES: Record<string, string> = {
 
 @Component({
   selector: 'payment-method-icon',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (img()) {
       <img [src]="img()" [class]="imgClass()" [alt]="method()" />

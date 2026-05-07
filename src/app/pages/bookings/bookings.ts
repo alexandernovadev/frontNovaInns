@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BookingsService } from '../../core/services/bookings.service';
@@ -17,6 +17,7 @@ import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delet
 
 @Component({
   selector: 'app-bookings',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, PlatformIcon, Pagination, CurrencyCopPipe, DateEsPipe],
   templateUrl: './bookings.html',
 })

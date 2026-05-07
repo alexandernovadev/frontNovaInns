@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, Info, Server, Globe } from 'lucide-angular';
 
@@ -15,6 +15,7 @@ interface AppInfo {
 
 @Component({
   selector: 'app-info',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LucideAngularModule],
   templateUrl: './info.html',
 })

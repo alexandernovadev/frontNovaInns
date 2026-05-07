@@ -1,7 +1,8 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-pagination',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (totalPages() > 1) {
       <div class="flex items-center justify-between px-5 py-3.5 border-t border-border">

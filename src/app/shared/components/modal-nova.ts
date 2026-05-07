@@ -1,4 +1,4 @@
-import { Component, input, output, HostListener, ElementRef, viewChild } from '@angular/core';
+import { Component, input, output, HostListener, ElementRef, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule, X } from 'lucide-angular';
 
@@ -11,6 +11,7 @@ const SIZE_MAP: Record<string, string> = {
 
 @Component({
   selector: 'modal-nova',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, LucideAngularModule],
   template: `
     @if (visible()) {
