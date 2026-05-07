@@ -2,7 +2,8 @@ import { Component, inject, signal, viewChild, ElementRef, OnInit } from '@angul
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
-import { BookingsService, IBooking } from '../../../core/services/bookings.service';
+import { BookingsService } from '../../../core/services/bookings.service';
+import { IBooking } from '../../../core/interfaces';
 import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
 import { ModalNova } from '../../../shared/components/modal-nova';
 import { StatusBadge } from '../../../shared/components/status-badge';

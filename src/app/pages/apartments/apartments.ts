@@ -1,7 +1,8 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ApartmentsService, IApartment } from '../../core/services/apartments.service';
+import { ApartmentsService } from '../../core/services/apartments.service';
+import { IApartment } from '../../core/interfaces';
 import { ModalNova } from '../../shared/components/modal-nova';
 import { StatusBadge } from '../../shared/components/status-badge';
 import { Pagination } from '../../shared/components/pagination';

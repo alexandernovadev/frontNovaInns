@@ -1,7 +1,8 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { BookingsService, IBooking, FinancialSummary } from '../../core/services/bookings.service';
+import { BookingsService } from '../../core/services/bookings.service';
+import { IBooking, FinancialSummary } from '../../core/interfaces';
 import { ModalNova } from '../../shared/components/modal-nova';
 import { StatusBadge } from '../../shared/components/status-badge';
 import { PlatformIcon } from '../../shared/components/platform-icon';

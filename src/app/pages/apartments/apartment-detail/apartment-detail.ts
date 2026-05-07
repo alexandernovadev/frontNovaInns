@@ -3,10 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import {
   ApartmentsService,
-  IApartment,
-  IRoom,
-  IBathroom,
 } from '../../../core/services/apartments.service';
+import { IApartment, IRoom, IBathroom } from '../../../core/interfaces';
 import { ModalNova } from '../../../shared/components/modal-nova';
 import { StatusBadge } from '../../../shared/components/status-badge';
 import { AlertService } from '../../../shared/components/services/alert.service';

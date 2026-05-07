@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component, inject, signal, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { BookingsService, IBooking } from '../../../core/services/bookings.service';
-import { ApartmentsService, IApartment } from '../../../core/services/apartments.service';
+import { BookingsService } from '../../../core/services/bookings.service';
+import { ApartmentsService } from '../../../core/services/apartments.service';
+import { IBooking, IApartment } from '../../../core/interfaces';
 import { COUNTRIES_DATA, CountryData } from './countries';
 import { PlatformIcon } from '../../../shared/components/platform-icon';
 import { PaymentMethodIcon } from '../../../shared/components/payment-method-icon';

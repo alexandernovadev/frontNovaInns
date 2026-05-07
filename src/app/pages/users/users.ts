@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { UsersService, IUser, UserQuery } from '../../core/services/users.service';
+import { UsersService } from '../../core/services/users.service';
+import { IUser, UserQuery } from '../../core/interfaces';
 import { ModalNova } from '../../shared/components/modal-nova';
 import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';

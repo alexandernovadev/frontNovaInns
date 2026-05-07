@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts';
 import * as L from 'leaflet';
-import { AnalyticsService, DashboardData } from '../../core/services/analytics.service';
+import { AnalyticsService } from '../../core/services/analytics.service';
+import { DashboardData } from '../../core/interfaces';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { LucideAngularModule, BarChart3, TrendingUp, PieChart, Globe, Building2, CalendarDays, Hash, DollarSign, ArrowLeft } from 'lucide-angular';
 

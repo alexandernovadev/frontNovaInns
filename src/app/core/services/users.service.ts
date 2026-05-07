@@ -2,29 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API } from '../../shared/constants/api.constant';
 import { buildParams } from '../../shared/utils/http-params.util';
+import { IUser, UserPage, UserQuery } from '../interfaces';
 
 const BASE = `${API}/users`;
-
-export interface IUser {
-  _id: string;
-  auth:        { email: string; role: 'SUPER_ADMIN' | 'ADMIN' | 'STAFF' | 'GUEST' };
-  profile:     { fullName: string; phone: string; identificationNumber?: string };
-  workContext: { isActive: boolean };
-  preferences: { language: string };
-}
-
-export interface UserPage {
-  data: IUser[];
-  meta: { total: number; page: number; limit: number; totalPages: number };
-}
-
-export interface UserQuery {
-  search?: string;
-  role?: string;
-  isActive?: string;
-  page?: number;
-  limit?: number;
-}
 
 @Injectable({ providedIn: 'root' })
 export class UsersService {
