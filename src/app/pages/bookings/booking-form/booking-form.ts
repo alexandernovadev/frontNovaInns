@@ -71,7 +71,7 @@ export class BookingFormComponent implements OnInit {
   readonly ArrowLeft = ArrowLeft;
 
   private bookingsService = inject(BookingsService);
-  private aptSvc = inject(ApartmentsService);
+  private apartmentsService = inject(ApartmentsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
@@ -105,7 +105,7 @@ export class BookingFormComponent implements OnInit {
   readonly PLATFORM_CLASS = PLATFORM_CLASS;
 
   ngOnInit() {
-    this.aptSvc
+    this.apartmentsService
       .findAll({ limit: 100 } as any)
       .subscribe({ next: (r) => this.apartments.set(r.data) });
     const id = this.route.snapshot.paramMap.get('id');

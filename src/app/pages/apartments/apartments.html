@@ -53,19 +53,19 @@
           } @else if (apartments().length === 0) {
             <tr><td colspan="6" class="text-center py-12 text-text-disabled">Sin resultados</td></tr>
           } @else {
-            @for (apt of apartments(); track apt._id) {
-              <tr (click)="openDetail(apt)"
+            @for (apartment of apartments(); track apartment._id) {
+              <tr (click)="openDetail(apartment)"
                 class="border-b border-border last:border-0 hover:bg-hover transition-colors cursor-pointer">
-                <td class="px-5 py-4 text-text-primary font-medium">{{ apt.internalName }}</td>
+                <td class="px-5 py-4 text-text-primary font-medium">{{ apartment.internalName }}</td>
                 <td class="px-5 py-4">
-                  <status-badge [value]="apt.status" type="apartment" />
+                  <status-badge [value]="apartment.status" type="apartment" />
                 </td>
-                <td class="px-5 py-4 text-text-secondary">{{ apt.rooms.length }}</td>
-                <td class="px-5 py-4 text-text-secondary">{{ apt.bathrooms.length }}</td>
-                <td class="px-5 py-4 text-text-secondary">{{ apt.parking.totalSpots }} spots</td>
+                <td class="px-5 py-4 text-text-secondary">{{ apartment.rooms.length }}</td>
+                <td class="px-5 py-4 text-text-secondary">{{ apartment.bathrooms.length }}</td>
+                <td class="px-5 py-4 text-text-secondary">{{ apartment.parking.totalSpots }} spots</td>
                 <td class="px-5 py-4">
                   <div class="flex items-center gap-2 justify-end">
-                    <button (click)="openDelete(apt, $event)"
+                    <button (click)="openDelete(apartment, $event)"
                       class="p-2 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>

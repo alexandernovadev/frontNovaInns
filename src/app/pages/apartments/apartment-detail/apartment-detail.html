@@ -1,6 +1,6 @@
 @if (loading()) {
   <div class="flex items-center justify-center h-64 text-text-disabled">Cargando...</div>
-} @else if (apt()) {
+} @else if (apartment()) {
 <div class="p-6 space-y-6">
 
   <!-- Header -->
@@ -10,8 +10,8 @@
       <lucide-icon [img]="ArrowLeft" class="w-5 h-5" [strokeWidth]="2"/>
     </button>
     <div class="flex-1">
-      <h1 class="text-text-primary text-2xl font-bold">{{ apt()!.internalName }}</h1>
-      <status-badge [value]="apt()!.status" type="apartment" />
+      <h1 class="text-text-primary text-2xl font-bold">{{ apartment()!.internalName }}</h1>
+      <status-badge [value]="apartment()!.status" type="apartment" />
     </div>
   </div>
 
@@ -91,12 +91,12 @@
         </button>
       </div>
 
-      @if (apt()!.rooms.length === 0) {
+      @if (apartment()!.rooms.length === 0) {
         <div class="bg-surface border border-border rounded-2xl py-12 text-center text-text-disabled">
           Sin habitaciones registradas
         </div>
       } @else {
-        @for (room of apt()!.rooms; track room._id) {
+        @for (room of apartment()!.rooms; track room._id) {
           <div class="bg-surface border border-border rounded-2xl overflow-hidden">
             <!-- Header -->
             <div class="flex items-center justify-between px-5 py-3.5 bg-indigo-500/10 border-b border-indigo-500/20">
@@ -180,12 +180,12 @@
         </button>
       </div>
 
-      @if (apt()!.bathrooms.length === 0) {
+      @if (apartment()!.bathrooms.length === 0) {
         <div class="bg-surface border border-border rounded-2xl py-12 text-center text-text-disabled">
           Sin baños registrados
         </div>
       } @else {
-        @for (bath of apt()!.bathrooms; track bath._id) {
+        @for (bath of apartment()!.bathrooms; track bath._id) {
           <div class="bg-surface border border-border rounded-2xl overflow-hidden">
             <!-- Header -->
             <div class="flex items-center justify-between px-5 py-3.5 bg-cyan-500/10 border-b border-cyan-500/20">
@@ -251,7 +251,7 @@
               <lucide-icon [img]="Refrigerator" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Neveras</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.appliances.fridges"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.fridges"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
 
@@ -260,7 +260,7 @@
               <lucide-icon [img]="Flame" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Estufas</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.appliances.stoves"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.stoves"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
 
@@ -269,7 +269,7 @@
               <lucide-icon [img]="Microwave" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Microondas</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.appliances.microwaves"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.microwaves"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
 
@@ -278,7 +278,7 @@
               <lucide-icon [img]="Zap" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Licuadoras</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.appliances.blenders"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.blenders"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
 
@@ -287,7 +287,7 @@
               <lucide-icon [img]="ChefHat" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Ollas</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.cookware.pots"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.cookware.pots"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
 
@@ -296,7 +296,7 @@
               <lucide-icon [img]="Utensils" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Sartenes</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.cookware.pans"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.cookware.pans"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
 
@@ -305,7 +305,7 @@
               <lucide-icon [img]="Armchair" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Sillas comedor</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.kitchen.seating.diningSillas"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.seating.diningSillas"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors"/>
           </div>
 
@@ -325,7 +325,7 @@
               <lucide-icon [img]="Tv" class="w-8 h-8 text-blue-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Televisores</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.electronics.tvs"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.electronics.tvs"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-blue-400 transition-colors"/>
           </div>
 
@@ -334,7 +334,7 @@
               <lucide-icon [img]="Shirt" class="w-8 h-8 text-blue-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Planchas</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.electronics.irons"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.electronics.irons"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-blue-400 transition-colors"/>
           </div>
 
@@ -343,7 +343,7 @@
               <lucide-icon [img]="Wind" class="w-8 h-8 text-blue-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Secadores</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.electronics.hairDryers"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.electronics.hairDryers"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-blue-400 transition-colors"/>
           </div>
 
@@ -363,7 +363,7 @@
               <lucide-icon [img]="Sofa" class="w-8 h-8 text-purple-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Sofás</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.sofas"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.sofas"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-purple-400 transition-colors"/>
           </div>
 
@@ -372,7 +372,7 @@
               <lucide-icon [img]="Bed" class="w-8 h-8 text-purple-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Sofás cama</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.sofaBeds"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.sofaBeds"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-purple-400 transition-colors"/>
           </div>
 
@@ -381,7 +381,7 @@
               <lucide-icon [img]="LayoutGrid" class="w-8 h-8 text-purple-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Tapetes</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.rugs"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.rugs"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-purple-400 transition-colors"/>
           </div>
 
@@ -390,7 +390,7 @@
               <lucide-icon [img]="UtensilsCrossed" class="w-8 h-8 text-purple-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Mesas comedor</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.equipment.furniture.diningTables"
+            <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.diningTables"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-purple-400 transition-colors"/>
           </div>
 
@@ -410,7 +410,7 @@
               <lucide-icon [img]="Car" class="w-8 h-8 text-emerald-400" [strokeWidth]="1.8"/>
             </div>
             <span class="text-text-secondary text-sm font-medium text-center">Puestos</span>
-            <input type="number" min="0" [(ngModel)]="apt()!.parking.totalSpots"
+            <input type="number" min="0" [(ngModel)]="apartment()!.parking.totalSpots"
               class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-emerald-400 transition-colors"/>
           </div>
 
@@ -449,11 +449,11 @@
       </label>
 
       <!-- Grid de fotos -->
-      @if (apt()!.photos.length === 0) {
+      @if (apartment()!.photos.length === 0) {
         <p class="text-center text-text-disabled text-sm py-4">Sin fotos</p>
       } @else {
         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          @for (photo of apt()!.photos; track photo.publicId) {
+          @for (photo of apartment()!.photos; track photo.publicId) {
             <div class="relative group rounded-xl overflow-hidden border border-border aspect-square bg-input">
               <img [src]="photo.url" [alt]="photo.caption" class="w-full h-full object-cover"/>
               <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity

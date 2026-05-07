@@ -65,7 +65,7 @@ export class ApartmentDetailComponent implements OnInit {
   private router = inject(Router);
   private alert = inject(AlertService);
 
-  apt = signal<IApartment | null>(null);
+  apartment = signal<IApartment | null>(null);
   loading = signal(true);
   saving = signal(false);
   tab = signal<Tab>('general');
@@ -100,7 +100,7 @@ export class ApartmentDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.apartmentsService.findById(id).subscribe({
       next: (apt) => {
-        this.apt.set(this.normalize(apt));
+        this.apartment.set(this.normalize(apt));
         this.syncGeneralForm(apt);
         this.loading.set(false);
       },
@@ -130,12 +130,12 @@ export class ApartmentDetailComponent implements OnInit {
 
   // ---- General ----
   saveGeneral() {
-    const id = this.apt()?._id;
+    const id = this.apartment()?._id;
     if (!id) return;
     this.saving.set(true);
     this.apartmentsService.update(id, { internalName: this.editName.trim(), status: this.editStatus }).subscribe({
       next: (apt) => {
-        this.apt.set(apt);
+        this.apartment.set(apt);
         this.saving.set(false);
       },
       error: () => this.saving.set(false),
@@ -165,7 +165,7 @@ export class ApartmentDetailComponent implements OnInit {
   }
 
   saveRoom() {
-    const apt = this.apt();
+    const apt = this.apartment();
     if (!apt) return;
     this.saving.set(true);
     const rooms = structuredClone(apt.rooms);
@@ -178,7 +178,7 @@ export class ApartmentDetailComponent implements OnInit {
     }
     this.apartmentsService.update(apt._id, { rooms }).subscribe({
       next: (updated) => {
-        this.apt.set(updated);
+        this.apartment.set(updated);
         this.showRoomForm.set(false);
         this.saving.set(false);
         this.alert.success('Habitación guardada');
@@ -188,11 +188,11 @@ export class ApartmentDetailComponent implements OnInit {
   }
 
   deleteRoom(room: IRoom) {
-    const apt = this.apt();
+    const apt = this.apartment();
     if (!apt) return;
     const rooms = apt.rooms.filter((r: IRoom) => r._id !== room._id);
     this.apartmentsService.update(apt._id, { rooms }).subscribe({
-      next: (updated) => this.apt.set(updated),
+      next: (updated) => this.apartment.set(updated),
     });
   }
 
@@ -214,7 +214,7 @@ export class ApartmentDetailComponent implements OnInit {
   }
 
   saveBath() {
-    const apt = this.apt();
+    const apt = this.apartment();
     if (!apt) return;
     this.saving.set(true);
     const bathrooms = structuredClone(apt.bathrooms);
@@ -227,7 +227,7 @@ export class ApartmentDetailComponent implements OnInit {
     }
     this.apartmentsService.update(apt._id, { bathrooms }).subscribe({
       next: (updated) => {
-        this.apt.set(updated);
+        this.apartment.set(updated);
         this.showBathForm.set(false);
         this.saving.set(false);
         this.alert.success('Baño guardado');
@@ -237,22 +237,22 @@ export class ApartmentDetailComponent implements OnInit {
   }
 
   deleteBath(bath: IBathroom) {
-    const apt = this.apt();
+    const apt = this.apartment();
     if (!apt) return;
     const bathrooms = apt.bathrooms.filter((b: IBathroom) => b._id !== bath._id);
     this.apartmentsService.update(apt._id, { bathrooms }).subscribe({
-      next: (updated) => this.apt.set(updated),
+      next: (updated) => this.apartment.set(updated),
     });
   }
 
   // ---- Equipment ----
   saveEquipment() {
-    const apt = this.apt();
+    const apt = this.apartment();
     if (!apt) return;
     this.saving.set(true);
     this.apartmentsService.update(apt._id, { equipment: apt.equipment, parking: apt.parking }).subscribe({
       next: (updated) => {
-        this.apt.set(updated);
+        this.apartment.set(updated);
         this.saving.set(false);
       },
       error: () => this.saving.set(false),
@@ -264,14 +264,14 @@ export class ApartmentDetailComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
-    const apt = this.apt();
+    const apt = this.apartment();
     if (!apt) return;
     this.uploadingPhoto.set(true);
     this.apartmentsService.uploadImage(file).subscribe({
       next: (res) => {
         this.apartmentsService.addPhoto(apt._id, { url: res.url, publicId: res.publicId }).subscribe({
           next: (updated) => {
-            this.apt.set(updated);
+            this.apartment.set(updated);
             this.uploadingPhoto.set(false);
           },
           error: () => this.uploadingPhoto.set(false),
@@ -283,10 +283,10 @@ export class ApartmentDetailComponent implements OnInit {
   }
 
   removePhoto(publicId: string) {
-    const apt = this.apt();
+    const apt = this.apartment();
     if (!apt) return;
     this.apartmentsService.removePhoto(apt._id, publicId).subscribe({
-      next: (updated) => this.apt.set(updated),
+      next: (updated) => this.apartment.set(updated),
     });
   }
 

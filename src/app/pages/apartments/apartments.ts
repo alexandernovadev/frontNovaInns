@@ -65,8 +65,8 @@ export class ApartmentsComponent implements OnInit {
     );
   }
 
-  openDetail(apt: IApartment) {
-    this.router.navigate(['/apartments', apt._id]);
+  openDetail(apartment: IApartment) {
+    this.router.navigate(['/apartments', apartment._id]);
   }
 
   openCreate() {
@@ -78,18 +78,18 @@ export class ApartmentsComponent implements OnInit {
     if (!this.newName.trim()) return;
     this.saving.set(true);
     this.apartmentsService.create({ internalName: this.newName.trim() }).subscribe({
-      next: (apt) => {
+      next: (apartment) => {
         this.showCreate.set(false);
         this.saving.set(false);
-        this.router.navigate(['/apartments', apt._id]);
+        this.router.navigate(['/apartments', apartment._id]);
       },
       error: () => this.saving.set(false),
     });
   }
 
-  openDelete(apt: IApartment, e: Event) {
+  openDelete(apartment: IApartment, e: Event) {
     e.stopPropagation();
-    openDelete(this.deleteState, apt);
+    openDelete(this.deleteState, apartment);
   }
 
   onDeleteClosed() { this.deleteState.show.set(false); }
