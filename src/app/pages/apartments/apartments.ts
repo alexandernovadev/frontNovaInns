@@ -29,7 +29,7 @@ const STATUS_CLASS: Record<string, string> = {
 export class ApartmentsComponent implements OnInit {
   readonly Building2 = Building2;
 
-  private svc = inject(ApartmentsService);
+  private apartmentsService = inject(ApartmentsService);
   private router = inject(Router);
   private alert = inject(AlertService);
 
@@ -61,7 +61,7 @@ export class ApartmentsComponent implements OnInit {
       this.loading,
       this.apartments,
       this.meta,
-      this.svc.findAll({ search: this.search, status: this.statusFilter, page }),
+      this.apartmentsService.findAll({ search: this.search, status: this.statusFilter, page }),
     );
   }
 
@@ -77,7 +77,7 @@ export class ApartmentsComponent implements OnInit {
   submitCreate() {
     if (!this.newName.trim()) return;
     this.saving.set(true);
-    this.svc.create({ internalName: this.newName.trim() }).subscribe({
+    this.apartmentsService.create({ internalName: this.newName.trim() }).subscribe({
       next: (apt) => {
         this.showCreate.set(false);
         this.saving.set(false);
@@ -95,7 +95,7 @@ export class ApartmentsComponent implements OnInit {
   onDeleteClosed() { this.deleteState.show.set(false); }
 
   confirmDelete() {
-    confirmDelete(this.deleteState, id => this.svc.remove(id), this.alert, () => {
+    confirmDelete(this.deleteState, id => this.apartmentsService.remove(id), this.alert, () => {
       this.load(1);
     }, { success: 'Apartamento eliminado', error: 'Error al eliminar apartamento' });
   }

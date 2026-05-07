@@ -24,7 +24,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   readonly DollarSign = DollarSign;
   readonly ArrowLeft = ArrowLeft;
 
-  private svc = inject(AnalyticsService);
+  private analytics = inject(AnalyticsService);
   private http = inject(HttpClient);
 
   data = signal<DashboardData | null>(null);
@@ -82,7 +82,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   loadData() {
     this.loading.set(true);
     this.error.set(null);
-    this.svc.dashboard().subscribe({
+    this.analytics.dashboard().subscribe({
       next: d => {
         this.data.set(d);
         this.buildCharts(d);
@@ -165,7 +165,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     // Load both GeoJSON and department data, then draw
     this.http.get(`/assets/geo/${file}_departments.json`, { responseType: 'json' }).subscribe({
       next: (geo: any) => {
-        this.svc.regions(countryCode, 'department').subscribe(r => {
+        this.analytics.regions(countryCode, 'department').subscribe(r => {
           this.departmentData.set(r);
           this.drawDeptLayer(geo, countryCode);
         });
@@ -248,7 +248,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     const dept = this.departmentData()?.find(d => this.normalizeDeptName(d.department, countryCode) === deptName);
     this.selectedDeptInfo.set(dept ? { guests: dept.guests, revenue: dept.revenue } : null);
     this.cityData.set(null);
-    this.svc.regions(countryCode).subscribe({
+    this.analytics.regions(countryCode).subscribe({
       next: r => this.cityData.set(r.filter(c => this.normalizeDeptName(c.department, countryCode) === deptName)),
       error: () => this.cityData.set([]),
     });

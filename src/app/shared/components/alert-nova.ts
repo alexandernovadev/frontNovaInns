@@ -28,7 +28,7 @@ const TEXT_MAP: Record<string, string> = {
   imports: [LucideAngularModule],
   template: `
     <div class="fixed top-4 right-4 z-[100] flex flex-col gap-2 max-w-[420px]">
-      @for (alert of svc.alertsSignal(); track alert.id) {
+      @for (alert of alertService.alertsSignal(); track alert.id) {
         <div class="bg-surface border rounded-xl px-4 py-3 shadow-xl flex items-start gap-3"
              [class]="BORDER_MAP[alert.type]">
           <lucide-icon [img]="ICON_MAP[alert.type]" class="w-5 h-5 shrink-0 mt-0.5"
@@ -39,7 +39,7 @@ const TEXT_MAP: Record<string, string> = {
               <p class="text-text-secondary text-xs mt-0.5">{{ alert.message }}</p>
             }
           </div>
-          <button (click)="svc.dismiss(alert.id)"
+          <button (click)="alertService.dismiss(alert.id)"
             class="p-0.5 text-text-disabled hover:text-text-primary rounded transition-colors cursor-pointer shrink-0">
             <lucide-icon [img]="X" class="w-4 h-4" [strokeWidth]="2" />
           </button>
@@ -58,5 +58,5 @@ export class AlertNova {
   protected readonly BORDER_MAP = BORDER_MAP;
   protected readonly TEXT_MAP = TEXT_MAP;
 
-  protected svc = inject(AlertService);
+  protected alertService = inject(AlertService);
 }

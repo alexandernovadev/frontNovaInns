@@ -70,7 +70,7 @@ export class BookingFormComponent implements OnInit {
   readonly IdCard = IdCard;
   readonly ArrowLeft = ArrowLeft;
 
-  private svc = inject(BookingsService);
+  private bookingsService = inject(BookingsService);
   private aptSvc = inject(ApartmentsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -113,7 +113,7 @@ export class BookingFormComponent implements OnInit {
       this.isEditing = true;
       this.editingId = id;
       this.loading.set(true);
-      this.svc.findById(id).subscribe({
+      this.bookingsService.findById(id).subscribe({
         next: (b) => {
           this.populateForm(b);
           this.loading.set(false);
@@ -219,8 +219,8 @@ export class BookingFormComponent implements OnInit {
       observations: this.formGeneral.observations,
     };
     const req$ = this.isEditing
-      ? this.svc.update(this.editingId, payload)
-      : this.svc.create(payload);
+      ? this.bookingsService.update(this.editingId, payload)
+      : this.bookingsService.create(payload);
     req$.subscribe({
       next: () => {
         this.saving.set(false);
@@ -263,13 +263,13 @@ export class BookingFormComponent implements OnInit {
 
   private deleteOldPhoto(guest: GuestForm | undefined, type: IdType) {
     const old = guest?.identifications?.find((i) => i.type === type);
-    if (old?.publicId) this.svc.deleteImage(old.publicId).subscribe();
+    if (old?.publicId) this.bookingsService.deleteImage(old.publicId).subscribe();
   }
 
   uploadPhoto(file: File, key: string, type: IdType, target: GuestForm) {
     this.uploading[key] = type;
     if (target) this.deleteOldPhoto(target, type);
-    this.svc.uploadImage(file).subscribe({
+    this.bookingsService.uploadImage(file).subscribe({
       next: (res) => {
         if (!target) {
           this.uploading[key] = null;
@@ -303,7 +303,7 @@ export class BookingFormComponent implements OnInit {
     const member = this.members[i];
     if (member) {
       member.identifications.forEach((id) => {
-        if (id.publicId) this.svc.deleteImage(id.publicId).subscribe();
+        if (id.publicId) this.bookingsService.deleteImage(id.publicId).subscribe();
       });
     }
     this.members.splice(i, 1);

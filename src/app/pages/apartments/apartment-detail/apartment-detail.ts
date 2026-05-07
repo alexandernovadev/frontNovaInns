@@ -60,7 +60,7 @@ export class ApartmentDetailComponent implements OnInit {
   readonly Trash2          = Trash2;
   readonly Camera          = Camera;
 
-  private svc = inject(ApartmentsService);
+  private apartmentsService = inject(ApartmentsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private alert = inject(AlertService);
@@ -98,7 +98,7 @@ export class ApartmentDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
-    this.svc.findById(id).subscribe({
+    this.apartmentsService.findById(id).subscribe({
       next: (apt) => {
         this.apt.set(this.normalize(apt));
         this.syncGeneralForm(apt);
@@ -133,7 +133,7 @@ export class ApartmentDetailComponent implements OnInit {
     const id = this.apt()?._id;
     if (!id) return;
     this.saving.set(true);
-    this.svc.update(id, { internalName: this.editName.trim(), status: this.editStatus }).subscribe({
+    this.apartmentsService.update(id, { internalName: this.editName.trim(), status: this.editStatus }).subscribe({
       next: (apt) => {
         this.apt.set(apt);
         this.saving.set(false);
@@ -176,7 +176,7 @@ export class ApartmentDetailComponent implements OnInit {
     } else {
       rooms.push(this.roomForm);
     }
-    this.svc.update(apt._id, { rooms }).subscribe({
+    this.apartmentsService.update(apt._id, { rooms }).subscribe({
       next: (updated) => {
         this.apt.set(updated);
         this.showRoomForm.set(false);
@@ -191,7 +191,7 @@ export class ApartmentDetailComponent implements OnInit {
     const apt = this.apt();
     if (!apt) return;
     const rooms = apt.rooms.filter((r: IRoom) => r._id !== room._id);
-    this.svc.update(apt._id, { rooms }).subscribe({
+    this.apartmentsService.update(apt._id, { rooms }).subscribe({
       next: (updated) => this.apt.set(updated),
     });
   }
@@ -225,7 +225,7 @@ export class ApartmentDetailComponent implements OnInit {
     } else {
       bathrooms.push(this.bathForm);
     }
-    this.svc.update(apt._id, { bathrooms }).subscribe({
+    this.apartmentsService.update(apt._id, { bathrooms }).subscribe({
       next: (updated) => {
         this.apt.set(updated);
         this.showBathForm.set(false);
@@ -240,7 +240,7 @@ export class ApartmentDetailComponent implements OnInit {
     const apt = this.apt();
     if (!apt) return;
     const bathrooms = apt.bathrooms.filter((b: IBathroom) => b._id !== bath._id);
-    this.svc.update(apt._id, { bathrooms }).subscribe({
+    this.apartmentsService.update(apt._id, { bathrooms }).subscribe({
       next: (updated) => this.apt.set(updated),
     });
   }
@@ -250,7 +250,7 @@ export class ApartmentDetailComponent implements OnInit {
     const apt = this.apt();
     if (!apt) return;
     this.saving.set(true);
-    this.svc.update(apt._id, { equipment: apt.equipment, parking: apt.parking }).subscribe({
+    this.apartmentsService.update(apt._id, { equipment: apt.equipment, parking: apt.parking }).subscribe({
       next: (updated) => {
         this.apt.set(updated);
         this.saving.set(false);
@@ -267,9 +267,9 @@ export class ApartmentDetailComponent implements OnInit {
     const apt = this.apt();
     if (!apt) return;
     this.uploadingPhoto.set(true);
-    this.svc.uploadImage(file).subscribe({
+    this.apartmentsService.uploadImage(file).subscribe({
       next: (res) => {
-        this.svc.addPhoto(apt._id, { url: res.url, publicId: res.publicId }).subscribe({
+        this.apartmentsService.addPhoto(apt._id, { url: res.url, publicId: res.publicId }).subscribe({
           next: (updated) => {
             this.apt.set(updated);
             this.uploadingPhoto.set(false);
@@ -285,7 +285,7 @@ export class ApartmentDetailComponent implements OnInit {
   removePhoto(publicId: string) {
     const apt = this.apt();
     if (!apt) return;
-    this.svc.removePhoto(apt._id, publicId).subscribe({
+    this.apartmentsService.removePhoto(apt._id, publicId).subscribe({
       next: (updated) => this.apt.set(updated),
     });
   }

@@ -22,7 +22,7 @@ import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delet
 export class BookingsComponent implements OnInit {
   readonly CalendarDays = CalendarDays;
 
-  private svc    = inject(BookingsService);
+  private bookingsService    = inject(BookingsService);
   private router = inject(Router);
   private alert  = inject(AlertService);
 
@@ -60,12 +60,12 @@ export class BookingsComponent implements OnInit {
       this.loading,
       this.bookings,
       this.meta,
-      this.svc.findAll({ search: this.search, status: this.statusFilter, platform: this.platformFilter, page }),
+      this.bookingsService.findAll({ search: this.search, status: this.statusFilter, platform: this.platformFilter, page }),
     );
   }
 
   loadSummary() {
-    this.svc.financialSummary().subscribe({ next: s => this.summary.set(s) });
+    this.bookingsService.financialSummary().subscribe({ next: s => this.summary.set(s) });
   }
 
   openDetail(b: IBooking) { this.router.navigate(['/bookings', b._id]); }
@@ -85,7 +85,7 @@ export class BookingsComponent implements OnInit {
   onPaymentClosed() { this.showPayment.set(false); }
 
   confirmDelete() {
-    confirmDelete(this.deleteState, id => this.svc.delete(id), this.alert, () => {
+    confirmDelete(this.deleteState, id => this.bookingsService.delete(id), this.alert, () => {
       this.load(1);
       this.loadSummary();
     }, { success: 'Reserva eliminada', error: 'Error al eliminar reserva' });
@@ -102,7 +102,7 @@ export class BookingsComponent implements OnInit {
     const id = this.paymentSelected()?._id;
     if (!id || !this.payAmount) return;
     this.saving.set(true);
-    this.svc.registerPayment(id, this.payAmount).subscribe({
+    this.bookingsService.registerPayment(id, this.payAmount).subscribe({
       next: updated => {
         this.bookings.update(list => list.map(b => b._id === updated._id ? updated : b));
         this.showPayment.set(false);
@@ -114,11 +114,11 @@ export class BookingsComponent implements OnInit {
     });
   }
 
-  totalGuests(b: IBooking) { return this.svc.totalGuests(b); }
-  nights(b: IBooking)      { return this.svc.nights(b); }
-  pending(b: IBooking)     { return this.svc.pending(b); }
-  aptName(b: IBooking)     { return this.svc.aptName(b); }
+  totalGuests(b: IBooking) { return this.bookingsService.totalGuests(b); }
+  nights(b: IBooking)      { return this.bookingsService.nights(b); }
+  pending(b: IBooking)     { return this.bookingsService.pending(b); }
+  aptName(b: IBooking)     { return this.bookingsService.aptName(b); }
 
-  paidPct(b: IBooking) { return this.svc.paidPct(b); }
+  paidPct(b: IBooking) { return this.bookingsService.paidPct(b); }
 
 }

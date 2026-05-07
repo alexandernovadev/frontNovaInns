@@ -17,7 +17,7 @@ import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delet
 export class UsersComponent implements OnInit {
   readonly UsersIcon = Users;
 
-  private svc   = inject(UsersService);
+  private usersService   = inject(UsersService);
   private alert = inject(AlertService);
 
   // tabla
@@ -52,7 +52,7 @@ export class UsersComponent implements OnInit {
 
   load(page = 1) {
     const q: UserQuery = { page, limit: 10, search: this.search || undefined, role: this.roleFilter || undefined, isActive: this.activeFilter || undefined };
-    loadList(this.loading, this.users, this.meta, this.svc.findAll(q));
+    loadList(this.loading, this.users, this.meta, this.usersService.findAll(q));
   }
 
   onSearch() { this.load(1); }
@@ -66,7 +66,7 @@ export class UsersComponent implements OnInit {
 
   submitCreate() {
     this.saving.set(true);
-    this.svc.create(this.form).subscribe({
+    this.usersService.create(this.form).subscribe({
       next: () => { this.showCreate.set(false); this.load(1); this.saving.set(false); this.alert.success('Usuario creado'); },
       error: (e) => { this.errorMsg.set(e.error?.message ?? 'Error al crear'); this.saving.set(false); this.alert.error('Error al crear usuario'); },
     });
@@ -97,7 +97,7 @@ export class UsersComponent implements OnInit {
       role: this.form.role,
       identificationNumber: this.form.identificationNumber,
     };
-    this.svc.update(id, payload).subscribe({
+    this.usersService.update(id, payload).subscribe({
       next: () => { this.showEdit.set(false); this.load(this.meta().page); this.saving.set(false); this.alert.success('Usuario actualizado'); },
       error: (e) => { this.errorMsg.set(e.error?.message ?? 'Error al actualizar'); this.saving.set(false); this.alert.error('Error al actualizar usuario'); },
     });
@@ -109,7 +109,7 @@ export class UsersComponent implements OnInit {
   onDeleteClosed() { this.deleteState.show.set(false); }
 
   confirmDelete() {
-    confirmDelete(this.deleteState, id => this.svc.remove(id), this.alert, () => {
+    confirmDelete(this.deleteState, id => this.usersService.remove(id), this.alert, () => {
       this.load(1);
     }, { success: 'Usuario eliminado', error: 'Error al eliminar usuario' });
   }

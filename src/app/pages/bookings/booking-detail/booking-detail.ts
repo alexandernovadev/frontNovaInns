@@ -45,7 +45,7 @@ export class BookingDetailComponent implements OnInit {
   readonly X             = X;
   readonly Hash          = Hash;
 
-  private svc     = inject(BookingsService);
+  private bookingsService     = inject(BookingsService);
   private route   = inject(ActivatedRoute);
   private router  = inject(Router);
   private alert   = inject(AlertService);
@@ -68,7 +68,7 @@ export class BookingDetailComponent implements OnInit {
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;
-    this.svc.findById(id).subscribe({
+    this.bookingsService.findById(id).subscribe({
       next: b => { this.booking.set(b); this.loading.set(false); },
       error: () => { this.loading.set(false); this.router.navigate(['/bookings']); },
     });
@@ -89,7 +89,7 @@ export class BookingDetailComponent implements OnInit {
   onDeleteClosed() { this.deleteState.show.set(false); }
 
   confirmDelete() {
-    confirmDelete(this.deleteState, id => this.svc.delete(id), this.alert, () => {
+    confirmDelete(this.deleteState, id => this.bookingsService.delete(id), this.alert, () => {
       this.router.navigate(['/bookings']);
     }, { success: 'Reserva eliminada', error: 'Error al eliminar reserva' });
   }
@@ -98,19 +98,19 @@ export class BookingDetailComponent implements OnInit {
     const id = this.booking()?._id;
     if (!id || !this.payAmount) return;
     this.saving.set(true);
-    this.svc.registerPayment(id, this.payAmount).subscribe({
+    this.bookingsService.registerPayment(id, this.payAmount).subscribe({
       next: updated => { this.booking.set(updated); this.showPayment.set(false); this.saving.set(false); this.alert.success('Pago registrado'); },
       error: () => { this.saving.set(false); this.alert.error('Error al registrar pago'); },
     });
   }
 
-  nights()      { const b = this.booking(); return b ? this.svc.nights(b) : 0; }
-  pending()     { const b = this.booking(); return b ? this.svc.pending(b) : 0; }
-  aptName()     { const b = this.booking(); return b ? this.svc.aptName(b) : ''; }
-  totalGuests() { const b = this.booking(); return b ? this.svc.totalGuests(b) : 0; }
+  nights()      { const b = this.booking(); return b ? this.bookingsService.nights(b) : 0; }
+  pending()     { const b = this.booking(); return b ? this.bookingsService.pending(b) : 0; }
+  aptName()     { const b = this.booking(); return b ? this.bookingsService.aptName(b) : ''; }
+  totalGuests() { const b = this.booking(); return b ? this.bookingsService.totalGuests(b) : 0; }
 
   paidPct() {
     const b = this.booking();
-    return b ? this.svc.paidPct(b) : 0;
+    return b ? this.bookingsService.paidPct(b) : 0;
   }
 }

@@ -15,7 +15,7 @@ interface ImportState  { loading: boolean; result: ImportResult | null; error: s
 export class DataComponent {
   readonly ArrowUpDown = ArrowUpDown;
 
-  private svc = inject(DataService);
+  private dataService = inject(DataService);
 
   exportLoading = signal<Record<Model, boolean>>({ bookings: false, apartments: false });
 
@@ -29,8 +29,8 @@ export class DataComponent {
     this.exportLoading.update(s => ({ ...s, [model]: true }));
 
     const req$ = model === 'bookings'
-      ? this.svc.exportBookings()
-      : this.svc.exportApartments();
+      ? this.dataService.exportBookings()
+      : this.dataService.exportApartments();
 
     req$.subscribe({
       next: data => {
@@ -55,8 +55,8 @@ export class DataComponent {
         if (!Array.isArray(records)) throw new Error('El archivo debe ser un array JSON');
 
         const req$ = model === 'bookings'
-          ? this.svc.importBookings(records)
-          : this.svc.importApartments(records);
+          ? this.dataService.importBookings(records)
+          : this.dataService.importApartments(records);
 
         req$.subscribe({
           next: result => {
