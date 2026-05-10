@@ -7,6 +7,7 @@ import { IBooking, IApartment } from '../../../core/interfaces';
 import { COUNTRIES_DATA, CountryData } from './countries';
 import { PlatformIcon } from '../../../shared/components/platform-icon';
 import { PaymentMethodIcon } from '../../../shared/components/payment-method-icon';
+import { AutocompleteSelect, AutocompleteOption } from '../../../shared/components/autocomplete-select';
 import { CurrencyCopPipe } from '../../../shared/pipes/currency-cop.pipe';
 import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
 import { fmtNumber } from '../../../shared/utils/number.util';
@@ -52,7 +53,7 @@ interface GuestForm {
 @Component({
   selector: 'app-booking-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, PlatformIcon, PaymentMethodIcon, CurrencyCopPipe, DateEsPipe],
+  imports: [FormsModule, LucideAngularModule, PlatformIcon, PaymentMethodIcon, CurrencyCopPipe, DateEsPipe, AutocompleteSelect],
   templateUrl: './booking-form.html',
 })
 export class BookingFormComponent implements OnInit {
@@ -105,6 +106,11 @@ export class BookingFormComponent implements OnInit {
   readonly ID_TYPES = ID_TYPES;
   readonly ID_LABELS = ID_LABELS;
   readonly PLATFORM_CLASS = PLATFORM_CLASS;
+
+  // Autocomplete helpers
+  countryOptions = (): AutocompleteOption[] => this.COUNTRIES_DATA.map(c => ({ label: c.name, value: c.code }));
+  deptOptions = (countryCode: string): AutocompleteOption[] => this.getDepartments(countryCode).map(d => ({ label: d.name, value: d.name }));
+  cityOptions = (countryCode: string, dept: string): AutocompleteOption[] => this.getCities(countryCode, dept).map(c => ({ label: c, value: c }));
 
   ngOnInit() {
     this.apartmentsService

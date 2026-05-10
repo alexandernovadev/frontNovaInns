@@ -153,28 +153,24 @@
       </div>
       <div class="grid grid-cols-3 gap-3">
         <div>
-          <select [(ngModel)]="host.countryCode" (ngModelChange)="onCountryChange(host)" class="w-full bg-input border border-border rounded-xl px-3 py-2.5 text-text-primary text-sm focus:outline-none focus:border-brand cursor-pointer">
-            <option value="">País</option>
-            @for (c of COUNTRIES_DATA; track c.code) {
-            <option [value]="c.code">{{ c.name }}</option>
-            }
-          </select>
+          <autocomplete-select
+            [options]="countryOptions()"
+            [(value)]="host.countryCode"
+            (valueChange)="onCountryChange(host)"
+            placeholder="País" />
         </div>
         <div>
-          <select [(ngModel)]="host.department" (ngModelChange)="onDepartmentChange(host)" class="w-full bg-input border border-border rounded-xl px-3 py-2.5 text-text-primary text-sm focus:outline-none focus:border-brand cursor-pointer">
-            <option value="">Departamento</option>
-            @for (d of getDepartments(host.countryCode); track d.name) {
-            <option [value]="d.name">{{ d.name }}</option>
-            }
-          </select>
+          <autocomplete-select
+            [options]="deptOptions(host.countryCode)"
+            [(value)]="host.department"
+            (valueChange)="onDepartmentChange(host)"
+            placeholder="Departamento" />
         </div>
         <div>
-          <select [(ngModel)]="host.city" class="w-full bg-input border border-border rounded-xl px-3 py-2.5 text-text-primary text-sm focus:outline-none focus:border-brand cursor-pointer">
-            <option value="">Ciudad</option>
-            @for (c of getCities(host.countryCode, host.department); track c) {
-            <option [value]="c">{{ c }}</option>
-            }
-          </select>
+          <autocomplete-select
+            [options]="cityOptions(host.countryCode, host.department)"
+            [(value)]="host.city"
+            placeholder="Ciudad" />
         </div>
       </div>
       <div class="grid grid-cols-3 gap-3">
@@ -242,28 +238,24 @@
       </div>
       <div class="grid grid-cols-3 gap-3">
         <div>
-          <select [(ngModel)]="member.countryCode" (ngModelChange)="onCountryChange(member)" class="w-full bg-input border border-border rounded-xl px-3 py-2.5 text-text-primary text-sm focus:outline-none focus:border-brand cursor-pointer">
-            <option value="">País</option>
-            @for (c of COUNTRIES_DATA; track c.code) {
-            <option [value]="c.code">{{ c.name }}</option>
-            }
-          </select>
+          <autocomplete-select
+            [options]="countryOptions()"
+            [(value)]="member.countryCode"
+            (valueChange)="onCountryChange(member)"
+            placeholder="País" />
         </div>
         <div>
-          <select [(ngModel)]="member.department" (ngModelChange)="onDepartmentChange(member)" class="w-full bg-input border border-border rounded-xl px-3 py-2.5 text-text-primary text-sm focus:outline-none focus:border-brand cursor-pointer">
-            <option value="">Departamento</option>
-            @for (d of getDepartments(member.countryCode); track d.name) {
-            <option [value]="d.name">{{ d.name }}</option>
-            }
-          </select>
+          <autocomplete-select
+            [options]="deptOptions(member.countryCode)"
+            [(value)]="member.department"
+            (valueChange)="onDepartmentChange(member)"
+            placeholder="Departamento" />
         </div>
         <div>
-          <select [(ngModel)]="member.city" class="w-full bg-input border border-border rounded-xl px-3 py-2.5 text-text-primary text-sm focus:outline-none focus:border-brand cursor-pointer">
-            <option value="">Ciudad</option>
-            @for (c of getCities(member.countryCode, member.department); track c) {
-            <option [value]="c">{{ c }}</option>
-            }
-          </select>
+          <autocomplete-select
+            [options]="cityOptions(member.countryCode, member.department)"
+            [(value)]="member.city"
+            placeholder="Ciudad" />
         </div>
       </div>
       <div class="grid grid-cols-3 gap-3">
