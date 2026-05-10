@@ -8,6 +8,7 @@ import { IBooking, BookingPage, FinancialSummary } from '../interfaces';
 @Injectable({ providedIn: 'root' })
 export class BookingsService {
   private http = inject(HttpClient);
+  private uploadService = inject(UploadService);
 
   findAll(query: { search?: string; status?: string; platform?: string; page?: number } = {}) {
     return this.http.get<BookingPage>(`${API}/bookings`, { params: buildParams(query) });
@@ -38,11 +39,11 @@ export class BookingsService {
   }
 
   uploadImage(file: File) {
-    return inject(UploadService).upload(file, 'bookings');
+    return this.uploadService.upload(file, 'bookings');
   }
 
   deleteImage(publicId: string) {
-    return inject(UploadService).delete(publicId);
+    return this.uploadService.delete(publicId);
   }
 
   aptName(booking: IBooking): string {

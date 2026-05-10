@@ -2,8 +2,8 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 const IMAGES: Record<string, string> = {
   Efectivo: '/assets/images/dinero.png',
-  Nequi: '/assets/images/nequi.svg',
-  Bancolombia: '/assets/images/bancolombia.svg',
+  Nequi: '/assets/images/NequiFInal.png',
+  Bancolombia: '/assets/images/bbcolombia1.png',
 };
 
 @Component({
