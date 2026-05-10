@@ -1,4 +1,4 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, X } from 'lucide-angular';
 
 @Component({
@@ -10,7 +10,6 @@ import { LucideAngularModule, X } from 'lucide-angular';
       <div
         class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
         (click)="close()"
-        (keydown)="onKeydown($event)"
       >
         <button
           (click)="close()"
@@ -37,7 +36,8 @@ export class PhotoViewer {
     this.closed.emit();
   }
 
-  onKeydown(e: KeyboardEvent) {
-    if (e.key === 'Escape') this.close();
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    if (this.url()) this.close();
   }
 }

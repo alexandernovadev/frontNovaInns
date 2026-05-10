@@ -47,6 +47,8 @@ export class BookingDetailComponent implements OnInit {
   readonly X             = X;
   readonly Hash          = Hash;
 
+  tab = signal<'info' | 'guests'>('info');
+
   private bookingsService     = inject(BookingsService);
   private route   = inject(ActivatedRoute);
   private router  = inject(Router);

@@ -55,10 +55,24 @@
     </div>
   </div>
 
-  <!-- ── Body grid ── -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+  <!-- ── Tabs ── -->
+  <div class="flex gap-1 bg-surface border border-border rounded-2xl p-1">
+    <button (click)="tab.set('info')"
+      class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+      [class]="tab() === 'info' ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
+      <lucide-icon [img]="CalendarDays" class="w-4 h-4" [strokeWidth]="2"/>
+      Información
+    </button>
+    <button (click)="tab.set('guests')"
+      class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+      [class]="tab() === 'guests' ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
+      <lucide-icon [img]="Users" class="w-4 h-4" [strokeWidth]="2"/>
+      Huéspedes
+    </button>
+  </div>
 
-    <!-- ════ LEFT ════ -->
+  <!-- ══════ TAB: INFO ══════ -->
+  @if (tab() === 'info') {
     <div class="space-y-5">
 
       <!-- Estancia -->
@@ -210,8 +224,10 @@
       }
 
     </div>
+  }
 
-    <!-- ════ RIGHT: Guests ════ -->
+  <!-- ══════ TAB: GUESTS ══════ -->
+  @if (tab() === 'guests') {
     <div class="space-y-5">
 
       <div class="flex items-center gap-2 px-1">
@@ -259,7 +275,7 @@
                 @for (photo of b.group.host.identifications; track photo.type) {
                   <div (click)="photoUrl.set(photo.url)"
                     class="relative rounded-xl overflow-hidden aspect-[4/3] bg-bg group cursor-pointer">
-                    <img [src]="photo.url" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+                    <img [src]="photo.url" class="w-full h-full object-contain"/>
                     <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                       <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
@@ -318,7 +334,7 @@
                   @for (photo of member.identifications; track photo.type) {
                     <div (click)="photoUrl.set(photo.url)"
                       class="relative rounded-xl overflow-hidden aspect-[4/3] bg-bg group cursor-pointer">
-                      <img [src]="photo.url" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"/>
+                      <img [src]="photo.url" class="w-full h-full object-contain"/>
                       <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
@@ -341,7 +357,7 @@
       }
 
     </div>
-  </div>
+  }
 </div>
 }
 
