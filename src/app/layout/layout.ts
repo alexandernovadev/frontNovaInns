@@ -2,7 +2,7 @@ import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/cor
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 import { AlertNova } from '../shared/components/alert-nova';
-import { LucideAngularModule, CalendarDays, Building2, Users, ArrowUpDown, Info, BarChart3, LogOut, Menu } from 'lucide-angular';
+import { LucideAngularModule, CalendarDays, Building2, Users, ArrowUpDown, Info, BarChart3, LogOut, Menu, ChevronLeft } from 'lucide-angular';
 
 @Component({
   selector: 'app-layout',
@@ -12,6 +12,7 @@ import { LucideAngularModule, CalendarDays, Building2, Users, ArrowUpDown, Info,
 })
 export class LayoutComponent {
   auth = inject(AuthService);
+  collapsed = signal(localStorage.getItem('sidebar_collapsed') === 'true');
   sidebarOpen = signal(false);
 
   readonly CalendarDays = CalendarDays;
@@ -22,9 +23,15 @@ export class LayoutComponent {
   readonly Info = Info;
   readonly LogOut = LogOut;
   readonly Menu = Menu;
+  readonly ChevronLeft = ChevronLeft;
 
   toggleSidebar() { this.sidebarOpen.update(v => !v); }
   closeSidebar() { this.sidebarOpen.set(false); }
+  toggleCollapsed() {
+    const v = !this.collapsed();
+    this.collapsed.set(v);
+    localStorage.setItem('sidebar_collapsed', String(v));
+  }
 
   navItems = [
     { label: 'Reservas', route: '/bookings', icon: CalendarDays },

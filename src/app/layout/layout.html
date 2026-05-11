@@ -7,44 +7,81 @@
 
   <!-- Sidebar -->
   <aside
-    class="fixed lg:static inset-y-0 left-0 z-30 w-64 bg-surface border-r border-border
-           flex flex-col transition-transform duration-300 ease-in-out lg:translate-x-0"
+    class="fixed lg:static inset-y-0 left-0 z-30 flex flex-col transition-all duration-300 ease-in-out lg:translate-x-0"
+    [class]="collapsed()
+      ? 'w-16 bg-surface border-r border-border'
+      : 'w-64 bg-surface border-r border-border'"
     [class.translate-x-0]="sidebarOpen()"
     [class.-translate-x-full]="!sidebarOpen()"
   >
     <!-- Logo -->
     <div class="flex items-center justify-center py-6 border-b border-border">
-      <img src="assets/images/LogoNovaInns.png" alt="Nova Inns" class="w-36 h-36 object-contain" />
+      @if (collapsed()) {
+        <img src="assets/images/LogoNovaInns.png" alt="Nova Inns" class="w-10 h-10 object-contain" />
+      } @else {
+        <img src="assets/images/LogoNovaInns.png" alt="Nova Inns" class="w-36 h-36 object-contain" />
+      }
     </div>
 
+    <!-- Collapse toggle (desktop only) -->
+    <button (click)="toggleCollapsed()"
+      class="hidden lg:flex absolute -right-3 top-24 w-6 h-6 bg-surface border border-border rounded-full items-center justify-center cursor-pointer z-10 hover:bg-hover transition-colors"
+      [class.rotate-180]="collapsed()">
+      <lucide-icon [img]="ChevronLeft" class="w-3.5 h-3.5 text-text-secondary" [strokeWidth]="2"/>
+    </button>
+
     <!-- Nav -->
-    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-hidden hover:overflow-y-auto">
       @for (item of navItems; track item.route) {
-        <a
-          [routerLink]="item.route"
-          routerLinkActive="bg-brand/10 text-brand border-l-2 border-brand"
-          [routerLinkActiveOptions]="{ exact: false }"
-          (click)="closeSidebar()"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary
-                 hover:bg-hover hover:text-text-primary transition-colors border-l-2 border-transparent"
-        >
-          <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
-          <span class="text-sm font-medium">{{ item.label }}</span>
-        </a>
+        <div class="relative group">
+          <a
+            [routerLink]="item.route"
+            routerLinkActive="bg-brand/10 text-brand border-l-2 border-brand"
+            [routerLinkActiveOptions]="{ exact: false }"
+            (click)="closeSidebar()"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary
+                   hover:bg-hover hover:text-text-primary transition-colors"
+            [class]="collapsed() ? 'border-l-0 justify-center px-0' : 'border-l-2 border-transparent'"
+          >
+            <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
+            @if (!collapsed()) {
+              <span class="text-sm font-medium">{{ item.label }}</span>
+            }
+          </a>
+          @if (collapsed()) {
+            <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+              <div class="bg-surface border border-border rounded-xl px-3 py-2 shadow-2xl whitespace-nowrap text-sm text-text-primary font-medium">
+                <lucide-icon [img]="item.icon" class="w-4 h-4 inline mr-2 text-brand" [strokeWidth]="1.8"/>{{ item.label }}
+              </div>
+            </div>
+          }
+        </div>
       }
     </nav>
 
     <!-- Logout -->
     <div class="p-3 border-t border-border">
-      <button
-        (click)="auth.logout()"
-        class="flex items-center gap-3 w-full px-4 py-3 rounded-xl
-               text-text-secondary hover:bg-error/10 hover:text-error
-               transition-colors cursor-pointer"
-      >
-        <lucide-icon [img]="LogOut" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
-        <span class="text-sm font-medium">Cerrar sesión</span>
-      </button>
+      <div class="relative group">
+        <button
+          (click)="auth.logout()"
+          class="flex items-center gap-3 w-full px-4 py-3 rounded-xl
+                 text-text-secondary hover:bg-error/10 hover:text-error
+                 transition-colors cursor-pointer"
+          [class]="collapsed() ? 'justify-center px-0' : ''"
+        >
+          <lucide-icon [img]="LogOut" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
+          @if (!collapsed()) {
+            <span class="text-sm font-medium">Cerrar sesión</span>
+          }
+        </button>
+        @if (collapsed()) {
+          <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+            <div class="bg-surface border border-border rounded-xl px-3 py-2 shadow-2xl whitespace-nowrap text-sm text-error font-medium">
+              Cerrar sesión
+            </div>
+          </div>
+        }
+      </div>
     </div>
   </aside>
 
