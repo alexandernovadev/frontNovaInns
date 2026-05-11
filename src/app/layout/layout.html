@@ -9,7 +9,7 @@
   <aside
     class="fixed lg:static inset-y-0 left-0 z-30 flex flex-col transition-all duration-300 ease-in-out lg:translate-x-0"
     [class]="collapsed()
-      ? 'w-16 bg-surface border-r border-border'
+      ? 'lg:w-16 w-64 bg-surface border-r border-border'
       : 'w-64 bg-surface border-r border-border'"
     [class.translate-x-0]="sidebarOpen()"
     [class.-translate-x-full]="!sidebarOpen()"
@@ -17,10 +17,9 @@
     <!-- Logo -->
     <div class="flex items-center justify-center py-6 border-b border-border">
       @if (collapsed()) {
-        <img src="assets/images/LogoNovaInns.png" alt="Nova Inns" class="w-10 h-10 object-contain" />
-      } @else {
-        <img src="assets/images/LogoNovaInns.png" alt="Nova Inns" class="w-36 h-36 object-contain" />
+        <img src="assets/images/LogoNovaInns.png" alt="Nova Inns" class="hidden lg:block w-10 h-10 object-contain" />
       }
+      <img src="assets/images/LogoNovaInns.png" alt="Nova Inns" class="w-36 h-36 object-contain" [class.lg:hidden]="collapsed()" />
     </div>
 
     <!-- Collapse toggle (desktop only) -->
@@ -38,15 +37,17 @@
           routerLinkActive="bg-brand/10 text-brand border-l-2 border-brand"
           [routerLinkActiveOptions]="{ exact: false }"
           (click)="closeSidebar()"
-          (mouseenter)="tooltip.set({ label: item.label, y: $event.clientY })"
-          (mouseleave)="tooltip.set(null)"
+          (mouseenter)="setTooltip(item.label, $event)"
+          (mouseleave)="clearTooltip()"
           class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary
                  hover:bg-hover hover:text-text-primary transition-colors"
-          [class]="collapsed() ? 'border-l-0 justify-center px-0' : 'border-l-2 border-transparent'"
+          [class]="collapsed() ? 'lg:border-l-0 lg:justify-center lg:px-0 border-l-2 border-transparent' : 'border-l-2 border-transparent'"
         >
           <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
           @if (!collapsed()) {
             <span class="text-sm font-medium">{{ item.label }}</span>
+          } @else {
+            <span class="lg:hidden text-sm font-medium">{{ item.label }}</span>
           }
         </a>
       }
@@ -54,7 +55,7 @@
 
     <!-- Tooltip for collapsed nav -->
     @if (collapsed() && tooltip(); as t) {
-      <div class="fixed z-[999] pointer-events-none" [style.top.px]="t.y" style="left: 68px;">
+      <div class="fixed z-[999] pointer-events-none hidden lg:block" [style.top.px]="t.top" style="left: 64px;">
         <div class="bg-surface border border-border rounded-xl px-3 py-2 shadow-2xl whitespace-nowrap text-sm text-text-primary font-medium" style="transform: translateY(-50%);">
           {{ t.label }}
         </div>
@@ -65,17 +66,19 @@
     <div class="p-3 border-t border-border">
       <button
         (click)="auth.logout()"
-        (mouseenter)="tooltip.set({ label: 'Cerrar sesión', y: $event.clientY })"
-        (mouseleave)="tooltip.set(null)"
+        (mouseenter)="setTooltip('Cerrar sesión', $event)"
+        (mouseleave)="clearTooltip()"
         class="flex items-center gap-3 w-full px-4 py-3 rounded-xl
                text-text-secondary hover:bg-error/10 hover:text-error
                transition-colors cursor-pointer"
-        [class]="collapsed() ? 'justify-center px-0' : ''"
+        [class]="collapsed() ? 'lg:justify-center lg:px-0' : ''"
       >
-        <lucide-icon [img]="LogOut" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
-        @if (!collapsed()) {
-          <span class="text-sm font-medium">Cerrar sesión</span>
-        }
+          <lucide-icon [img]="LogOut" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
+          @if (!collapsed()) {
+            <span class="text-sm font-medium">Cerrar sesión</span>
+          } @else {
+            <span class="lg:hidden text-sm font-medium">Cerrar sesión</span>
+          }
       </button>
     </div>
   </aside>

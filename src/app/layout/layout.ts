@@ -14,7 +14,17 @@ export class LayoutComponent {
   auth = inject(AuthService);
   collapsed = signal(localStorage.getItem('sidebar_collapsed') === 'true');
   sidebarOpen = signal(false);
-  tooltip = signal<{ label: string; y: number } | null>(null);
+  tooltip = signal<{ label: string; top: number } | null>(null);
+
+  setTooltip(label: string, e: Event) {
+    const el = e.currentTarget as HTMLElement;
+    const rect = el.getBoundingClientRect();
+    this.tooltip.set({ label, top: rect.top + rect.height / 2 });
+  }
+
+  clearTooltip() {
+    this.tooltip.set(null);
+  }
 
   readonly CalendarDays = CalendarDays;
   readonly Building2 = Building2;
