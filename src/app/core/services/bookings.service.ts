@@ -10,7 +10,7 @@ export class BookingsService {
   private http = inject(HttpClient);
   private uploadService = inject(UploadService);
 
-  findAll(query: { search?: string; status?: string; platform?: string; page?: number } = {}) {
+  findAll(query: { search?: string; status?: string; platform?: string; page?: number; fromDate?: string; toDate?: string } = {}) {
     return this.http.get<BookingPage>(`${API}/bookings`, { params: buildParams(query) });
   }
 

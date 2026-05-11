@@ -1,5 +1,6 @@
 import { Component, input, model, signal, computed, HostListener, ElementRef, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 export interface AutocompleteOption {
   label: string;
@@ -9,7 +10,7 @@ export interface AutocompleteOption {
 @Component({
   selector: 'autocomplete-select',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="relative" #container>
       <!-- Input -->
@@ -18,11 +19,15 @@ export interface AutocompleteOption {
         [value]="displayText()"
         (input)="onInput($event)"
         (focus)="onFocus()"
+        (click)="onClick()"
         (keydown)="onKeydown($event)"
+        (click)="$event.stopPropagation()"
         [placeholder]="placeholder()"
+        [readonly]="readonly()"
         autocomplete="off"
-        class="w-full glass-sm rounded-xl px-3 py-2.5 text-text-primary text-sm
-               placeholder:text-text-disabled focus:outline-none focus:border-brand transition-colors cursor-text"
+        class="w-full bg-input border border-border rounded-xl px-3 py-2.5 text-text-primary text-sm
+               placeholder:text-text-disabled focus:outline-none focus:border-brand transition-colors"
+        [class.cursor-pointer]="readonly()"
       />
 
       <!-- Icon - dropdown arrow -->
@@ -57,6 +62,7 @@ export class AutocompleteSelect {
 
   options = input<AutocompleteOption[]>([]);
   placeholder = input('');
+  readonly = input(false);
   value = model('');
 
   searchTerm = signal('');
@@ -64,6 +70,7 @@ export class AutocompleteSelect {
   highlightedIndex = signal(-1);
 
   filteredOptions = computed(() => {
+    if (this.readonly()) return this.options();
     const term = this.searchTerm().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     return this.options().filter(o => o.label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(term));
   });
@@ -77,6 +84,7 @@ export class AutocompleteSelect {
   });
 
   onInput(e: Event) {
+    if (this.readonly()) return;
     const el = e.target as HTMLInputElement;
     this.searchTerm.set(el.value);
     this.isOpen.set(true);
@@ -86,9 +94,16 @@ export class AutocompleteSelect {
   }
 
   onFocus() {
+    if (this.readonly()) return;
     this.searchTerm.set('');
     this.isOpen.set(true);
     this.highlightedIndex.set(-1);
+  }
+
+  onClick() {
+    if (this.readonly()) {
+      this.isOpen.update(v => !v);
+    }
   }
 
   selectOption(opt: AutocompleteOption) {
@@ -99,6 +114,7 @@ export class AutocompleteSelect {
   }
 
   onKeydown(e: KeyboardEvent) {
+    if (this.readonly()) return;
     const filtered = this.filteredOptions();
     const current = this.highlightedIndex();
 
@@ -116,7 +132,6 @@ export class AutocompleteSelect {
     }
   }
 
-  @HostListener('document:click', ['$event'])
   onClickOutside(e: Event) {
     const container = this.containerRef();
     if (container && !container.nativeElement.contains(e.target as Node)) {

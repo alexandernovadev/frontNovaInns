@@ -9,14 +9,28 @@
       </h1>
       <p class="text-text-secondary text-sm mt-0.5">{{ meta().total }} reservas</p>
     </div>
-    <button (click)="openCreate()" class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
-             px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-      </svg>
-      <span class="hidden sm:inline">Nueva reserva</span>
-      <span class="sm:hidden">Nueva</span>
-    </button>
+    <div class="flex items-center gap-2">
+      <autocomplete-select
+        [options]="yearOptions()"
+        [(value)]="yearFilter"
+        (valueChange)="load(1)"
+        [readonly]="true"
+        placeholder="Año" />
+      <autocomplete-select
+        [options]="monthOptions()"
+        [(value)]="monthFilter"
+        (valueChange)="load(1)"
+        [readonly]="true"
+        placeholder="Mes" />
+      <button (click)="openCreate()" class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
+               px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        <span class="hidden sm:inline">Nueva reserva</span>
+        <span class="sm:hidden">Nueva</span>
+      </button>
+    </div>
   </div>
 
   <!-- Summary -->
@@ -180,7 +194,7 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between flex-wrap gap-3">
           <span class="text-text-disabled text-xs">{{ b.billing.paymentMethod }}</span>
           @if (b.billing.status !== 'PAGADO' && b.billing.status !== 'NO SHOW') {
           <button (click)="openPayment(b, $event)" class="text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-brand/10 text-brand

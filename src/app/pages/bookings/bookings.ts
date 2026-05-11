@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { BookingsService } from '../../core/services/bookings.service';
@@ -12,13 +12,14 @@ import { DateEsPipe } from '../../shared/pipes/date-es.pipe';
 import { PLATFORMS, PLATFORM_CLASS, STATUSES } from '../../shared/constants/booking.constants';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, CalendarDays } from 'lucide-angular';
+import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { loadList } from '../../shared/utils/list.util';
 import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delete.util';
 
 @Component({
   selector: 'app-bookings',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, PlatformIcon, Pagination, CurrencyCopPipe, DateEsPipe],
+  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, PlatformIcon, Pagination, CurrencyCopPipe, DateEsPipe, AutocompleteSelect],
   templateUrl: './bookings.html',
 })
 export class BookingsComponent implements OnInit {
@@ -37,6 +38,47 @@ export class BookingsComponent implements OnInit {
   search         = '';
   statusFilter   = '';
   platformFilter = '';
+  yearFilter = signal(String(new Date().getFullYear()));
+
+  // Mês padrão = ciclo atual (ex: se hoje é 11/mai, o ciclo é Abr 18 - Mai 18)
+  // O negócio fechou a primeira reserva no dia 18, por isso o ciclo é do dia 18 ao 18
+  private static defaultMonth(): string {
+    const d = new Date();
+    let m = d.getMonth();
+    // Se ainda não passou do dia 18, o ciclo atual é o Mês anterior
+    if (d.getDate() < 18) m = m === 0 ? 11 : m - 1;
+    return String(m);
+  }
+  monthFilter = signal(BookingsComponent.defaultMonth());
+
+  // Opções de ano: de 2026 (primeiro ano da empresa) até ano atual + 1
+  yearOptions = computed(() => {
+    const y = new Date().getFullYear();
+    const opts: { label: string; value: string }[] = [{ label: 'Todos', value: '' }];
+    for (let i = 2026; i <= y + 1; i++) {
+      opts.push({ label: String(i), value: String(i) });
+    }
+    return opts;
+  });
+
+  // 12 ciclos fixos de 18 do mês X até 18 do mês seguinte
+  // Ex: "Enero 18 - Febrero 18", ..., "Diciembre 18 - Enero 18"
+  monthOptions = computed(() => {
+    //                         0                      1                   2
+    const ms = ['Enero 18 - Febrero 18','Febrero 18 - Marzo 18','Marzo 18 - Abril 18',
+    //           3                      4                    5
+                'Abril 18 - Mayo 18','Mayo 18 - Junio 18','Junio 18 - Julio 18',
+    //           6                       7                         8
+                'Julio 18 - Agosto 18','Agosto 18 - Septiembre 18','Septiembre 18 - Octubre 18',
+    //           9                        10                          11
+                'Octubre 18 - Noviembre 18','Noviembre 18 - Diciembre 18','Diciembre 18 - Enero 18'];
+    const opts: { label: string; value: string }[] = [{ label: 'Todos', value: '' }];
+    for (let m = 0; m < 12; m++) {
+      // value = índice 0-11, usado no load() para calcular datas com o ano selecionado
+      opts.push({ label: ms[m], value: String(m) });
+    }
+    return opts;
+  });
 
   showPayment = signal(false);
   paymentSelected = signal<IBooking | null>(null);
@@ -58,11 +100,23 @@ export class BookingsComponent implements OnInit {
   }
 
   load(page = 1) {
+    let fromDate: string | undefined;
+    let toDate: string | undefined;
+    if (this.yearFilter() && this.monthFilter()) {
+      const y = parseInt(this.yearFilter());
+      const m = parseInt(this.monthFilter());
+      // from = YYYY-(m+1)-18  ex: m=3 (Abr) → 2026-04-18
+      fromDate = `${y}-${String(m + 1).padStart(2, '0')}-18`;
+      // se m=11 (Dez), o "to" pula pro ano seguinte → 2027-01-18
+      const toY = m === 11 ? y + 1 : y;
+      const toM = m === 11 ? 1 : m + 2;
+      toDate = `${toY}-${String(toM).padStart(2, '0')}-18`;
+    }
     loadList(
       this.loading,
       this.bookings,
       this.meta,
-      this.bookingsService.findAll({ search: this.search, status: this.statusFilter, platform: this.platformFilter, page }),
+      this.bookingsService.findAll({ search: this.search, status: this.statusFilter, platform: this.platformFilter, page, fromDate, toDate }),
     );
   }
 
