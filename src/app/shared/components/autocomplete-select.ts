@@ -41,14 +41,17 @@ export interface AutocompleteOption {
       @if (isOpen() && filteredOptions().length > 0) {
         <div class="absolute z-50 top-full left-0 right-0 mt-1 bg-surface border border-border rounded-xl overflow-hidden shadow-2xl">
           @for (opt of filteredOptions(); track opt.value; let i = $index) {
+            @let selected = opt.value === value() && opt.value !== '';
             <button
               type="button"
-              (click)="selectOption(opt)"
+              (click)="!selected && selectOption(opt)"
               (mousedown)="$event.preventDefault()"
-              class="w-full text-left px-3 py-2.5 text-sm transition-colors cursor-pointer"
-              [class]="i === highlightedIndex()
-                ? 'bg-white/10 text-text-primary'
-                : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'">
+              class="w-full text-left px-3 py-2.5 text-sm transition-colors"
+              [class]="selected
+                ? 'bg-brand/20 text-brand font-semibold cursor-default'
+                : i === highlightedIndex()
+                  ? 'bg-white/10 text-text-primary cursor-pointer'
+                  : 'text-text-secondary hover:bg-white/5 hover:text-text-primary cursor-pointer'">
               {{ opt.label }}
             </button>
           }
