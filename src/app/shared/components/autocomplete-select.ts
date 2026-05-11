@@ -44,7 +44,7 @@ export interface AutocompleteOption {
             @let selected = opt.value === value() && opt.value !== '';
             <button
               type="button"
-              (click)="!selected && selectOption(opt)"
+              (click)="selectOption(opt)"
               (mousedown)="$event.preventDefault()"
               class="w-full text-left px-3 py-2.5 text-sm transition-colors"
               [class]="selected
@@ -117,6 +117,10 @@ export class AutocompleteSelect {
   }
 
   onKeydown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      this.isOpen.set(false);
+      return;
+    }
     if (this.readonly()) return;
     const filtered = this.filteredOptions();
     const current = this.highlightedIndex();
@@ -135,6 +139,7 @@ export class AutocompleteSelect {
     }
   }
 
+  @HostListener('document:click', ['$event'])
   onClickOutside(e: Event) {
     const container = this.containerRef();
     if (container && !container.nativeElement.contains(e.target as Node)) {
