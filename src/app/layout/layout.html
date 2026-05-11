@@ -1,4 +1,4 @@
-<div class="flex h-screen bg-bg overflow-hidden">
+<div class="flex h-screen bg-bg">
 
   <!-- Overlay móvil -->
   @if (sidebarOpen()) {
@@ -31,57 +31,52 @@
     </button>
 
     <!-- Nav -->
-    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-hidden hover:overflow-y-auto">
+    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
       @for (item of navItems; track item.route) {
-        <div class="relative group">
-          <a
-            [routerLink]="item.route"
-            routerLinkActive="bg-brand/10 text-brand border-l-2 border-brand"
-            [routerLinkActiveOptions]="{ exact: false }"
-            (click)="closeSidebar()"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary
-                   hover:bg-hover hover:text-text-primary transition-colors"
-            [class]="collapsed() ? 'border-l-0 justify-center px-0' : 'border-l-2 border-transparent'"
-          >
-            <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
-            @if (!collapsed()) {
-              <span class="text-sm font-medium">{{ item.label }}</span>
-            }
-          </a>
-          @if (collapsed()) {
-            <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-              <div class="bg-surface border border-border rounded-xl px-3 py-2 shadow-2xl whitespace-nowrap text-sm text-text-primary font-medium">
-                <lucide-icon [img]="item.icon" class="w-4 h-4 inline mr-2 text-brand" [strokeWidth]="1.8"/>{{ item.label }}
-              </div>
-            </div>
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="bg-brand/10 text-brand border-l-2 border-brand"
+          [routerLinkActiveOptions]="{ exact: false }"
+          (click)="closeSidebar()"
+          (mouseenter)="tooltip.set({ label: item.label, y: $event.clientY })"
+          (mouseleave)="tooltip.set(null)"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary
+                 hover:bg-hover hover:text-text-primary transition-colors"
+          [class]="collapsed() ? 'border-l-0 justify-center px-0' : 'border-l-2 border-transparent'"
+        >
+          <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
+          @if (!collapsed()) {
+            <span class="text-sm font-medium">{{ item.label }}</span>
           }
-        </div>
+        </a>
       }
     </nav>
 
+    <!-- Tooltip for collapsed nav -->
+    @if (collapsed() && tooltip(); as t) {
+      <div class="fixed z-[999] pointer-events-none" [style.top.px]="t.y" style="left: 68px;">
+        <div class="bg-surface border border-border rounded-xl px-3 py-2 shadow-2xl whitespace-nowrap text-sm text-text-primary font-medium" style="transform: translateY(-50%);">
+          {{ t.label }}
+        </div>
+      </div>
+    }
+
     <!-- Logout -->
     <div class="p-3 border-t border-border">
-      <div class="relative group">
-        <button
-          (click)="auth.logout()"
-          class="flex items-center gap-3 w-full px-4 py-3 rounded-xl
-                 text-text-secondary hover:bg-error/10 hover:text-error
-                 transition-colors cursor-pointer"
-          [class]="collapsed() ? 'justify-center px-0' : ''"
-        >
-          <lucide-icon [img]="LogOut" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
-          @if (!collapsed()) {
-            <span class="text-sm font-medium">Cerrar sesión</span>
-          }
-        </button>
-        @if (collapsed()) {
-          <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-            <div class="bg-surface border border-border rounded-xl px-3 py-2 shadow-2xl whitespace-nowrap text-sm text-error font-medium">
-              Cerrar sesión
-            </div>
-          </div>
+      <button
+        (click)="auth.logout()"
+        (mouseenter)="tooltip.set({ label: 'Cerrar sesión', y: $event.clientY })"
+        (mouseleave)="tooltip.set(null)"
+        class="flex items-center gap-3 w-full px-4 py-3 rounded-xl
+               text-text-secondary hover:bg-error/10 hover:text-error
+               transition-colors cursor-pointer"
+        [class]="collapsed() ? 'justify-center px-0' : ''"
+      >
+        <lucide-icon [img]="LogOut" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
+        @if (!collapsed()) {
+          <span class="text-sm font-medium">Cerrar sesión</span>
         }
-      </div>
+      </button>
     </div>
   </aside>
 
