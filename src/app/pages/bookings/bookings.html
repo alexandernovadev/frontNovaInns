@@ -22,13 +22,13 @@
         (valueChange)="load(1)"
         [readonly]="true"
         placeholder="Mes" />
-      <button (click)="openCreate()" class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
-               px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <button (click)="openCreate()" 
+        class="w-10 h-10 flex items-center justify-center bg-brand hover:bg-brand-accent text-bg font-bold
+               rounded-full transition-colors cursor-pointer shrink-0"
+        title="Nueva reserva">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
         </svg>
-        <span class="hidden sm:inline">Nueva reserva</span>
-        <span class="sm:hidden">Nueva</span>
       </button>
     </div>
   </div>
