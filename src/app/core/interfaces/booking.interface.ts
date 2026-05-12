@@ -13,10 +13,12 @@ export interface IGuest {
 
 export interface IExtraService {
   _id?: string;
-  type: 'CAR' | 'MOTORCYCLE' | 'OTHER';
+  type: 'PARKING' | 'LAUNDRY' | 'OTHER';
   description: string;
   quantity: number;
   price: number;
+  vehicleType?: 'CAR' | 'MOTORCYCLE' | 'BICYCLE' | 'OTHER';
+  weightKg?: number;
 }
 
 export interface IBilling {

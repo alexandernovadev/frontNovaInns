@@ -457,7 +457,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   private buildExtraServicesOptions(d: DashboardData) {
-    const labels: Record<string, string> = { CAR: 'Auto', MOTORCYCLE: 'Moto', OTHER: 'Otro' };
+    const labels: Record<string, string> = { PARKING: 'Parqueadero', LAUNDRY: 'Lavandería', OTHER: 'Otro' };
     this.extraServicesOptions = {
       tooltip: { trigger: 'item', formatter: '{b}: ${c}' },
       series: [

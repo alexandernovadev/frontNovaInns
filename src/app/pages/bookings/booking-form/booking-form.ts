@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { BookingsService } from '../../../core/services/bookings.service';
 import { ApartmentsService } from '../../../core/services/apartments.service';
-import { IBooking, IApartment } from '../../../core/interfaces';
+import { IBooking, IApartment, IExtraService } from '../../../core/interfaces';
 import { COUNTRIES_DATA, CountryData } from './countries';
 import { PlatformIcon } from '../../../shared/components/platform-icon';
 import { PaymentMethodIcon } from '../../../shared/components/payment-method-icon';
@@ -29,6 +29,11 @@ import {
   MapPin,
   IdCard,
   ArrowLeft,
+  Car,
+  Shirt,
+  Package,
+  Bike,
+  Plus,
 } from 'lucide-angular';
 
 type FormTab = 'general' | 'guests' | 'billing';
@@ -72,6 +77,11 @@ export class BookingFormComponent implements OnInit {
   readonly MapPin = MapPin;
   readonly IdCard = IdCard;
   readonly ArrowLeft = ArrowLeft;
+  readonly Car = Car;
+  readonly Shirt = Shirt;
+  readonly Package = Package;
+  readonly Bike = Bike;
+  readonly Plus = Plus;
 
   private bookingsService = inject(BookingsService);
   private apartmentsService = inject(ApartmentsService);
@@ -176,6 +186,7 @@ export class BookingFormComponent implements OnInit {
         type: i.type as IdType,
       })),
     }));
+    this.extraServices = (b.billing.extraServices ?? []).map(s => ({ ...s }));
   }
 
   goBack() {
@@ -216,8 +227,8 @@ export class BookingFormComponent implements OnInit {
       stay: { checkIn: this.formGeneral.checkIn, checkOut: this.formGeneral.checkOut },
       billing: {
         basePrice: this.formBilling.basePrice,
-        extraServices: [],
-        totalAmount: this.formBilling.basePrice,
+        extraServices: this.extraServices,
+        totalAmount: this.totalAmount,
         amountReceived: this.formBilling.amountReceived,
         platform: this.formGeneral.platform,
         paymentMethod: this.formBilling.paymentMethod,
@@ -335,6 +346,44 @@ export class BookingFormComponent implements OnInit {
     return guest.identifications.find((i) => i.type === type);
   }
 
+  // ── Extra Services ──
+  readonly EXTRA_SERVICE_TYPES = ['PARKING', 'LAUNDRY', 'OTHER'] as const;
+  readonly VEHICLE_TYPES = ['CAR', 'MOTORCYCLE', 'BICYCLE', 'OTHER'] as const;
+
+  extraServices: IExtraService[] = [];
+
+  get totalAmount(): number {
+    const extrasTotal = this.extraServices.reduce((sum, s) => sum + s.price * s.quantity, 0);
+    return this.formBilling.basePrice + extrasTotal;
+  }
+
+  extrasTotal(): number {
+    return this.extraServices.reduce((sum, s) => sum + s.price * s.quantity, 0);
+  }
+
+  addExtraService() {
+    this.extraServices = [...this.extraServices, {
+      type: 'OTHER',
+      description: '',
+      quantity: 1,
+      price: 0,
+    }];
+  }
+
+  removeExtraService(idx: number) {
+    this.extraServices = this.extraServices.filter((_, i) => i !== idx);
+  }
+
+  onExtraServicePriceInput(e: Event, idx: number) {
+    const input = e.target as HTMLInputElement;
+    const raw = input.value.replace(/\./g, '').replace(/[^0-9]/g, '');
+    const num = parseInt(raw, 10) || 0;
+    this.extraServices[idx] = { ...this.extraServices[idx], price: num };
+    input.value = num
+      ? new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(num)
+      : '';
+  }
+
   // ── Billing ──
   onPriceInput(e: Event, field: 'basePrice' | 'amountReceived') {
     const input = e.target as HTMLInputElement;
@@ -349,8 +398,9 @@ export class BookingFormComponent implements OnInit {
   fmtNumber = fmtNumber;
 
   formPaidPct() {
-    if (!this.formBilling.basePrice) return 0;
-    return Math.min(100, Math.round((this.formBilling.amountReceived / this.formBilling.basePrice) * 100));
+    const total = this.totalAmount;
+    if (!total) return 0;
+    return Math.min(100, Math.round((this.formBilling.amountReceived / total) * 100));
   }
 
   private blankGeneral(): {

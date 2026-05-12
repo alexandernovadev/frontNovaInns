@@ -145,11 +145,21 @@
                 <div class="flex items-center justify-between gap-2">
                   <div class="flex items-center gap-2 min-w-0">
                     <span class="text-xs px-2 py-0.5 rounded-lg font-bold shrink-0"
-                      [class]="svc.type === 'CAR' ? 'bg-blue-500/15 text-blue-400' :
-                               svc.type === 'MOTORCYCLE' ? 'bg-orange-500/15 text-orange-400' :
+                      [class]="svc.type === 'PARKING' ? 'bg-blue-500/15 text-blue-400' :
+                               svc.type === 'LAUNDRY' ? 'bg-emerald-500/15 text-emerald-400' :
                                'bg-purple-500/15 text-purple-400'">
-                      {{ svc.type === 'CAR' ? 'Auto' : svc.type === 'MOTORCYCLE' ? 'Moto' : 'Extra' }}
+                      {{ svc.type === 'PARKING' ? 'Parqueadero' : svc.type === 'LAUNDRY' ? 'Lavandería' : 'Extra' }}
                     </span>
+                    @if (svc.type === 'PARKING' && svc.vehicleType) {
+                      <span class="text-xs bg-bg rounded-lg px-1.5 py-0.5 text-text-secondary font-medium shrink-0">
+                        {{ svc.vehicleType === 'CAR' ? 'Auto' : svc.vehicleType === 'MOTORCYCLE' ? 'Moto' : svc.vehicleType === 'BICYCLE' ? 'Bici' : 'Otro' }}
+                      </span>
+                    }
+                    @if (svc.type === 'LAUNDRY' && svc.weightKg) {
+                      <span class="text-xs bg-bg rounded-lg px-1.5 py-0.5 text-text-secondary font-medium shrink-0">
+                        {{ svc.weightKg }} kg
+                      </span>
+                    }
                     <span class="text-text-primary text-sm font-medium truncate">{{ svc.description }}</span>
                   </div>
                   <span class="text-text-primary font-bold text-sm shrink-0">{{ svc.price * svc.quantity | currencyCop }}</span>
