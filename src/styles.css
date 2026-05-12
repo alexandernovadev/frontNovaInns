@@ -354,6 +354,9 @@
   .mt-1\.5 {
     margin-top: calc(var(--spacing) * 1.5);
   }
+  .mt-2 {
+    margin-top: calc(var(--spacing) * 2);
+  }
   .mt-6 {
     margin-top: calc(var(--spacing) * 6);
   }
@@ -777,6 +780,12 @@
   }
   .border-border {
     border-color: var(--color-border);
+  }
+  .border-border\/40 {
+    border-color: color-mix(in srgb, #2A2A2E 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-border) 40%, transparent);
+    }
   }
   .border-brand {
     border-color: var(--color-brand);
@@ -1866,6 +1875,11 @@
   .sm\:grid-cols-3 {
     @media (width >= 40rem) {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .sm\:grid-cols-4 {
+    @media (width >= 40rem) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
   .sm\:grid-cols-6 {
