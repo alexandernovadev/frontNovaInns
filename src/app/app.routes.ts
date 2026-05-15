@@ -62,6 +62,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./pages/analytics/analytics').then((m) => m.AnalyticsComponent),
       },
+      {
+        path: 'calendar',
+        loadComponent: () =>
+          import('./pages/calendar/calendar').then((m) => m.CalendarComponent),
+      },
     ],
   },
   { path: '**', redirectTo: 'bookings' },

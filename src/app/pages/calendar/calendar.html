@@ -1,0 +1,96 @@
+<div class="p-3 sm:p-4 space-y-3">
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2">
+        <lucide-icon [img]="CalendarDays" class="w-6 h-6 text-brand" [strokeWidth]="2" />
+        Calendario
+      </h1>
+      <p class="text-text-secondary text-xs">Vista anual de reservas y festivos</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button (click)="prevYear()" class="flex items-center gap-1 text-text-secondary hover:text-text-primary px-3 py-1.5 rounded-xl hover:bg-surface transition-colors cursor-pointer">
+        <lucide-icon [img]="ChevronLeft" class="w-4 h-4" [strokeWidth]="2" />
+      </button>
+      <span class="text-text-primary text-lg font-bold" style="min-width:80px;text-align:center">{{ year() }}</span>
+      <button (click)="nextYear()" class="flex items-center gap-1 text-text-secondary hover:text-text-primary px-3 py-1.5 rounded-xl hover:bg-surface transition-colors cursor-pointer">
+        <lucide-icon [img]="ChevronRight" class="w-4 h-4" [strokeWidth]="2" />
+      </button>
+    </div>
+  </div>
+
+  @if (loading()) {
+  <div class="text-center py-16 text-text-disabled">Cargando...</div>
+  } @else {
+  <!-- Legend -->
+  <div class="flex items-center gap-4 text-xs text-text-secondary">
+    <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-error"></span> Festivo</span>
+    <span class="flex items-center gap-2"><span class="w-5 h-3 rounded-sm" style="background:rgba(242,194,0,0.25);border:2px solid #F2C200"></span> Reserva</span>
+    <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background:var(--color-blue-500)"></span> Hoy</span>
+  </div>
+
+  <!-- Calendar grid: 4 columns x 3 rows -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+    @for (month of months(); track month.month) {
+    <div class="bg-surface border border-border rounded-lg p-1.5 overflow-visible">
+      <h3 class="text-text-primary font-semibold" style="font-size:9px;text-align:center;margin-bottom:2px">{{ month.name }}</h3>
+      <!-- Day headers -->
+      <div class="grid grid-cols-7" style="gap:1px">
+        @for (h of dayHeaders; track h) {
+        <span class="text-text-disabled" style="font-size:8px;text-align:center;font-weight:500">{{ h }}</span>
+        }
+      </div>
+      <!-- Days -->
+      <div class="grid grid-cols-7" style="gap:1px">
+        @for (day of month.days; track $index) {
+        @if (day.isPadding) {
+        <div></div>
+        } @else {
+        <!-- day cell -->
+        <div class="day-cell"
+          (click)="onDayClick($event, day)"
+          [ngClass]="{
+            'holiday': !!day.holiday,
+            'today': day.isToday && !day.holiday,
+            'has-booking': day.bookings.length > 0 && !day.holiday,
+            'plain': !day.holiday && !day.isToday
+          }"
+        >
+          <span class="day-num">{{ day.day }}</span>
+          @if (day.holiday) {
+          <span class="holiday-tooltip">{{ day.holiday }}</span>
+          }
+        </div>
+        }
+        }
+      </div>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- Popover -->
+  @if (popover(); as p) {
+  <div
+    class="fixed z-50 bg-surface border border-border rounded-2xl shadow-2xl"
+    style="left:{{ p.x }}px;top:{{ p.y }}px;padding:16px;min-width:240px"
+    (click)="$event.stopPropagation()"
+  >
+    <p class="text-text-primary font-bold text-xs mb-2">{{ p.dayStr }}</p>
+    <div class="space-y-1.5">
+      @for (b of p.bookings; track b._id) {
+      <div class="border-b border-border/50 pb-1.5 last:border-0 last:pb-0">
+        <p class="text-text-primary text-xs font-semibold">{{ b.group.host.fullName }}</p>
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-secondary mt-0.5">
+          <span class="text-text-primary font-medium">{{ b.billing.totalAmount | currencyCop }}</span>
+          <span>·</span>
+          <span>{{ nights(b) }}n</span>
+          <span>·</span>
+          <span>{{ aptName(b) }}</span>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  }
+</div>
