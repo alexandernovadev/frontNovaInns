@@ -2,3 +2,4 @@ export type { IBooking, IBilling, IExtraService, IGuest, BookingPage, FinancialS
 export type { IApartment, IRoom, IBathroom, IPhoto, ApartmentPage } from './apartment.interface';
 export type { IUser, UserPage, UserQuery } from './user.interface';
 export type { DashboardData, RegionData } from './analytics.interface';
+export type { VacancyData } from './analytics.interface';

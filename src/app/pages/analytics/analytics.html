@@ -165,6 +165,46 @@
     </div>
   </div>
 
+  <!-- Vacancy -->
+  @if (vacancy(); as v) {
+  <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+    <div class="glass rounded-2xl p-4 text-center">
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Prom. x apto</p>
+      <p class="text-text-primary text-lg font-bold">{{ v.avgUnsoldPerApt }} vacíos / {{ v.avgOccupiedPerApt }} ocup</p>
+      <p class="text-text-disabled text-xs mt-0.5">en {{ v.totalDaysInRange }} días del período</p>
+    </div>
+    <div class="glass rounded-2xl p-4 text-center">
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Días no vendidos</p>
+      <p class="text-error text-lg font-bold">{{ v.totalUnsoldDays.toLocaleString('es-CO') }}</p>
+      <p class="text-text-disabled text-xs mt-0.5">total {{ v.totalApts }} aptos</p>
+    </div>
+    <div class="glass rounded-2xl p-4 text-center">
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Días totales</p>
+      <p class="text-text-primary text-lg font-bold">{{ v.totalDaySlots.toLocaleString('es-CO') }}</p>
+      <p class="text-text-disabled text-xs mt-0.5">slot disponibles</p>
+    </div>
+    <div class="glass rounded-2xl p-4 text-center">
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Tasa vacancia</p>
+      <p class="text-warning text-lg font-bold">{{ v.vacancyRate }}%</p>
+      <p class="text-text-disabled text-xs mt-0.5">general</p>
+    </div>
+    <div class="glass rounded-2xl p-4 text-center">
+      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Período</p>
+      <p class="text-text-primary text-lg font-bold">{{ v.monthly.length }} ciclos</p>
+      <p class="text-text-disabled text-xs mt-0.5">{{ v.totalDaysInRange }} días</p>
+    </div>
+  </div>
+  <div class="glass rounded-2xl p-5">
+    <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
+      <lucide-icon [img]="CalendarDays" class="w-4 h-4 text-brand" [strokeWidth]="2" />
+      Vacancia mensual
+    </h3>
+    <div echarts [options]="vacancyOptions" class="w-full" style="height:300px"></div>
+  </div>
+  } @else if (vacancyLoading()) {
+  <div class="glass rounded-2xl p-5 text-center text-text-disabled text-sm">Cargando vacancia...</div>
+  }
+
   }
 
   <!-- ════════ TAB: MAPA ════════ -->

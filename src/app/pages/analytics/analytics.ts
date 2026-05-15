@@ -4,7 +4,7 @@ import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts';
 import * as L from 'leaflet';
 import { AnalyticsService } from '../../core/services/analytics.service';
-import { DashboardData } from '../../core/interfaces';
+import { DashboardData, VacancyData } from '../../core/interfaces';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import {
   LucideAngularModule,
@@ -61,6 +61,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     { code: 'EC', name: 'Ecuador' },
   ];
 
+  // vacancy
+  vacancy = signal<VacancyData | null>(null);
+  vacancyLoading = signal(false);
+
   // ECharts options (dashboard)
   monthlyOptions: any = {};
   platformOptions: any = {};
@@ -69,6 +73,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   dayOfWeekOptions: any = {};
   extraServicesOptions: any = {};
   topAptOptions: any = {};
+  vacancyOptions: any = {};
 
   // Leaflet map
   private map: L.Map | null = null;
@@ -98,6 +103,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   loadData() {
     this.loading.set(true);
     this.error.set(null);
+    this.vacancyLoading.set(true);
     this.analytics.dashboard().subscribe({
       next: (d) => {
         this.data.set(d);
@@ -108,6 +114,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         this.error.set('Error al cargar datos');
         this.loading.set(false);
       },
+    });
+    this.analytics.vacancy().subscribe({
+      next: (v) => {
+        this.vacancy.set(v);
+        this.buildVacancyOptions(v);
+        this.vacancyLoading.set(false);
+      },
+      error: () => this.vacancyLoading.set(false),
     });
   }
 
@@ -302,6 +316,52 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.buildDayOfWeekOptions(d);
     this.buildExtraServicesOptions(d);
     this.buildTopAptOptions(d);
+  }
+
+  private buildVacancyOptions(v: VacancyData) {
+    const labels = v.monthly.map((m: any) => m.label);
+    this.vacancyOptions = {
+      tooltip: {
+        trigger: 'axis',
+        formatter: (p: any) => {
+          const idx = p[0].dataIndex;
+          const m = v.monthly[idx];
+          return `<strong>${m.label}</strong><br/>
+            ${p[0].marker} No vendidos: ${m.unsoldDays} (${m.vacancyPct}%)<br/>
+            ${p[1].marker} Ocupados: ${m.availableDays - m.unsoldDays}<br/>
+            <span style="color:#9898a8">Promedio x apto: ${m.avgUnsoldPerApt} vacíos · ${m.avgOccupiedPerApt} ocupados (${m.daysInCycle} días)</span>`;
+        },
+      },
+      legend: { data: ['No vendidos', 'Ocupados'], textStyle: { color: '#B3B3B8' } },
+      grid: { left: 120, right: 20, top: 40, bottom: 40 },
+      xAxis: {
+        type: 'category',
+        data: labels,
+        axisLabel: { color: '#6E6E73', rotate: 30, fontSize: 10 },
+        axisLine: { lineStyle: { color: '#2A2A2E' } },
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: { color: '#6E6E73' },
+        splitLine: { lineStyle: { color: '#2A2A2E' } },
+      },
+      series: [
+        {
+          name: 'No vendidos',
+          type: 'bar',
+          stack: 'total',
+          data: v.monthly.map((m: any) => m.unsoldDays),
+          itemStyle: { color: '#E17055', borderRadius: [0, 0, 0, 0] },
+        },
+        {
+          name: 'Ocupados',
+          type: 'bar',
+          stack: 'total',
+          data: v.monthly.map((m: any) => m.availableDays - m.unsoldDays),
+          itemStyle: { color: '#22C55E', borderRadius: [4, 4, 0, 0] },
+        },
+      ],
+    };
   }
 
   private buildMonthlyOptions(d: DashboardData) {
