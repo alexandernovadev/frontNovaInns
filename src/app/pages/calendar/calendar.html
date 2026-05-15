@@ -52,7 +52,7 @@
           [ngClass]="{
             'holiday': !!day.holiday,
             'today': day.isToday && !day.holiday,
-            'has-booking': day.bookings.length > 0 && !day.holiday,
+            'has-booking': day.bookings.length > 0,
             'plain': !day.holiday && !day.isToday
           }"
         >
@@ -75,12 +75,13 @@
     class="fixed z-50 bg-surface border border-border rounded-2xl shadow-2xl"
     style="left:{{ p.x }}px;top:{{ p.y }}px;padding:16px;min-width:240px"
     (click)="$event.stopPropagation()"
+    (wheel)="$event.stopPropagation()"
   >
     <p class="text-text-primary font-bold text-xs mb-2">{{ p.dayStr }}</p>
     <div class="space-y-1.5">
       @for (b of p.bookings; track b._id) {
       <div class="border-b border-border/50 pb-1.5 last:border-0 last:pb-0">
-        <p class="text-text-primary text-xs font-semibold">{{ b.group.host.fullName }}</p>
+        <a [routerLink]="['/bookings', b._id]" class="text-text-primary text-xs font-semibold hover:text-brand transition-colors cursor-pointer">{{ b.group.host.fullName }}</a>
         <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-secondary mt-0.5">
           <span class="text-text-primary font-medium">{{ b.billing.totalAmount | currencyCop }}</span>
           <span>·</span>

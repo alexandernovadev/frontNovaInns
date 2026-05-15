@@ -14,6 +14,13 @@ export class BookingsService {
     return this.http.get<BookingPage>(`${API}/bookings`, { params: buildParams(query) });
   }
 
+  findCalendar(from?: string, to?: string) {
+    let params: any = {};
+    if (from) params.from = from;
+    if (to) params.to = to;
+    return this.http.get<BookingPage>(`${API}/bookings/calendar`, { params });
+  }
+
   findById(id: string) {
     return this.http.get<IBooking>(`${API}/bookings/${id}`);
   }

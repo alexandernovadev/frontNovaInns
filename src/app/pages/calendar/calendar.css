@@ -18,6 +18,16 @@
   font-weight: 700;
   border-radius: 50%;
 }
+.day-cell.holiday.has-booking {
+  outline: none;
+  border-top: 2px solid var(--color-error);
+  border-bottom: 2px solid var(--color-warning);
+  border-left: 2px solid var(--color-warning);
+  border-right: 2px solid var(--color-warning);
+  border-radius: 3px;
+  background: rgba(239,68,68,.18);
+  color: #fff;
+}
 .day-cell.today {
   background: var(--color-blue-500);
   color: #fff;
