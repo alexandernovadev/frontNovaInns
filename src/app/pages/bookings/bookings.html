@@ -240,8 +240,10 @@
     Pendiente: <span class="text-warning font-bold">{{ pending(paymentSelected()!) | currencyCop }}</span>
   </p>
   <label class="block text-text-secondary text-sm mb-1.5">Monto a registrar</label>
-  <input type="number" min="0" [(ngModel)]="payAmount" placeholder="0" autocomplete="off" class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
-           focus:outline-none focus:border-brand transition-colors" />
+   <input id="payInput" type="text" inputmode="numeric" placeholder="0" autocomplete="off"
+      (input)="onPaymentInput($event)"
+      class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
+            focus:outline-none focus:border-brand transition-colors" />
 </modal-nova>
 <ng-template #paymentFooter>
   <div class="flex gap-3">

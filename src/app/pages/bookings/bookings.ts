@@ -9,6 +9,7 @@ import { PlatformIcon } from '../../shared/components/platform-icon';
 import { Pagination } from '../../shared/components/pagination';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { DateEsPipe } from '../../shared/pipes/date-es.pipe';
+import { fmtNumber } from '../../shared/utils/number.util';
 import { PLATFORMS, PLATFORM_CLASS, STATUSES } from '../../shared/constants/booking.constants';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, CalendarDays } from 'lucide-angular';
@@ -150,8 +151,20 @@ export class BookingsComponent implements OnInit {
   openPayment(b: IBooking, e: Event) {
     e.stopPropagation();
     this.paymentSelected.set(b);
-    this.payAmount = 0;
+    this.payAmount = this.pending(b);
     this.showPayment.set(true);
+    setTimeout(() => {
+      const el = document.querySelector<HTMLInputElement>('#payInput');
+      if (el) el.value = fmtNumber(this.payAmount);
+    });
+  }
+
+  onPaymentInput(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const raw = input.value.replace(/\./g, '').replace(/[^0-9]/g, '');
+    const num = parseInt(raw, 10) || 0;
+    this.payAmount = num;
+    input.value = fmtNumber(num);
   }
 
   confirmPayment() {
