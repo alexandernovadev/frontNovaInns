@@ -343,9 +343,15 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
               fillOpacity: guests > 0 ? 0.95 : 0.3,
             });
             target.bringToFront();
+            if (guests > 0) {
+              target.setTooltipContent(`${name} — <strong>${guests}</strong> ${guests === 1 ? 'huésped' : 'huéspedes'}`);
+            }
           },
           mouseout: (e: any) => {
             this.geoLayer?.resetStyle(e.target);
+            if (guests > 0) {
+              e.target.setTooltipContent(`<strong>${guests}</strong>`);
+            }
           },
         });
       },
