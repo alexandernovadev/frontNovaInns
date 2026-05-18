@@ -427,12 +427,20 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           radius: ['45%', '70%'],
           center: ['50%', '50%'],
           label: { color: '#B3B3B8', fontSize: 11 },
-          data: d.platforms.map((p) => ({ value: p.total, name: p.platform })),
+          data: d.platforms.map((p) => ({ value: p.total, name: p.platform, itemStyle: { color: this.resolvePlatformColor(p.platform) } })),
           itemStyle: { borderRadius: 4 },
-          color: ['#F2C200', '#3B82F6', '#22C55E'],
         },
       ],
     };
+  }
+
+  private resolvePlatformColor(name: string): string {
+    switch (name) {
+      case 'AirBnB': return '#FF5A5F';
+      case 'Booking': return '#023580';
+      case 'Directo': return '#CA8A04';
+      default: return '#6E6E73';
+    }
   }
 
   private buildPaymentOptions(d: DashboardData) {
@@ -444,12 +452,20 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           radius: ['45%', '70%'],
           center: ['50%', '50%'],
           label: { color: '#B3B3B8', fontSize: 11 },
-          data: d.payments.map((p) => ({ value: p.total, name: p.method })),
+          data: d.payments.map((p) => ({ value: p.total, name: p.method, itemStyle: { color: this.resolvePaymentColor(p.method) } })),
           itemStyle: { borderRadius: 4 },
-          color: ['#22C55E', '#FACC15', '#3B82F6', '#6E6E73'],
         },
       ],
     };
+  }
+
+  private resolvePaymentColor(name: string): string {
+    switch (name) {
+      case 'Bancolombia': return '#FACC15';
+      case 'Nequi': return '#6D28D9';
+      case 'Efectivo': return '#22C55E';
+      default: return '#6E6E73';
+    }
   }
 
   // (intentionally blank — occupancy chart removed)
@@ -459,6 +475,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   // (intentionally blank — top apartments chart removed)
 
   private buildDayOfWeekOptions(d: DashboardData) {
+    const colors = ['#F97316','#EAB308','#22C55E','#06B6D4','#3B82F6','#8B5CF6','#EC4899'];
     this.dayOfWeekOptions = {
       tooltip: { trigger: 'axis' },
       grid: { left: 50, right: 20, top: 20, bottom: 30 },
@@ -476,8 +493,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       series: [
         {
           type: 'bar',
-          data: d.dayOfWeek.map((dw) => dw.count),
-          itemStyle: { color: '#F2C200', borderRadius: [4, 4, 0, 0] },
+          data: d.dayOfWeek.map((dw, i) => ({ value: dw.count, itemStyle: { color: colors[i], borderRadius: [4, 4, 0, 0] } })),
         },
       ],
     };

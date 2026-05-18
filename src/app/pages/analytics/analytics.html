@@ -56,34 +56,34 @@
 
   <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
     <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="DollarSign" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2" />
+      <lucide-icon [img]="DollarSign" class="w-5 h-5 text-amber-400 mx-auto mb-1" [strokeWidth]="2" />
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Esperado</p>
-      <p class="text-text-primary text-lg font-bold">{{ d.summary.totalExpected | currencyCop }}</p>
+      <p class="text-amber-400 text-lg font-bold">{{ d.summary.totalExpected | currencyCop }}</p>
     </div>
     <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="TrendingUp" class="w-5 h-5 text-success mx-auto mb-1" [strokeWidth]="2" />
+      <lucide-icon [img]="TrendingUp" class="w-5 h-5 text-emerald-400 mx-auto mb-1" [strokeWidth]="2" />
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Recibido</p>
-      <p class="text-success text-lg font-bold">{{ d.summary.totalReceived | currencyCop }}</p>
+      <p class="text-emerald-400 text-lg font-bold">{{ d.summary.totalReceived | currencyCop }}</p>
     </div>
     <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="Hash" class="w-5 h-5 text-warning mx-auto mb-1" [strokeWidth]="2" />
+      <lucide-icon [img]="Hash" class="w-5 h-5 text-rose-400 mx-auto mb-1" [strokeWidth]="2" />
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Pendiente</p>
-      <p class="text-warning text-lg font-bold">{{ d.summary.totalPending | currencyCop }}</p>
+      <p class="text-rose-400 text-lg font-bold">{{ d.summary.totalPending | currencyCop }}</p>
     </div>
     <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="CalendarDays" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2" />
+      <lucide-icon [img]="CalendarDays" class="w-5 h-5 text-sky-400 mx-auto mb-1" [strokeWidth]="2" />
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Reservas</p>
-      <p class="text-text-primary text-lg font-bold">{{ d.summary.bookingCount }}</p>
+      <p class="text-sky-400 text-lg font-bold">{{ d.summary.bookingCount }}</p>
     </div>
     <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="Building2" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2" />
+      <lucide-icon [img]="Building2" class="w-5 h-5 text-violet-400 mx-auto mb-1" [strokeWidth]="2" />
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Prom. estadía</p>
-      <p class="text-text-primary text-lg font-bold">{{ d.summary.avgNights }}n</p>
+      <p class="text-violet-400 text-lg font-bold">{{ d.summary.avgNights }}n</p>
     </div>
     <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="PieChart" class="w-5 h-5 text-brand mx-auto mb-1" [strokeWidth]="2" />
+      <lucide-icon [img]="PieChart" class="w-5 h-5 text-teal-400 mx-auto mb-1" [strokeWidth]="2" />
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Cobrado</p>
-      <p class="text-success text-lg font-bold">{{ pct(d.summary.totalReceived) }}%</p>
+      <p class="text-teal-400 text-lg font-bold">{{ pct(d.summary.totalReceived) }}%</p>
     </div>
   </div>
 
@@ -125,27 +125,27 @@
   <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
     <div class="glass rounded-2xl p-4 text-center">
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Prom. x apto</p>
-      <p class="text-text-primary text-lg font-bold">{{ v.avgUnsoldPerApt }} vacíos / {{ v.avgOccupiedPerApt }} ocup</p>
+      <p class="text-orange-400 text-lg font-bold">{{ v.avgUnsoldPerApt }} vacíos / {{ v.avgOccupiedPerApt }} ocup</p>
       <p class="text-text-disabled text-xs mt-0.5">en {{ v.totalDaysInRange }} días del período</p>
     </div>
     <div class="glass rounded-2xl p-4 text-center">
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Días no vendidos</p>
-      <p class="text-error text-lg font-bold">{{ v.totalUnsoldDays.toLocaleString('es-CO') }}</p>
+      <p class="text-red-400 text-lg font-bold">{{ v.totalUnsoldDays.toLocaleString('es-CO') }}</p>
       <p class="text-text-disabled text-xs mt-0.5">total {{ v.totalApts }} aptos</p>
     </div>
     <div class="glass rounded-2xl p-4 text-center">
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Días totales</p>
-      <p class="text-text-primary text-lg font-bold">{{ v.totalDaySlots.toLocaleString('es-CO') }}</p>
+      <p class="text-blue-400 text-lg font-bold">{{ v.totalDaySlots.toLocaleString('es-CO') }}</p>
       <p class="text-text-disabled text-xs mt-0.5">slot disponibles</p>
     </div>
     <div class="glass rounded-2xl p-4 text-center">
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Tasa vacancia</p>
-      <p class="text-warning text-lg font-bold">{{ v.vacancyRate }}%</p>
+      <p class="text-purple-400 text-lg font-bold">{{ v.vacancyRate }}%</p>
       <p class="text-text-disabled text-xs mt-0.5">general</p>
     </div>
     <div class="glass rounded-2xl p-4 text-center">
       <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Período</p>
-      <p class="text-text-primary text-lg font-bold">{{ v.monthly.length }} ciclos</p>
+      <p class="text-cyan-400 text-lg font-bold">{{ v.monthly.length }} ciclos</p>
       <p class="text-text-disabled text-xs mt-0.5">{{ v.totalDaysInRange }} días</p>
     </div>
   </div>
