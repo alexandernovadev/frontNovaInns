@@ -69,11 +69,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   monthlyOptions: any = {};
   platformOptions: any = {};
   paymentOptions: any = {};
-  occupancyOptions: any = {};
   dayOfWeekOptions: any = {};
-  extraServicesOptions: any = {};
-  topAptOptions: any = {};
-  vacancyOptions: any = {};
 
   // Leaflet map
   private map: L.Map | null = null;
@@ -118,7 +114,6 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.analytics.vacancy().subscribe({
       next: (v) => {
         this.vacancy.set(v);
-        this.buildVacancyOptions(v);
         this.vacancyLoading.set(false);
       },
       error: () => this.vacancyLoading.set(false),
@@ -312,57 +307,12 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.buildMonthlyOptions(d);
     this.buildPlatformOptions(d);
     this.buildPaymentOptions(d);
-    this.buildOccupancyOptions(d);
     this.buildDayOfWeekOptions(d);
-    this.buildExtraServicesOptions(d);
-    this.buildTopAptOptions(d);
   }
 
-  private buildVacancyOptions(v: VacancyData) {
-    const labels = v.monthly.map((m: any) => m.label);
-    this.vacancyOptions = {
-      tooltip: {
-        trigger: 'axis',
-        formatter: (p: any) => {
-          const idx = p[0].dataIndex;
-          const m = v.monthly[idx];
-          return `<strong>${m.label}</strong><br/>
-            ${p[0].marker} No vendidos: ${m.unsoldDays} (${m.vacancyPct}%)<br/>
-            ${p[1].marker} Ocupados: ${m.availableDays - m.unsoldDays}<br/>
-            <span style="color:#9898a8">Promedio x apto: ${m.avgUnsoldPerApt} vacíos · ${m.avgOccupiedPerApt} ocupados (${m.daysInCycle} días)</span>`;
-        },
-      },
-      legend: { data: ['No vendidos', 'Ocupados'], textStyle: { color: '#B3B3B8' } },
-      grid: { left: 120, right: 20, top: 40, bottom: 40 },
-      xAxis: {
-        type: 'category',
-        data: labels,
-        axisLabel: { color: '#6E6E73', rotate: 30, fontSize: 10 },
-        axisLine: { lineStyle: { color: '#2A2A2E' } },
-      },
-      yAxis: {
-        type: 'value',
-        axisLabel: { color: '#6E6E73' },
-        splitLine: { lineStyle: { color: '#2A2A2E' } },
-      },
-      series: [
-        {
-          name: 'No vendidos',
-          type: 'bar',
-          stack: 'total',
-          data: v.monthly.map((m: any) => m.unsoldDays),
-          itemStyle: { color: '#E17055', borderRadius: [0, 0, 0, 0] },
-        },
-        {
-          name: 'Ocupados',
-          type: 'bar',
-          stack: 'total',
-          data: v.monthly.map((m: any) => m.availableDays - m.unsoldDays),
-          itemStyle: { color: '#22C55E', borderRadius: [4, 4, 0, 0] },
-        },
-      ],
-    };
-  }
+  // (intentionally empty — vacancy chart removed)
+
+  // (intentionally blank — vacancy chart removed)
 
   private buildMonthlyOptions(d: DashboardData) {
     const months = d.monthly.map((m) => m.month.slice(-2) + '/' + m.month.slice(2, 4));
@@ -436,60 +386,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     };
   }
 
-  private buildOccupancyOptions(d: DashboardData) {
-    const months = d.occupancy.map((m) => m.month.slice(-2) + '/' + m.month.slice(2, 4));
-    this.occupancyOptions = {
-      tooltip: { trigger: 'axis' },
-      legend: { data: ['% Ocupación', 'Ingresos'], textStyle: { color: '#B3B3B8' } },
-      grid: { left: 60, right: 60, top: 40, bottom: 30 },
-      xAxis: {
-        type: 'category',
-        data: months,
-        axisLabel: { color: '#6E6E73' },
-        axisLine: { lineStyle: { color: '#2A2A2E' } },
-      },
-      yAxis: [
-        {
-          type: 'value',
-          name: '%',
-          nameTextStyle: { color: '#6E6E73' },
-          axisLabel: { color: '#6E6E73' },
-          splitLine: { lineStyle: { color: '#2A2A2E' } },
-          max: 100,
-        },
-        {
-          type: 'value',
-          name: 'Ingresos',
-          nameTextStyle: { color: '#6E6E73' },
-          axisLabel: {
-            color: '#6E6E73',
-            formatter: (v: number) =>
-              v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`,
-          },
-          splitLine: { show: false },
-        },
-      ],
-      series: [
-        {
-          name: '% Ocupación',
-          type: 'line',
-          data: d.occupancy.map((m) => m.occupancyPct),
-          yAxisIndex: 0,
-          lineStyle: { color: '#F2C200' },
-          itemStyle: { color: '#F2C200' },
-          areaStyle: { color: 'rgba(242,194,0,0.1)' },
-          smooth: true,
-        },
-        {
-          name: 'Ingresos',
-          type: 'bar',
-          data: d.occupancy.map((m) => m.revenue),
-          yAxisIndex: 1,
-          itemStyle: { color: '#3B82F6', borderRadius: [4, 4, 0, 0] },
-        },
-      ],
-    };
-  }
+  // (intentionally blank — occupancy chart removed)
+
+  // (intentionally blank — extra services chart removed)
+
+  // (intentionally blank — top apartments chart removed)
 
   private buildDayOfWeekOptions(d: DashboardData) {
     this.dayOfWeekOptions = {
@@ -516,56 +417,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     };
   }
 
-  private buildExtraServicesOptions(d: DashboardData) {
-    const labels: Record<string, string> = { PARKING: 'Parqueadero', LAUNDRY: 'Lavandería', OTHER: 'Otro' };
-    this.extraServicesOptions = {
-      tooltip: { trigger: 'item', formatter: '{b}: ${c}' },
-      series: [
-        {
-          type: 'pie',
-          radius: ['45%', '70%'],
-          center: ['50%', '50%'],
-          label: { color: '#B3B3B8', fontSize: 11 },
-          data: d.extraServices.map((s) => ({ value: s.total, name: labels[s.type] || s.type })),
-          itemStyle: { borderRadius: 4 },
-          color: ['#3B82F6', '#F59E0B', '#8B5CF6'],
-        },
-      ],
-    };
-  }
 
-  private buildTopAptOptions(d: DashboardData) {
-    this.topAptOptions = {
-      tooltip: {
-        trigger: 'axis',
-        formatter: (p: any) =>
-          `${p[0].name}<br/>${p[0].marker} $${p[0].value.toLocaleString('es-CO')}`,
-      },
-      grid: { left: 120, right: 30, top: 10, bottom: 20 },
-      xAxis: {
-        type: 'value',
-        axisLabel: {
-          color: '#6E6E73',
-          formatter: (v: number) =>
-            v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`,
-        },
-        splitLine: { lineStyle: { color: '#2A2A2E' } },
-      },
-      yAxis: {
-        type: 'category',
-        data: d.topApartments.map((a) => a.name).reverse(),
-        axisLabel: { color: '#B3B3B8', fontSize: 11 },
-        axisLine: { lineStyle: { color: '#2A2A2E' } },
-      },
-      series: [
-        {
-          type: 'bar',
-          data: d.topApartments.map((a) => a.total).reverse(),
-          itemStyle: { color: '#F2C200', borderRadius: [0, 4, 4, 0] },
-        },
-      ],
-    };
-  }
 
   pct(v: number) {
     const d = this.data();
