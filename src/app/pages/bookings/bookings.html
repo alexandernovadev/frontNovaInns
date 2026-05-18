@@ -13,13 +13,13 @@
       <autocomplete-select
         [options]="yearOptions()"
         [(value)]="yearFilter"
-        (valueChange)="load(1)"
+        (valueChange)="onFilterChange()"
         [readonly]="true"
         placeholder="Año" />
       <autocomplete-select
         [options]="monthOptions()"
         [(value)]="monthFilter"
-        (valueChange)="load(1)"
+        (valueChange)="onFilterChange()"
         [readonly]="true"
         placeholder="Mes" />
       <button (click)="openCreate()" 
@@ -55,15 +55,15 @@
 
   <!-- Filtros -->
   <div class="flex flex-wrap gap-3">
-    <input [(ngModel)]="search" (ngModelChange)="load(1)" placeholder="Buscar por huésped..." class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
+    <input [(ngModel)]="search" (ngModelChange)="onFilterChange()" placeholder="Buscar por huésped..." class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
              text-text-primary placeholder:text-text-disabled text-sm
              focus:outline-none focus:border-brand transition-colors" />
-    <select [(ngModel)]="platformFilter" (ngModelChange)="load(1)" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+    <select [(ngModel)]="platformFilter" (ngModelChange)="onFilterChange()" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
              text-sm focus:outline-none focus:border-brand cursor-pointer">
       <option value="">Todas las plataformas</option>
       @for (p of PLATFORMS; track p) { <option [value]="p">{{ p }}</option> }
     </select>
-    <select [(ngModel)]="statusFilter" (ngModelChange)="load(1)" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+    <select [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
              text-sm focus:outline-none focus:border-brand cursor-pointer">
       <option value="">Todos los estados</option>
       @for (s of STATUSES; track s) { <option [value]="s">{{ s }}</option> }

@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { BookingsService } from '../../core/services/bookings.service';
 import { IBooking, FinancialSummary } from '../../core/interfaces';
 import { ModalNova } from '../../shared/components/modal-nova';
@@ -28,6 +28,7 @@ export class BookingsComponent implements OnInit {
 
   private bookingsService    = inject(BookingsService);
   private router = inject(Router);
+  private route  = inject(ActivatedRoute);
   private alert  = inject(AlertService);
 
   bookings  = signal<IBooking[]>([]);
@@ -96,6 +97,12 @@ export class BookingsComponent implements OnInit {
   readonly PLATFORM_CLASS = PLATFORM_CLASS;
 
   ngOnInit() {
+    const p = this.route.snapshot.queryParams;
+    this.search = p['q'] ?? '';
+    this.statusFilter = p['status'] ?? '';
+    this.platformFilter = p['platform'] ?? '';
+    if (p['year']) this.yearFilter.set(p['year']);
+    if (p['month']) this.monthFilter.set(p['month']);
     this.load();
   }
 
@@ -124,6 +131,24 @@ export class BookingsComponent implements OnInit {
   loadSummary() {
     const { fromDate, toDate } = this.dateRange();
     this.bookingsService.financialSummary(fromDate, toDate).subscribe({ next: s => this.summary.set(s) });
+  }
+
+  onFilterChange() {
+    this.load(1);
+    this.syncUrl();
+  }
+
+  private syncUrl() {
+    this.router.navigate([], {
+      queryParams: {
+        q: this.search || undefined,
+        status: this.statusFilter || undefined,
+        platform: this.platformFilter || undefined,
+        year: this.yearFilter() || undefined,
+        month: this.monthFilter() || undefined,
+      },
+      replaceUrl: true,
+    });
   }
 
   openDetail(b: IBooking) { this.router.navigate(['/bookings', b._id]); }
