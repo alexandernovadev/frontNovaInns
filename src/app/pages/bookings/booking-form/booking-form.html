@@ -47,6 +47,8 @@
   <!-- ===== GENERAL ===== -->
   @if (tab() === 'general') {
 
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
   <!-- Apartamento -->
   <div class="bg-surface border border-border rounded-2xl overflow-hidden">
     <div class="flex items-center gap-2 px-4 py-3 border-b border-border bg-brand/5">
@@ -113,6 +115,8 @@
     </div>
   </div>
 
+  </div>
+
   <!-- Observaciones -->
   <div class="bg-surface border border-border rounded-2xl overflow-hidden">
     <div class="flex items-center gap-2 px-4 py-3 border-b border-border">
@@ -120,7 +124,7 @@
       <span class="text-text-secondary text-sm font-semibold">Observaciones</span>
     </div>
     <div class="p-4">
-      <textarea [(ngModel)]="formGeneral.observations" rows="3" placeholder="Notas adicionales..." autocomplete="off"
+      <textarea [(ngModel)]="formGeneral.observations" rows="15" placeholder="Notas adicionales..." autocomplete="off"
         class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
                  placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand resize-none"></textarea>
     </div>
