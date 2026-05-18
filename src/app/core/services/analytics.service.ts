@@ -14,9 +14,11 @@ export class AnalyticsService {
     return this.http.get<DashboardData>(`${API}/analytics/dashboard`, { params });
   }
 
-  regions(country: string, groupBy?: string) {
+  regions(country: string, groupBy?: string, from?: string, to?: string) {
     let params: any = { country };
     if (groupBy) params.groupBy = groupBy;
+    if (from) params.from = from;
+    if (to) params.to = to;
     return this.http.get<RegionData[]>(`${API}/analytics/regions`, { params });
   }
 

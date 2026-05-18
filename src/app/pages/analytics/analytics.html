@@ -9,10 +9,24 @@
       </h1>
       <p class="text-text-secondary text-sm mt-0.5">Panel de métricas y rendimiento</p>
     </div>
-    <button (click)="loadData()"
-      class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
-      Actualizar
-    </button>
+    <div class="flex items-center gap-2">
+      <autocomplete-select
+        [options]="yearOptions()"
+        [(value)]="yearFilter"
+        (valueChange)="onFilterChange()"
+        [readonly]="true"
+        placeholder="Año" />
+      <autocomplete-select
+        [options]="monthOptions()"
+        [(value)]="monthFilter"
+        (valueChange)="onFilterChange()"
+        [readonly]="true"
+        placeholder="Mes" />
+      <button (click)="loadData()"
+        class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
+        Actualizar
+      </button>
+    </div>
   </div>
 
   <!-- Tabs -->

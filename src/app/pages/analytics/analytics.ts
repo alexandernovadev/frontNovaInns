@@ -1,11 +1,13 @@
-import { Component, inject, signal, OnInit, OnDestroy, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts';
 import * as L from 'leaflet';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { DashboardData, VacancyData } from '../../core/interfaces';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
+import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import {
   LucideAngularModule,
   BarChart3,
@@ -22,7 +24,7 @@ import {
 @Component({
   selector: 'app-analytics',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgxEchartsDirective, LucideAngularModule, CurrencyCopPipe],
+  imports: [NgxEchartsDirective, LucideAngularModule, CurrencyCopPipe, AutocompleteSelect],
   providers: [provideEchartsCore({ echarts })],
   templateUrl: './analytics.html',
 })
@@ -39,12 +41,38 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   private analytics = inject(AnalyticsService);
   private http = inject(HttpClient);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   data = signal<DashboardData | null>(null);
   loading = signal(true);
   error = signal<string | null>(null);
 
   tab = signal<'dashboard' | 'map'>('dashboard');
+
+  yearFilter = signal(String(new Date().getFullYear()));
+  monthFilter = signal('');
+
+  yearOptions = computed(() => {
+    const y = new Date().getFullYear();
+    const opts: { label: string; value: string }[] = [{ label: 'Todos', value: '' }];
+    for (let i = 2026; i <= y + 1; i++) {
+      opts.push({ label: String(i), value: String(i) });
+    }
+    return opts;
+  });
+
+  monthOptions = computed(() => {
+    const ms = ['Enero 18 - Febrero 18','Febrero 18 - Marzo 18','Marzo 18 - Abril 18',
+                'Abril 18 - Mayo 18','Mayo 18 - Junio 18','Junio 18 - Julio 18',
+                'Julio 18 - Agosto 18','Agosto 18 - Septiembre 18','Septiembre 18 - Octubre 18',
+                'Octubre 18 - Noviembre 18','Noviembre 18 - Diciembre 18','Diciembre 18 - Enero 18'];
+    const opts: { label: string; value: string }[] = [{ label: 'Todos', value: '' }];
+    for (let m = 0; m < 12; m++) {
+      opts.push({ label: ms[m], value: String(m) });
+    }
+    return opts;
+  });
 
   // drill-down state
   departmentData = signal<{ department: string; guests: number; revenue: number }[] | null>(null);
@@ -88,7 +116,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    const p = this.route.snapshot.queryParams;
+    if (p['year']) this.yearFilter.set(p['year']);
+    if (p['month']) this.monthFilter.set(p['month']);
     this.loadData();
+    this.syncUrl();
   }
 
   ngOnDestroy() {
@@ -97,10 +129,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   // ── Data loading ──
   loadData() {
+    const { fromDate, toDate } = this.dateRange();
     this.loading.set(true);
     this.error.set(null);
     this.vacancyLoading.set(true);
-    this.analytics.dashboard().subscribe({
+    this.analytics.dashboard(fromDate, toDate).subscribe({
       next: (d) => {
         this.data.set(d);
         this.buildCharts(d);
@@ -111,12 +144,42 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       },
     });
-    this.analytics.vacancy().subscribe({
+    this.analytics.vacancy(fromDate, toDate).subscribe({
       next: (v) => {
         this.vacancy.set(v);
         this.vacancyLoading.set(false);
       },
       error: () => this.vacancyLoading.set(false),
+    });
+  }
+
+  private dateRange(): { fromDate?: string; toDate?: string } {
+    if (!this.yearFilter() || !this.monthFilter()) return {};
+    const y = parseInt(this.yearFilter());
+    const m = parseInt(this.monthFilter());
+    const fromDate = `${y}-${String(m + 1).padStart(2, '0')}-18`;
+    const toY = m === 11 ? y + 1 : y;
+    const toM = m === 11 ? 1 : m + 2;
+    const toDate = `${toY}-${String(toM).padStart(2, '0')}-18`;
+    return { fromDate, toDate };
+  }
+
+  onFilterChange() {
+    this.loadData();
+    if (this.tab() === 'map' && this.mapInitialized) {
+      this.loadDeptLayer(this.selectedMapCountry());
+    }
+    this.syncUrl();
+  }
+
+  private syncUrl() {
+    this.router.navigate([], {
+      queryParams: {
+        year: this.yearFilter() || undefined,
+        month: this.monthFilter() || undefined,
+      },
+      replaceUrl: true,
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -186,6 +249,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   private loadDeptLayer(countryCode: string) {
+    const { fromDate, toDate } = this.dateRange();
     const fileMap: Record<string, string> = {
       CO: 'colombia',
       EC: 'ecuador',
@@ -198,7 +262,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     // Load both GeoJSON and department data, then draw
     this.http.get(`/assets/geo/${file}_departments.json`, { responseType: 'json' }).subscribe({
       next: (geo: any) => {
-        this.analytics.regions(countryCode, 'department').subscribe((r) => {
+        this.analytics.regions(countryCode, 'department', fromDate, toDate).subscribe((r) => {
           this.departmentData.set(r);
           this.drawDeptLayer(geo, countryCode);
         });
@@ -281,13 +345,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   // ── Drill-down ──
   onDeptClick(deptName: string, countryCode: string) {
+    const { fromDate, toDate } = this.dateRange();
     this.selectedDept.set(deptName);
     const dept = this.departmentData()?.find(
       (d) => this.normalizeDeptName(d.department, countryCode) === deptName,
     );
     this.selectedDeptInfo.set(dept ? { guests: dept.guests, revenue: dept.revenue } : null);
     this.cityData.set(null);
-    this.analytics.regions(countryCode).subscribe({
+    this.analytics.regions(countryCode, undefined, fromDate, toDate).subscribe({
       next: (r) =>
         this.cityData.set(
           r.filter((c) => this.normalizeDeptName(c.department, countryCode) === deptName),
