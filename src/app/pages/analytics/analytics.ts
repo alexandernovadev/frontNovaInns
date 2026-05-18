@@ -318,7 +318,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     const months = d.monthly.map((m) => m.month.slice(-2) + '/' + m.month.slice(2, 4));
     this.monthlyOptions = {
       tooltip: { trigger: 'axis' },
-      legend: { data: ['Esperado', 'Recibido'], textStyle: { color: '#B3B3B8' } },
+      legend: { data: ['Pendiente', 'Recibido'], textStyle: { color: '#B3B3B8' } },
       grid: { left: 60, right: 20, top: 40, bottom: 30 },
       xAxis: {
         type: 'category',
@@ -337,9 +337,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       },
       series: [
         {
-          name: 'Esperado',
+          name: 'Pendiente',
           type: 'bar',
-          data: d.monthly.map((m) => m.expected),
+          data: d.monthly.map((m) => m.pending),
           itemStyle: { color: '#F2C200', borderRadius: [4, 4, 0, 0] },
         },
         {

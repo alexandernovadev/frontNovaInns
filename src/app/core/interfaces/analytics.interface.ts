@@ -3,7 +3,7 @@ export interface DashboardData {
     totalExpected: number; totalReceived: number; totalPending: number;
     bookingCount: number; avgTotal: number; avgNights: number;
   };
-  monthly: { month: string; expected: number; received: number; count: number }[];
+  monthly: { month: string; pending: number; received: number; count: number }[];
   platforms: { platform: string; total: number; count: number }[];
   payments: { method: string; total: number; count: number }[];
   occupancy: { month: string; occupiedNights: number; availableNights: number; occupancyPct: number; revenue: number; count: number }[];
