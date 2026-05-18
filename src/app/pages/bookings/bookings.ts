@@ -97,32 +97,33 @@ export class BookingsComponent implements OnInit {
 
   ngOnInit() {
     this.load();
-    this.loadSummary();
+  }
+
+  private dateRange(): { fromDate?: string; toDate?: string } {
+    if (!this.yearFilter() || !this.monthFilter()) return {};
+    const y = parseInt(this.yearFilter());
+    const m = parseInt(this.monthFilter());
+    const fromDate = `${y}-${String(m + 1).padStart(2, '0')}-18`;
+    const toY = m === 11 ? y + 1 : y;
+    const toM = m === 11 ? 1 : m + 2;
+    const toDate = `${toY}-${String(toM).padStart(2, '0')}-18`;
+    return { fromDate, toDate };
   }
 
   load(page = 1) {
-    let fromDate: string | undefined;
-    let toDate: string | undefined;
-    if (this.yearFilter() && this.monthFilter()) {
-      const y = parseInt(this.yearFilter());
-      const m = parseInt(this.monthFilter());
-      // from = YYYY-(m+1)-18  ex: m=3 (Abr) → 2026-04-18
-      fromDate = `${y}-${String(m + 1).padStart(2, '0')}-18`;
-      // se m=11 (Dez), o "to" pula pro ano seguinte → 2027-01-18
-      const toY = m === 11 ? y + 1 : y;
-      const toM = m === 11 ? 1 : m + 2;
-      toDate = `${toY}-${String(toM).padStart(2, '0')}-18`;
-    }
+    const { fromDate, toDate } = this.dateRange();
     loadList(
       this.loading,
       this.bookings,
       this.meta,
       this.bookingsService.findAll({ search: this.search, status: this.statusFilter, platform: this.platformFilter, page, fromDate, toDate }),
     );
+    this.loadSummary();
   }
 
   loadSummary() {
-    this.bookingsService.financialSummary().subscribe({ next: s => this.summary.set(s) });
+    const { fromDate, toDate } = this.dateRange();
+    this.bookingsService.financialSummary(fromDate, toDate).subscribe({ next: s => this.summary.set(s) });
   }
 
   openDetail(b: IBooking) { this.router.navigate(['/bookings', b._id]); }

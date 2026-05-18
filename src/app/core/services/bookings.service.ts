@@ -41,8 +41,8 @@ export class BookingsService {
     return this.http.patch<IBooking>(`${API}/bookings/${id}/payment`, { amount });
   }
 
-  financialSummary() {
-    return this.http.get<FinancialSummary>(`${API}/bookings/summary/financial`);
+  financialSummary(fromDate?: string, toDate?: string) {
+    return this.http.get<FinancialSummary>(`${API}/bookings/summary/financial`, { params: buildParams({ fromDate, toDate }) });
   }
 
   uploadImage(file: File) {
