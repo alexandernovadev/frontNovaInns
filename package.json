@@ -6,7 +6,7 @@
     "ng": "ng",
     "tw": "npx @tailwindcss/cli -i src/tailwind.input.css -o src/styles.css",
     "tw:watch": "npm run tw -- --watch",
-    "start": "npm run gen-version && concurrently \"npm:tw:watch\" \"ng serve\"",
+    "start": "concurrently \"npm:tw:watch\" \"ng serve\"",
     "build": "npm run gen-version && npm run tw && ng build",
     "gen-version": "node scripts/gen-version.mjs",
     "test": "ng test"
