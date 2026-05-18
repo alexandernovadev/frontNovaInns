@@ -271,6 +271,12 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     });
   }
 
+  private deptColors = [
+    '#EF4444','#F97316','#EAB308','#22C55E','#14B8A6','#06B6D4',
+    '#3B82F6','#8B5CF6','#D946EF','#EC4899','#F43F5E','#84CC16',
+    '#10B981','#0EA5E9','#6366F1','#A855F7','#F59E0B','#65A30D',
+  ];
+
   private drawDeptLayer(geo: any, countryCode: string) {
     if (!this.map) return;
     if (this.geoLayer) {
@@ -279,7 +285,12 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     }
 
     const deptList = this.departmentData();
-    const maxGuests = Math.max(...(deptList?.map((d) => d.guests) ?? [1]), 1);
+    const colorMap = new Map<string, string>();
+    if (deptList) {
+      deptList.forEach((d, i) => {
+        colorMap.set(d.department, this.deptColors[i % this.deptColors.length]);
+      });
+    }
 
     this.geoLayer = L.geoJSON(geo, {
       style: (feature: any) => {
@@ -288,13 +299,13 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           (d) => this.normalizeDeptName(d.department, countryCode) === name,
         );
         const guests = dept?.guests ?? 0;
-        const intensity = maxGuests > 0 ? guests / maxGuests : 0;
         if (guests > 0) {
+          const c = colorMap.get(dept!.department) || '#F2C200';
           return {
-            color: 'rgba(242,194,0,0.6)',
+            color: c,
             weight: 2,
-            fillColor: `rgba(242,194,0,${0.15 + intensity * 0.6})`,
-            fillOpacity: 0.85,
+            fillColor: c,
+            fillOpacity: 0.7,
           };
         }
         return {
