@@ -190,7 +190,7 @@ export class BookingFormComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/bookings']);
+    this.router.navigate(['/bookings'], { queryParamsHandling: 'preserve' });
   }
 
   submit() {
@@ -243,7 +243,7 @@ export class BookingFormComponent implements OnInit {
     req$.subscribe({
       next: () => {
         this.saving.set(false);
-        this.router.navigate(['/bookings']);
+        this.router.navigate(['/bookings'], { queryParamsHandling: 'preserve' });
       },
       error: () => this.saving.set(false),
     });

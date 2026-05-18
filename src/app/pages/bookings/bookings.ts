@@ -156,7 +156,7 @@ export class BookingsComponent implements OnInit {
   openCreate()            { this.router.navigate(['/bookings/new']); }
   openEdit(b: IBooking, e: Event) {
     e.stopPropagation();
-    this.router.navigate(['/bookings', b._id, 'edit']);
+    this.router.navigate(['/bookings', b._id, 'edit'], { queryParamsHandling: 'preserve' });
   }
 
   openDeleteConfirm(b: IBooking, e: Event) {
