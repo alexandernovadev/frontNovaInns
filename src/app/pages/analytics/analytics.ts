@@ -8,6 +8,7 @@ import { AnalyticsService } from '../../core/services/analytics.service';
 import { DashboardData, VacancyData } from '../../core/interfaces';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
+import { fmtNumber } from '../../shared/utils/number.util';
 import {
   LucideAngularModule,
   BarChart3,
@@ -419,7 +420,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   private buildPlatformOptions(d: DashboardData) {
     this.platformOptions = {
-      tooltip: { trigger: 'item', formatter: '{b}: ${c}' },
+      tooltip: { trigger: 'item', formatter: (p: any) => `${p.name}: $${fmtNumber(p.value)} (${p.percent}%)` },
       series: [
         {
           type: 'pie',
@@ -436,7 +437,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   private buildPaymentOptions(d: DashboardData) {
     this.paymentOptions = {
-      tooltip: { trigger: 'item', formatter: '{b}: ${c}' },
+      tooltip: { trigger: 'item', formatter: (p: any) => `${p.name}: $${fmtNumber(p.value)} (${p.percent}%)` },
       series: [
         {
           type: 'pie',
