@@ -315,15 +315,15 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   // (intentionally blank — vacancy chart removed)
 
   private buildMonthlyOptions(d: DashboardData) {
-    const months = d.monthly.map((m) => m.month.slice(-2) + '/' + m.month.slice(2, 4));
+    const months = d.monthly.map((m) => m.month);
     this.monthlyOptions = {
       tooltip: { trigger: 'axis' },
       legend: { data: ['Pendiente', 'Recibido'], textStyle: { color: '#B3B3B8' } },
-      grid: { left: 60, right: 20, top: 40, bottom: 30 },
+      grid: { left: 60, right: 20, top: 40, bottom: 60 },
       xAxis: {
         type: 'category',
         data: months,
-        axisLabel: { color: '#6E6E73' },
+        axisLabel: { color: '#6E6E73', rotate: 30, fontSize: 11 },
         axisLine: { lineStyle: { color: '#2A2A2E' } },
       },
       yAxis: {
