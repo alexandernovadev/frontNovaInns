@@ -104,6 +104,7 @@ export class BookingsComponent implements OnInit {
     if (p['year']) this.yearFilter.set(p['year']);
     if (p['month']) this.monthFilter.set(p['month']);
     this.load();
+    this.syncUrl();
   }
 
   private dateRange(): { fromDate?: string; toDate?: string } {
