@@ -75,6 +75,8 @@
   @if (tab() === 'info') {
     <div class="space-y-5">
 
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
       <!-- Estancia -->
       <div class="bg-surface border border-border rounded-2xl overflow-hidden">
         <div class="flex items-center gap-2 px-5 py-4 border-b border-indigo-500/20 bg-indigo-500/5">
@@ -82,7 +84,6 @@
           <span class="text-indigo-400 font-semibold text-sm">Estancia</span>
         </div>
 
-        <!-- Mobile: col · Desktop: row with separator -->
         <div class="p-4 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:items-stretch">
 
           <!-- Check-in -->
@@ -120,7 +121,7 @@
       </div>
 
       <!-- Facturación -->
-      <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+      <div class="bg-surface border border-border rounded-2xl overflow-hidden lg:row-span-2">
         <div class="flex items-center gap-2 px-5 py-4 border-b border-brand/20 bg-brand/5">
           <lucide-icon [img]="CreditCard" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
           <span class="text-brand font-semibold text-sm">Facturación</span>
@@ -220,7 +221,8 @@
         </div>
       </div>
 
-      <!-- Observaciones -->
+      <!-- Observaciones (left column, below Estancia) -->
+      <div class="lg:col-start-1">
       @if (b.observations) {
         <div class="bg-surface border border-border rounded-2xl overflow-hidden">
           <div class="flex items-center gap-2 px-5 py-4 border-b border-border">
@@ -232,6 +234,9 @@
           </div>
         </div>
       }
+      </div>
+
+      </div>
 
     </div>
   }
