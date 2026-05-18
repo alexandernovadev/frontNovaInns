@@ -217,4 +217,6 @@ export class BookingsComponent implements OnInit {
 
   paidPct(b: IBooking) { return this.bookingsService.paidPct(b); }
 
+  readonly today = new Date().toISOString().split('T')[0];
+
 }
