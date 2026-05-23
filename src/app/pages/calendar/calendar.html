@@ -1,4 +1,5 @@
-<div class="p-3 sm:p-4 space-y-3">
+<div class="p-6 space-y-6">
+
   <!-- Header -->
   <div class="flex items-center justify-between">
     <div>
@@ -6,14 +7,16 @@
         <lucide-icon [img]="CalendarDays" class="w-6 h-6 text-brand" [strokeWidth]="2" />
         Calendario
       </h1>
-      <p class="text-text-secondary text-xs">Vista anual de reservas y festivos</p>
+      <p class="text-text-secondary text-sm mt-0.5">Vista anual de reservas y festivos</p>
     </div>
     <div class="flex items-center gap-3">
-      <button (click)="prevYear()" class="flex items-center gap-1 text-text-secondary hover:text-text-primary px-3 py-1.5 rounded-xl hover:bg-surface transition-colors cursor-pointer">
+      <button (click)="prevYear()"
+        class="flex items-center justify-center w-9 h-9 text-text-secondary hover:text-text-primary glass rounded-xl hover:bg-white/10 transition-all cursor-pointer">
         <lucide-icon [img]="ChevronLeft" class="w-4 h-4" [strokeWidth]="2" />
       </button>
-      <span class="text-text-primary text-lg font-bold" style="min-width:80px;text-align:center">{{ year() }}</span>
-      <button (click)="nextYear()" class="flex items-center gap-1 text-text-secondary hover:text-text-primary px-3 py-1.5 rounded-xl hover:bg-surface transition-colors cursor-pointer">
+      <span class="text-text-primary text-xl font-bold min-w-[88px] text-center select-none">{{ year() }}</span>
+      <button (click)="nextYear()"
+        class="flex items-center justify-center w-9 h-9 text-text-secondary hover:text-text-primary glass rounded-xl hover:bg-white/10 transition-all cursor-pointer">
         <lucide-icon [img]="ChevronRight" class="w-4 h-4" [strokeWidth]="2" />
       </button>
     </div>
@@ -22,43 +25,59 @@
   @if (loading()) {
   <div class="text-center py-16 text-text-disabled">Cargando...</div>
   } @else {
+
   <!-- Legend -->
-  <div class="flex items-center gap-4 text-xs text-text-secondary">
-    <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-error"></span> Festivo</span>
-    <span class="flex items-center gap-2"><span class="w-5 h-3 rounded-sm" style="background:rgba(242,194,0,0.25);border:2px solid #F2C200"></span> Reserva</span>
-    <span class="flex items-center gap-2"><span class="w-3 h-3 rounded-sm" style="background:var(--color-blue-500)"></span> Hoy</span>
+  <div class="flex items-center gap-5 text-xs text-text-secondary">
+    <span class="flex items-center gap-2">
+      <span class="w-3 h-3 rounded-full bg-red-400/60"></span> Festivo
+    </span>
+    <span class="flex items-center gap-2">
+      <span class="w-3 h-3 rounded-sm" style="background:rgba(20,184,166,0.5)"></span> Reserva
+    </span>
+    <span class="flex items-center gap-2">
+      <span class="w-3 h-3 rounded-sm bg-brand"></span> Hoy
+    </span>
+    <span class="flex items-center gap-2">
+      <span class="w-0.5 h-3 rounded-full bg-violet-400"></span> Corte ciclo
+    </span>
   </div>
 
-  <!-- Calendar grid: 4 columns x 3 rows -->
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+  <!-- Calendar grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
     @for (month of months(); track month.month) {
-    <div class="bg-surface border border-border rounded-lg p-1.5 overflow-visible">
-      <h3 class="text-text-primary font-semibold" style="font-size:9px;text-align:center;margin-bottom:2px">{{ month.name }}</h3>
+    <div class="glass rounded-2xl p-3">
+      <h3 class="text-text-primary font-semibold text-sm text-center mb-2.5">{{ month.name }}</h3>
+
       <!-- Day headers -->
-      <div class="grid grid-cols-7" style="gap:1px">
+      <div class="grid grid-cols-7 gap-0.5 mb-1.5">
         @for (h of dayHeaders; track h) {
-        <span class="text-text-disabled" style="font-size:8px;text-align:center;font-weight:500">{{ h }}</span>
+        <span class="text-text-secondary text-[11px] text-center font-semibold leading-none tracking-wider uppercase">{{ h }}</span>
         }
       </div>
-      <!-- Days -->
-      <div class="grid grid-cols-7" style="gap:1px">
+
+      <!-- Days grid -->
+      <div class="grid grid-cols-7 gap-0.5">
         @for (day of month.days; track $index) {
         @if (day.isPadding) {
-        <div></div>
+        <div class="h-6"></div>
         } @else {
-        <!-- day cell -->
-        <div class="day-cell"
+        <div
+          class="day-cell"
           (click)="onDayClick($event, day)"
           [ngClass]="{
             'holiday': !!day.holiday,
             'today': day.isToday && !day.holiday,
             'has-booking': day.bookings.length > 0,
+            'day-18': day.day === 18,
             'plain': !day.holiday && !day.isToday
           }"
         >
           <span class="day-num">{{ day.day }}</span>
           @if (day.holiday) {
-          <span class="holiday-tooltip">{{ day.holiday }}</span>
+          <span class="holiday-name">{{ day.holiday }}</span>
+          }
+          @if (day.bookings.length > 0 && (day.holiday || day.isToday)) {
+          <span class="booking-dot-white"></span>
           }
         </div>
         }
@@ -72,21 +91,24 @@
   <!-- Popover -->
   @if (popover(); as p) {
   <div
-    class="fixed z-50 bg-surface border border-border rounded-2xl shadow-2xl"
-    style="left:{{ p.x }}px;top:{{ p.y }}px;padding:16px;min-width:240px"
+    class="fixed z-50 min-w-[280px] p-4 rounded-2xl shadow-2xl backdrop-blur-xl"
+    style="left:{{ p.x }}px;top:{{ p.y }}px;background:rgba(11,11,12,0.94);border:1px solid rgba(255,255,255,0.08)"
     (click)="$event.stopPropagation()"
     (wheel)="$event.stopPropagation()"
   >
-    <p class="text-text-primary font-bold text-xs mb-2">{{ p.dayStr }}</p>
-    <div class="space-y-1.5">
+    <p class="text-text-primary font-bold text-sm mb-3">{{ p.dayStr }}</p>
+    <div class="space-y-2">
       @for (b of p.bookings; track b._id) {
-      <div class="border-b border-border/50 pb-1.5 last:border-0 last:pb-0">
-        <a [routerLink]="['/bookings', b._id]" class="text-text-primary text-xs font-semibold hover:text-brand transition-colors cursor-pointer">{{ b.group.host.fullName }}</a>
-        <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-secondary mt-0.5">
-          <span class="text-text-primary font-medium">{{ b.billing.totalAmount | currencyCop }}</span>
-          <span>·</span>
+      <div class="border-b border-white/5 pb-2 last:border-0 last:pb-0">
+        <a [routerLink]="['/bookings', b._id]"
+          class="text-text-primary text-sm font-semibold hover:text-brand transition-colors cursor-pointer">
+          {{ b.group.host.fullName }}
+        </a>
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-text-secondary mt-1">
+          <span class="text-brand font-semibold">{{ b.billing.totalAmount | currencyCop }}</span>
+          <span class="text-text-disabled">·</span>
           <span>{{ nights(b) }}n</span>
-          <span>·</span>
+          <span class="text-text-disabled">·</span>
           <span>{{ aptName(b) }}</span>
         </div>
       </div>
@@ -94,4 +116,5 @@
     </div>
   </div>
   }
+
 </div>

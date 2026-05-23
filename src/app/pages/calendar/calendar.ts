@@ -59,7 +59,7 @@ export class CalendarComponent implements OnInit {
       const from = new Date(fromY, fromM - 1, fromD);
       const to   = new Date(toY,   toM - 1, toD);
       const d = new Date(from);
-      while (d <= to) {
+      while (d < to) {
         const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
         if (!bkMap.has(key)) bkMap.set(key, []);
         bkMap.get(key)!.push(b);

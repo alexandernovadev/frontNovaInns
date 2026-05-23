@@ -1,80 +1,72 @@
 .day-cell {
-  height: 22px;
+  height: 24px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  border-radius: 3px;
+  border-radius: 6px;
   cursor: pointer;
   position: relative;
-  transition: background .15s;
+  transition: all .12s ease;
+  user-select: none;
 }
+
 .day-cell.plain { color: var(--color-text-primary); }
-.day-cell.plain:hover { background: var(--color-hover); }
+.day-cell.plain:hover { background: rgba(255,255,255,0.06); }
 
-.day-cell.holiday {
-  background: rgba(239,68,68,.18);
-  color: var(--color-error);
-  font-weight: 700;
-  border-radius: 50%;
-}
-.day-cell.holiday.has-booking {
-  outline: none;
-  border-top: 2px solid var(--color-error);
-  border-bottom: 2px solid var(--color-warning);
-  border-left: 2px solid var(--color-warning);
-  border-right: 2px solid var(--color-warning);
-  border-radius: 3px;
-  background: rgba(239,68,68,.18);
-  color: #fff;
-}
-.day-cell.today {
-  background: var(--color-blue-500);
-  color: #fff;
-  font-weight: 700;
-  font-size: 15px;
-  border-radius: 3px;
-}
-.day-cell.has-booking {
-  outline: 2px solid var(--color-warning);
-  outline-offset: -2px;
-  background: rgba(242,194,0,.08);
-}
-.day-cell.today.has-booking {
-  outline: 2px solid var(--color-warning);
-  outline-offset: -2px;
-  background: var(--color-blue-500);
-  color: #fff;
-}
+/* Booking bg (lowest priority) */
+.day-cell.has-booking:not(.holiday):not(.today) { background: rgba(20,184,166,0.14); }
+.day-cell.has-booking:not(.holiday):not(.today):hover { background: rgba(20,184,166,0.22); }
 
-.day-num { position: relative; z-index: 1; }
+/* Holiday bg */
+.day-cell.holiday:not(.today) { background: rgba(239,68,68,0.14); color: #FCA5A5; }
+.day-cell.holiday:not(.today):hover { background: rgba(239,68,68,0.22); }
 
-/* Custom holiday tooltip on hover */
-.holiday-tooltip {
-  display: none;
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--color-bg);
-  color: var(--color-text-primary);
-  font-size: 11px;
-  font-weight: 500;
-  padding: 4px 10px;
-  border-radius: 8px;
-  white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(0,0,0,.3);
-  border: 1px solid var(--color-border);
-  z-index: 10;
-  pointer-events: none;
-}
-.holiday-tooltip::after {
+/* Today bg (highest priority) */
+.day-cell.today { background: var(--color-brand); color: var(--color-bg); }
+.day-cell.today:hover { background: color-mix(in srgb, var(--color-brand) 85%, white); }
+
+/* Day 18 — violet bar */
+.day-cell.day-18::before {
   content: '';
   position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-top-color: var(--color-border);
+  left: 1px;
+  top: 3px;
+  bottom: 3px;
+  width: 2px;
+  border-radius: 2px;
+  background: #8B5CF6;
+  pointer-events: none;
 }
-.day-cell.holiday:hover .holiday-tooltip { display: block; }
+
+/* White booking dot (on red/gold backgrounds) */
+.booking-dot-white {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.6);
+  flex-shrink: 0;
+}
+
+/* Holiday name */
+.holiday-name {
+  font-size: 6px;
+  line-height: 1;
+  color: #FCA5A5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 28px;
+}
+.day-cell.today .holiday-name { color: var(--color-bg); }
+
+/* Day number */
+.day-num { font-size: 15px; line-height: 1; font-weight: 600; }
+.day-cell.today .day-num { font-weight: 800; font-size: 17px; }
+
+/* Popover animation */
+@keyframes popoverIn {
+  from { opacity: 0; transform: translateY(4px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.fixed.z-50 { animation: popoverIn 0.15s ease-out; }
