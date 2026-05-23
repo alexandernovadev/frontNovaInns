@@ -101,9 +101,15 @@ export class CalendarComponent implements OnInit {
       return;
     }
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const popoverWidth = 300;
+    const popoverHeight = Math.min(day.bookings.length * 56 + 60, 360);
+    let x = rect.left;
+    let y = rect.bottom + 4;
+    if (x + popoverWidth > window.innerWidth) x = window.innerWidth - popoverWidth - 8;
+    if (y + popoverHeight > window.innerHeight) y = rect.top - popoverHeight - 4;
     this.popover.set({
-      x: rect.left,
-      y: rect.bottom + 4,
+      x: Math.max(8, x),
+      y: Math.max(8, y),
       dayStr: day.dateStr,
       bookings: day.bookings,
     });

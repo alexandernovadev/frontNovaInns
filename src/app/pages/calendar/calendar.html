@@ -76,8 +76,11 @@
           @if (day.holiday) {
           <span class="holiday-name">{{ day.holiday }}</span>
           }
-          @if (day.bookings.length > 0 && (day.holiday || day.isToday)) {
+          @if (day.bookings.length > 0 && day.holiday) {
           <span class="booking-dot-white"></span>
+          }
+          @if (day.bookings.length > 0 && day.isToday && !day.holiday) {
+          <span class="booking-line-green"></span>
           }
         </div>
         }
@@ -91,8 +94,8 @@
   <!-- Popover -->
   @if (popover(); as p) {
   <div
-    class="fixed z-50 min-w-[280px] p-4 rounded-2xl shadow-2xl backdrop-blur-xl"
-    style="left:{{ p.x }}px;top:{{ p.y }}px;background:rgba(11,11,12,0.94);border:1px solid rgba(255,255,255,0.08)"
+    class="fixed z-50 min-w-[280px] p-4 rounded-2xl shadow-2xl backdrop-blur-xl overflow-y-auto"
+    style="left:{{ p.x }}px;top:{{ p.y }}px;max-height:360px;background:rgba(11,11,12,0.94);border:1px solid rgba(255,255,255,0.08)"
     (click)="$event.stopPropagation()"
     (wheel)="$event.stopPropagation()"
   >

@@ -39,12 +39,21 @@
   pointer-events: none;
 }
 
-/* White booking dot (on red/gold backgrounds) */
+/* White booking dot (on red backgrounds) */
 .booking-dot-white {
   width: 3px;
   height: 3px;
   border-radius: 50%;
   background: rgba(255,255,255,0.6);
+  flex-shrink: 0;
+}
+
+/* Green line (today + booking) */
+.booking-line-green {
+  width: 14px;
+  height: 2px;
+  border-radius: 2px;
+  background: #14B8A6;
   flex-shrink: 0;
 }
 
