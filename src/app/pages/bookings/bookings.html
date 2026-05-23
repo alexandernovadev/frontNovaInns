@@ -11,6 +11,14 @@
         <span>{{ meta().total }} reservas</span>
         <span class="text-text-disabled">·</span>
         <span class="bg-blue-800 text-blue-100 text-xs font-semibold px-2 py-0.5 rounded-lg">{{ today | dateEs }}</span>
+        <button (click)="toggleView()" title="{{ viewMode() === 'cards' ? 'Vista tabla' : 'Vista tarjetas' }}"
+          class="ml-1 p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-all cursor-pointer">
+          @if (viewMode() === 'cards') {
+          <lucide-icon [img]="Rows3" class="w-4 h-4" [strokeWidth]="2" />
+          } @else {
+          <lucide-icon [img]="LayoutGrid" class="w-4 h-4" [strokeWidth]="2" />
+          }
+        </button>
       </p>
     </div>
     <div class="flex items-center gap-2">
@@ -74,12 +82,13 @@
     </select>
   </div>
 
-  <!-- Cards -->
   @if (loading()) {
   <div class="text-center py-16 text-text-disabled">Cargando...</div>
   } @else if (bookings().length === 0) {
   <div class="text-center py-16 text-text-disabled">Sin reservas</div>
   } @else {
+
+  @if (viewMode() === 'cards') {
   <div class="grid gap-4 grid-cols-2 xl:grid-cols-4">
     @for (b of bookings(); track b._id) {
     <div
@@ -212,6 +221,99 @@
     </div>
     }
   </div>
+  } @else {
+
+  <!-- ═══════════ TABLE VIEW ═══════════ -->
+  <div class="glass rounded-2xl overflow-hidden overflow-x-auto">
+    <table class="text-sm min-w-[720px] w-full">
+      <thead>
+        <tr class="border-b border-white/5 text-text-disabled text-xs uppercase tracking-wider font-semibold">
+          <th class="text-left px-4 py-3 w-[56px]">Plataforma</th>
+          <th class="text-left px-2 py-3">Huésped</th>
+          <th class="text-left px-2 py-3 hidden sm:table-cell">Apartamento</th>
+          <th class="text-left px-2 py-3">Estadía</th>
+          <th class="text-right px-2 py-3">Total</th>
+          <th class="text-center px-2 py-3 hidden lg:table-cell">Estado</th>
+          <th class="px-2 py-3 w-[72px]"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (b of bookings(); track b._id) {
+        <tr class="border-b border-white/[0.03] hover:bg-white/[0.03] transition-colors cursor-pointer"
+          (click)="openDetail(b)">
+          <td class="px-4 py-3">
+            <span class="p-1.5 rounded-xl flex items-center w-fit" [class]="PLATFORM_CLASS[b.billing.platform]">
+              <platform-icon [platform]="b.billing.platform" size="sm" />
+            </span>
+          </td>
+          <td class="px-2 py-3">
+            <div class="flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 text-text-disabled shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <div class="min-w-0">
+                <p class="text-text-primary font-medium truncate">{{ b.group.host.fullName }}</p>
+                <p class="text-text-disabled text-[11px]">{{ totalGuests(b) }} {{ totalGuests(b) === 1 ? 'huésped' : 'huéspedes' }}</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-2 py-3 hidden sm:table-cell">
+            <p class="text-text-primary truncate max-w-[140px]">{{ aptName(b) }}</p>
+          </td>
+          <td class="px-2 py-3">
+            <div class="flex items-center gap-1.5 text-xs">
+              <span class="text-text-primary whitespace-nowrap">{{ b.stay.checkIn | dateEs:'short' }}</span>
+              <svg class="w-3 h-3 text-brand shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+              <span class="text-text-primary whitespace-nowrap">{{ b.stay.checkOut | dateEs:'short' }}</span>
+              <span class="text-brand text-[11px] font-bold px-1.5 py-0.5 bg-brand/10 rounded-md ml-1 whitespace-nowrap">{{ nights(b) }}n</span>
+            </div>
+          </td>
+          <td class="px-2 py-3 text-right">
+            <p class="text-text-primary font-bold whitespace-nowrap">{{ b.billing.totalAmount | currencyCop }}</p>
+            <div class="flex items-center justify-end gap-1.5 mt-1">
+              <div class="w-16 h-1 bg-bg rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all" [style.width.%]="paidPct(b)"
+                  [class]="paidPct(b) === 100 ? 'bg-success' : 'bg-warning'"></div>
+              </div>
+              @if (pending(b) > 0) {
+              <span class="text-warning text-[11px] font-semibold whitespace-nowrap">{{ pending(b) | currencyCop }}</span>
+              }
+            </div>
+          </td>
+          <td class="px-2 py-3 hidden lg:table-cell text-center">
+            <status-badge [value]="b.billing.status" type="billing" />
+          </td>
+          <td class="px-2 py-3">
+            <div class="flex items-center gap-1" (click)="$event.stopPropagation()">
+              <button (click)="openEdit(b, $event)" title="Editar"
+                class="p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                </svg>
+              </button>
+              <button (click)="openPayment(b, $event)" title="Pago"
+                class="p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                </svg>
+              </button>
+              <button (click)="openDeleteConfirm(b, $event)" title="Borrar"
+                class="p-1.5 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  }
 
   <app-pagination [page]="meta().page" [totalPages]="meta().totalPages" (pageChange)="load($event)" />
   }

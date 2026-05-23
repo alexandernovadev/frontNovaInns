@@ -12,7 +12,7 @@ import { DateEsPipe } from '../../shared/pipes/date-es.pipe';
 import { fmtNumber } from '../../shared/utils/number.util';
 import { PLATFORMS, PLATFORM_CLASS, STATUSES } from '../../shared/constants/booking.constants';
 import { AlertService } from '../../shared/components/services/alert.service';
-import { LucideAngularModule, CalendarDays } from 'lucide-angular';
+import { LucideAngularModule, CalendarDays, LayoutGrid, Rows3 } from 'lucide-angular';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { loadList } from '../../shared/utils/list.util';
 import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delete.util';
@@ -25,6 +25,8 @@ import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delet
 })
 export class BookingsComponent implements OnInit {
   readonly CalendarDays = CalendarDays;
+  readonly LayoutGrid = LayoutGrid;
+  readonly Rows3 = Rows3;
 
   private bookingsService    = inject(BookingsService);
   private router = inject(Router);
@@ -36,6 +38,16 @@ export class BookingsComponent implements OnInit {
   summary   = signal<FinancialSummary>({ totalExpected: 0, totalReceived: 0, totalPending: 0 });
   loading   = signal(false);
   saving    = signal(false);
+
+  viewMode = signal<'cards' | 'table'>(localStorage.getItem('bookingsView') as 'cards' | 'table' || 'cards');
+
+  toggleView() {
+    this.viewMode.update(m => {
+      const next = m === 'cards' ? 'table' : 'cards';
+      localStorage.setItem('bookingsView', next);
+      return next;
+    });
+  }
 
   search         = '';
   statusFilter   = '';
