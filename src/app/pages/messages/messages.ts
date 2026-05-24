@@ -172,6 +172,7 @@ Cuando estén cerca o lleguen al pueblo, sigan la ubicación que les envié. Si 
 Conductor: [Nombre]
 Vehículo: LWL-630
 Ubicación: Carrera 15 # 4 - [completar]
+Valor: $10.000 COP
 
 El taxi te está esperando en la dirección indicada. Si no lo ves, escríbeme y te ayudo a ubicarlo. 📲`,
     },
