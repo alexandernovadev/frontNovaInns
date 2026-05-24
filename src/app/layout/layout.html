@@ -15,12 +15,12 @@
     [class.-translate-x-full]="!sidebarOpen()"
   >
     <!-- Logo -->
-    <div class="flex items-center justify-center py-6 border-b border-border">
+    <a routerLink="/bookings" class="flex items-center justify-center py-6 border-b border-border cursor-pointer">
       @if (collapsed()) {
         <img src="assets/images/LogoNovaInns.png" alt="Nova Inns" class="hidden lg:block w-10 h-10 object-contain" />
       }
       <img src="assets/images/LogoNovaInns.png" alt="Nova Inns" class="w-36 h-36 object-contain" [class.lg:hidden]="collapsed()" />
-    </div>
+    </a>
 
     <!-- Collapse toggle (desktop only) -->
     <button (click)="toggleCollapsed()"
