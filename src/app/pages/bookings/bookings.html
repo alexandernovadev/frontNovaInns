@@ -77,11 +77,11 @@
       [readonly]="true"
       placeholder="Todas las plataformas" />
     <autocomplete-select
-      [options]="LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }))"
+      [options]="[{ label: 'Todos los estados', value: '' }, ...LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }))]"
       [value]="lifecycleFilter()"
       (valueChange)="lifecycleFilter.set($event); onFilterChange()"
       [readonly]="true"
-      placeholder="Todo estado" />
+      placeholder="Todos los estados" />
     <autocomplete-select
       [options]="STATUSES.filter(s => s !== 'NO SHOW').map(s => ({ label: s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s, value: s }))"
       [value]="statusFilter"
