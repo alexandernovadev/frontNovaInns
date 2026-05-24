@@ -54,7 +54,8 @@ export class BookingsComponent implements OnInit {
 
   updateLifecycleStatus(b: IBooking, e: Event) {
     e.stopPropagation();
-    const next = b.stay.status === 'PENDIENTE' ? 'CHECK-IN' : b.stay.status === 'CHECK-IN' ? 'CHECK-OUT' : 'PENDIENTE';
+    if (b.stay.status === 'CHECK-OUT') return;
+    const next = b.stay.status === 'PENDIENTE' ? 'CHECK-IN' : 'CHECK-OUT';
     this.bookingsService.updateStatus(b._id, next).subscribe({
       next: (updated) => {
         this.bookings.update(list => list.map(item => item._id === updated._id ? updated : item));

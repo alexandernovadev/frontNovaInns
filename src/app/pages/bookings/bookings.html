@@ -221,9 +221,11 @@
 
   <div class="flex items-center justify-between flex-wrap gap-2">
           <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 rounded-lg text-[11px] font-semibold cursor-pointer whitespace-nowrap"
+            <span class="px-2 py-0.5 rounded-lg text-[11px] font-semibold whitespace-nowrap select-none"
               [class]="LIFECYCLE_CLASS[b.stay.status || 'PENDIENTE']"
-              (click)="updateLifecycleStatus(b, $event)" title="Cambiar estado">
+              [class.opacity-60]="b.stay.status === 'CHECK-OUT'"
+              (click)="updateLifecycleStatus(b, $event)"
+              [title]="b.stay.status === 'CHECK-OUT' ? 'Estado final' : 'Cambiar estado'">
               {{ b.stay.status || 'PENDIENTE' }}
             </span>
             <span class="text-text-disabled text-xs">{{ b.billing.paymentMethod }}</span>
@@ -303,9 +305,11 @@
           </td>
           <td class="px-2 py-3 hidden lg:table-cell">
             <div class="flex flex-col items-center gap-1">
-              <span class="px-2 py-0.5 rounded-lg text-[11px] font-semibold cursor-pointer whitespace-nowrap"
+              <span class="px-2 py-0.5 rounded-lg text-[11px] font-semibold whitespace-nowrap select-none"
                 [class]="LIFECYCLE_CLASS[b.stay.status || 'PENDIENTE']"
-                (click)="updateLifecycleStatus(b, $event)" title="Cambiar estado">
+                [class.opacity-60]="b.stay.status === 'CHECK-OUT'"
+                (click)="updateLifecycleStatus(b, $event)"
+                [title]="b.stay.status === 'CHECK-OUT' ? 'Estado final' : 'Cambiar estado'">
                 {{ b.stay.status || 'PENDIENTE' }}
               </span>
               <status-badge [value]="b.billing.status" type="billing" />
