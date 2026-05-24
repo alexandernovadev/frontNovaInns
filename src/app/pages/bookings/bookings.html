@@ -70,21 +70,24 @@
     <input [(ngModel)]="search" (ngModelChange)="onFilterChange()" placeholder="Buscar por huésped..." class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
              text-text-primary placeholder:text-text-disabled text-sm
              focus:outline-none focus:border-brand transition-colors" />
-    <select [(ngModel)]="platformFilter" (ngModelChange)="onFilterChange()" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-             text-sm focus:outline-none focus:border-brand cursor-pointer">
-      <option value="">Todas las plataformas</option>
-      @for (p of PLATFORMS; track p) { <option [value]="p">{{ p }}</option> }
-    </select>
-    <select [(ngModel)]="lifecycleFilter" (ngModelChange)="onFilterChange()" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-             text-sm focus:outline-none focus:border-brand cursor-pointer">
-      <option value="">Todo estado</option>
-      @for (s of LIFECYCLE_STATUSES; track s) { <option [value]="s">{{ s }}</option> }
-    </select>
-    <select [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-             text-sm focus:outline-none focus:border-brand cursor-pointer">
-      <option value="">Todos los pagos</option>
-      @for (s of STATUSES; track s) { @if (s !== 'NO SHOW') { <option [value]="s">{{ s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s }}</option> } }
-    </select>
+    <autocomplete-select
+      [options]="PLATFORMS.map(p => ({ label: p, value: p }))"
+      [value]="platformFilter"
+      (valueChange)="platformFilter = $event; onFilterChange()"
+      [readonly]="true"
+      placeholder="Todas las plataformas" />
+    <autocomplete-select
+      [options]="LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }))"
+      [value]="lifecycleFilter()"
+      (valueChange)="lifecycleFilter.set($event); onFilterChange()"
+      [readonly]="true"
+      placeholder="Todo estado" />
+    <autocomplete-select
+      [options]="STATUSES.filter(s => s !== 'NO SHOW').map(s => ({ label: s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s, value: s }))"
+      [value]="statusFilter"
+      (valueChange)="statusFilter = $event; onFilterChange()"
+      [readonly]="true"
+      placeholder="Todos los pagos" />
   </div>
 
   @if (loading()) {

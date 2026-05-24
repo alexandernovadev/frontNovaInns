@@ -25,19 +25,18 @@
       class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
              text-text-primary placeholder:text-text-disabled text-sm
              focus:outline-none focus:border-brand transition-colors"/>
-    <select [(ngModel)]="roleFilter" (ngModelChange)="load(1)"
-      class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-             text-sm focus:outline-none focus:border-brand transition-colors cursor-pointer">
-      <option value="">Todos los roles</option>
-      @for (r of roles; track r) { <option [value]="r">{{ roleLabels[r] }}</option> }
-    </select>
-    <select [(ngModel)]="activeFilter" (ngModelChange)="load(1)"
-      class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
-             text-sm focus:outline-none focus:border-brand transition-colors cursor-pointer">
-      <option value="">Todos los estados</option>
-      <option value="true">Activos</option>
-      <option value="false">Inactivos</option>
-    </select>
+    <autocomplete-select
+      [options]="roles.map(r => ({ label: roleLabels[r], value: r }))"
+      [value]="roleFilter"
+      (valueChange)="roleFilter = $event; load(1)"
+      [readonly]="true"
+      placeholder="Todos los roles" />
+    <autocomplete-select
+      [options]="[{ label: 'Activos', value: 'true' }, { label: 'Inactivos', value: 'false' }]"
+      [value]="activeFilter"
+      (valueChange)="activeFilter = $event; load(1)"
+      [readonly]="true"
+      placeholder="Todos los estados" />
   </div>
 
   <!-- Tabla -->
@@ -130,10 +129,12 @@
     </div>
     <div>
       <label class="block text-text-secondary text-sm mb-1.5">Rol</label>
-      <select [(ngModel)]="form.role"
-        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm focus:outline-none focus:border-brand transition-colors cursor-pointer">
-        @for (r of roles; track r) { <option [value]="r">{{ roleLabels[r] }}</option> }
-      </select>
+      <autocomplete-select
+        [options]="roles.map(r => ({ label: roleLabels[r], value: r }))"
+        [value]="form.role"
+        (valueChange)="form.role = $event"
+        [readonly]="true"
+        placeholder="Seleccionar rol" />
     </div>
     @if (errorMsg()) { <p class="text-error text-sm">{{ errorMsg() }}</p> }
   </div>
@@ -169,10 +170,12 @@
     </div>
     <div>
       <label class="block text-text-secondary text-sm mb-1.5">Rol</label>
-      <select [(ngModel)]="form.role"
-        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm focus:outline-none focus:border-brand transition-colors cursor-pointer">
-        @for (r of roles; track r) { <option [value]="r">{{ roleLabels[r] }}</option> }
-      </select>
+      <autocomplete-select
+        [options]="roles.map(r => ({ label: roleLabels[r], value: r }))"
+        [value]="form.role"
+        (valueChange)="form.role = $event"
+        [readonly]="true"
+        placeholder="Seleccionar rol" />
     </div>
     @if (errorMsg()) { <p class="text-error text-sm">{{ errorMsg() }}</p> }
   </div>

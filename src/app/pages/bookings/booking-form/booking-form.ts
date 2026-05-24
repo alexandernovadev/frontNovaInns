@@ -390,6 +390,19 @@ export class BookingFormComponent implements OnInit {
       : '';
   }
 
+  onExtraServiceTypeChange(value: string, idx: number) {
+    this.extraServices[idx] = {
+      ...this.extraServices[idx],
+      type: value as IExtraService['type'],
+      vehicleType: undefined,
+      weightKg: undefined,
+    };
+  }
+
+  onVehicleTypeChange(value: string, idx: number) {
+    this.extraServices[idx] = { ...this.extraServices[idx], vehicleType: value as IExtraService['vehicleType'] };
+  }
+
   // ── Billing ──
   onPriceInput(e: Event, field: 'basePrice' | 'amountReceived') {
     const input = e.target as HTMLInputElement;

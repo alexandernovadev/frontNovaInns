@@ -371,7 +371,7 @@
   </div>
 
   <!-- Servicios extra -->
-  <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+  <div class="bg-surface border border-border rounded-2xl overflow-visible">
     <div class="flex items-center justify-between gap-2 px-4 py-3 border-b border-border">
       <div class="flex items-center gap-2">
         <lucide-icon [img]="Package" class="w-4 h-4 text-text-secondary" [strokeWidth]="2" />
@@ -405,26 +405,23 @@
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div>
             <label class="text-text-disabled text-xs mb-1 block">Tipo</label>
-            <select [(ngModel)]="svc.type" (ngModelChange)="svc.vehicleType = undefined; svc.weightKg = undefined"
-              class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-sm
-                     focus:outline-none focus:border-brand cursor-pointer">
-              @for (t of EXTRA_SERVICE_TYPES; track t) {
-                <option [value]="t">{{ t === 'PARKING' ? 'Parqueadero' : t === 'LAUNDRY' ? 'Lavandería' : 'Otro' }}</option>
-              }
-            </select>
+            <autocomplete-select
+              [options]="EXTRA_SERVICE_TYPES.map(t => ({ label: t === 'PARKING' ? 'Parqueadero' : t === 'LAUNDRY' ? 'Lavandería' : 'Otro', value: t }))"
+              [value]="svc.type"
+              (valueChange)="onExtraServiceTypeChange($event, $index)"
+              [readonly]="true"
+              placeholder="Tipo" />
           </div>
 
           @if (svc.type === 'PARKING') {
             <div>
               <label class="text-text-disabled text-xs mb-1 block">Vehículo</label>
-              <select [(ngModel)]="svc.vehicleType"
-                class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-sm
-                       focus:outline-none focus:border-brand cursor-pointer">
-                <option value="">Seleccionar</option>
-                @for (v of VEHICLE_TYPES; track v) {
-                  <option [value]="v">{{ v === 'CAR' ? 'Auto' : v === 'MOTORCYCLE' ? 'Moto' : v === 'BICYCLE' ? 'Bicicleta' : 'Otro' }}</option>
-                }
-              </select>
+              <autocomplete-select
+                [options]="VEHICLE_TYPES.map(v => ({ label: v === 'CAR' ? 'Auto' : v === 'MOTORCYCLE' ? 'Moto' : v === 'BICYCLE' ? 'Bicicleta' : 'Otro', value: v }))"
+                [value]="svc.vehicleType || ''"
+                (valueChange)="onVehicleTypeChange($event, $index)"
+                [readonly]="true"
+                placeholder="Seleccionar" />
             </div>
           }
 
