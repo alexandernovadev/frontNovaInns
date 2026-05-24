@@ -66,6 +66,8 @@ export class MessagesComponent {
       checkout: 'bg-purple-500/15 text-purple-400',
       pre_welcome: 'bg-amber-500/15 text-amber-400',
       transport: 'bg-cyan-500/15 text-cyan-400',
+      taxi: 'bg-rose-500/15 text-rose-400',
+      improve_id: 'bg-indigo-500/15 text-indigo-400',
     };
     return map[id] || 'bg-surface text-text-secondary';
   }
@@ -88,12 +90,7 @@ export class MessagesComponent {
     }
   }
 
-  templates: ({
-    id: string;
-    title: string;
-    icon: string;
-    text: string;
-  })[] = [
+  templates: MessageTemplate[] = [
     {
       id: 'welcome',
       title: 'Bienvenida — Previo a la llegada',
@@ -165,6 +162,34 @@ Pueden tomar un Uber o aplicación desde el aeropuerto directamente hasta el Por
 
 — Llegada a Zipaquirá —
 Cuando estén cerca o lleguen al pueblo, sigan la ubicación que les envié. Si lo prefieren, puedo coordinar un taxi de confianza para que los recoja en la parada de Zipaquirá y los traiga al apartamento (valor: $10.000 COP).`,
+    },
+    {
+      id: 'taxi',
+      title: 'Llegada — Taxi esperando',
+      icon: '🚖',
+      text: `🚖 ¡Tu taxi ya está esperando!
+
+Conductor: [Nombre]
+Vehículo: LWL-630
+Ubicación: Carrera 15 # 4 - [completar]
+
+El taxi te está esperando en la dirección indicada. Si no lo ves, escríbeme y te ayudo a ubicarlo. 📲`,
+    },
+    {
+      id: 'improve_id',
+      title: 'Mejorar imagen de documento (prompt AI)',
+      icon: '🪪',
+      text: `IMPROVE IMAGE
+
+Restore a low-quality scanned ID document to high-definition.
+Fix blur, noise, and low contrast.
+Reconstruct fine details carefully while preserving original content.
+Sharpen text for readability without altering characters.
+Remove stains, shadows, and uneven lighting.
+Keep document authentic, no hallucinated text or changes.
+Crisp, evenly lit, high-resolution archival scan quality.
+
+NO USE PYTHON, use your image model.`,
     },
   ];
 }
