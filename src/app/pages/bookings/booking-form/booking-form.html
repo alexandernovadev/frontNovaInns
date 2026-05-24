@@ -50,19 +50,18 @@
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
 
   <!-- Apartamento -->
-  <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+  <div class="bg-surface border border-border rounded-2xl overflow-visible">
     <div class="flex items-center gap-2 px-4 py-3 border-b border-border bg-brand/5">
       <lucide-icon [img]="Building2" class="w-4 h-4 text-brand" [strokeWidth]="2" />
       <span class="text-brand text-sm font-semibold">Apartamento</span>
     </div>
     <div class="p-4">
-      <select [(ngModel)]="formGeneral.apartmentId" class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
-                 focus:outline-none focus:border-brand cursor-pointer">
-        <option value="">Seleccionar apartamento</option>
-        @for (a of apartments(); track a._id) {
-        <option [value]="a._id">{{ a.internalName }}</option>
-        }
-      </select>
+      <autocomplete-select
+        [options]="apartmentOptions()"
+        [value]="formGeneral.apartmentId"
+        (valueChange)="formGeneral.apartmentId = $event"
+        [readonly]="true"
+        placeholder="Seleccionar apartamento" />
     </div>
   </div>
 
@@ -112,6 +111,22 @@
          <platform-icon [platform]="p" size="lg" />
        </button>
       }
+    </div>
+  </div>
+
+  <!-- Estado -->
+  <div class="bg-surface border border-border rounded-2xl overflow-visible">
+    <div class="flex items-center gap-2 px-4 py-3 border-b border-purple-500/20 bg-purple-500/5">
+      <lucide-icon [img]="CalendarDays" class="w-4 h-4 text-purple-400" [strokeWidth]="2" />
+      <span class="text-purple-400 text-sm font-semibold">Estado</span>
+    </div>
+    <div class="p-4">
+      <autocomplete-select
+        [options]="lifecycleOptions()"
+        [value]="formGeneral.status"
+        (valueChange)="formGeneral.status = $event"
+        [readonly]="true"
+        placeholder="Estado" />
     </div>
   </div>
 

@@ -10,7 +10,7 @@ import { Pagination } from '../../shared/components/pagination';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { DateEsPipe } from '../../shared/pipes/date-es.pipe';
 import { fmtNumber } from '../../shared/utils/number.util';
-import { PLATFORMS, PLATFORM_CLASS, STATUSES } from '../../shared/constants/booking.constants';
+import { PLATFORMS, PLATFORM_CLASS, STATUSES, LIFECYCLE_STATUSES, LIFECYCLE_CLASS } from '../../shared/constants/booking.constants';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, CalendarDays, LayoutGrid, Rows3, MessageSquare } from 'lucide-angular';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
@@ -47,6 +47,19 @@ export class BookingsComponent implements OnInit {
       const next = m === 'cards' ? 'table' : 'cards';
       localStorage.setItem('bookingsView', next);
       return next;
+    });
+  }
+
+  lifecycleFilter = signal('');
+
+  updateLifecycleStatus(b: IBooking, e: Event) {
+    e.stopPropagation();
+    const next = b.stay.status === 'PENDIENTE' ? 'CHECK-IN' : b.stay.status === 'CHECK-IN' ? 'CHECK-OUT' : 'PENDIENTE';
+    this.bookingsService.updateStatus(b._id, next).subscribe({
+      next: (updated) => {
+        this.bookings.update(list => list.map(item => item._id === updated._id ? updated : item));
+      },
+      error: () => this.alert.error('Error al actualizar estado'),
     });
   }
 
@@ -116,6 +129,8 @@ export class BookingsComponent implements OnInit {
   readonly PLATFORMS = PLATFORMS;
   readonly STATUSES  = STATUSES;
   readonly PLATFORM_CLASS = PLATFORM_CLASS;
+  readonly LIFECYCLE_STATUSES = LIFECYCLE_STATUSES;
+  readonly LIFECYCLE_CLASS = LIFECYCLE_CLASS;
 
   ngOnInit() {
     const p = this.route.snapshot.queryParams;
@@ -124,6 +139,7 @@ export class BookingsComponent implements OnInit {
     this.platformFilter = p['platform'] ?? '';
     if (p['year']) this.yearFilter.set(p['year']);
     if (p['month']) this.monthFilter.set(p['month']);
+    if (p['lifecycle']) this.lifecycleFilter.set(p['lifecycle']);
     this.load();
     this.syncUrl();
   }
@@ -145,7 +161,7 @@ export class BookingsComponent implements OnInit {
       this.loading,
       this.bookings,
       this.meta,
-      this.bookingsService.findAll({ search: this.search, status: this.statusFilter, platform: this.platformFilter, page, fromDate, toDate }),
+      this.bookingsService.findAll({ search: this.search, status: this.statusFilter, lifecycle: this.lifecycleFilter(), platform: this.platformFilter, page, fromDate, toDate }),
     );
     this.loadSummary();
   }
@@ -166,6 +182,7 @@ export class BookingsComponent implements OnInit {
         q: this.search || undefined,
         status: this.statusFilter || undefined,
         platform: this.platformFilter || undefined,
+        lifecycle: this.lifecycleFilter() || undefined,
         year: this.yearFilter() || undefined,
         month: this.monthFilter() || undefined,
       },

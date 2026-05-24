@@ -75,10 +75,15 @@
       <option value="">Todas las plataformas</option>
       @for (p of PLATFORMS; track p) { <option [value]="p">{{ p }}</option> }
     </select>
+    <select [(ngModel)]="lifecycleFilter" (ngModelChange)="onFilterChange()" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
+             text-sm focus:outline-none focus:border-brand cursor-pointer">
+      <option value="">Todo estado</option>
+      @for (s of LIFECYCLE_STATUSES; track s) { <option [value]="s">{{ s }}</option> }
+    </select>
     <select [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()" class="bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary
              text-sm focus:outline-none focus:border-brand cursor-pointer">
-      <option value="">Todos los estados</option>
-      @for (s of STATUSES; track s) { <option [value]="s">{{ s }}</option> }
+      <option value="">Todos los pagos</option>
+      @for (s of STATUSES; track s) { @if (s !== 'NO SHOW') { <option [value]="s">{{ s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s }}</option> } }
     </select>
   </div>
 
@@ -211,8 +216,15 @@
           </div>
         </div>
 
-  <div class="flex items-center justify-between flex-wrap gap-3">
-          <span class="text-text-disabled text-xs">{{ b.billing.paymentMethod }}</span>
+  <div class="flex items-center justify-between flex-wrap gap-2">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded-lg text-[11px] font-semibold cursor-pointer whitespace-nowrap"
+              [class]="LIFECYCLE_CLASS[b.stay.status || 'PENDIENTE']"
+              (click)="updateLifecycleStatus(b, $event)" title="Cambiar estado">
+              {{ b.stay.status || 'PENDIENTE' }}
+            </span>
+            <span class="text-text-disabled text-xs">{{ b.billing.paymentMethod }}</span>
+          </div>
           @if (b.billing.status !== 'PAGADO' && b.billing.status !== 'NO SHOW') {
           <button (click)="openPayment(b, $event)" class="text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-brand/10 text-brand
                          hover:bg-brand/20 transition-colors cursor-pointer">
@@ -286,8 +298,15 @@
               }
             </div>
           </td>
-          <td class="px-2 py-3 hidden lg:table-cell text-center">
-            <status-badge [value]="b.billing.status" type="billing" />
+          <td class="px-2 py-3 hidden lg:table-cell">
+            <div class="flex flex-col items-center gap-1">
+              <span class="px-2 py-0.5 rounded-lg text-[11px] font-semibold cursor-pointer whitespace-nowrap"
+                [class]="LIFECYCLE_CLASS[b.stay.status || 'PENDIENTE']"
+                (click)="updateLifecycleStatus(b, $event)" title="Cambiar estado">
+                {{ b.stay.status || 'PENDIENTE' }}
+              </span>
+              <status-badge [value]="b.billing.status" type="billing" />
+            </div>
           </td>
           <td class="px-2 py-3">
             <div class="flex items-center gap-1" (click)="$event.stopPropagation()">

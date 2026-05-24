@@ -35,7 +35,7 @@ export interface IBooking {
   _id: string;
   apartmentId: { _id: string; internalName: string; status: string } | string;
   group: { host: IGuest; members: IGuest[] };
-  stay: { checkIn: string; checkOut: string };
+  stay: { checkIn: string; checkOut: string; status?: 'PENDIENTE' | 'CHECK-IN' | 'CHECK-OUT' };
   billing: IBilling;
   observations: string;
   createdAt: string;

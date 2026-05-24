@@ -6,6 +6,11 @@ const MAPS: Record<string, Record<string, { cls: string; dot: string; label: str
     'FALTA PAGO': { cls: 'bg-warning/15 text-warning', dot: 'bg-warning', label: 'Falta pago' },
     'NO SHOW': { cls: 'bg-error/15 text-error', dot: 'bg-error', label: 'No show' },
   },
+  lifecycle: {
+    PENDIENTE: { cls: 'bg-blue-500/15 text-blue-400', dot: 'bg-blue-400', label: 'Pendiente' },
+    'CHECK-IN': { cls: 'bg-emerald-500/15 text-emerald-400', dot: 'bg-emerald-400', label: 'Check-in' },
+    'CHECK-OUT': { cls: 'bg-purple-500/15 text-purple-400', dot: 'bg-purple-400', label: 'Check-out' },
+  },
   apartment: {
     ACTIVE: { cls: 'bg-success/10 text-success', dot: 'bg-success', label: 'Activo' },
     MAINTENANCE: { cls: 'bg-warning/10 text-warning', dot: 'bg-warning', label: 'Mantenimiento' },
@@ -30,7 +35,7 @@ const MAPS: Record<string, Record<string, { cls: string; dot: string; label: str
 })
 export class StatusBadge {
   value = input.required<string>();
-  type = input<'billing' | 'apartment'>('billing');
+  type = input<'billing' | 'lifecycle' | 'apartment'>('billing');
   showDot = input(true);
 
   protected entry() {

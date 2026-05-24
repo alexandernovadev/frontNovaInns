@@ -11,7 +11,7 @@ import { AutocompleteSelect, AutocompleteOption } from '../../../shared/componen
 import { CurrencyCopPipe } from '../../../shared/pipes/currency-cop.pipe';
 import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
 import { fmtNumber } from '../../../shared/utils/number.util';
-import { PLATFORMS, METHODS, ID_TYPES, ID_LABELS, PLATFORM_CLASS } from '../../../shared/constants/booking.constants';
+import { PLATFORMS, METHODS, ID_TYPES, ID_LABELS, PLATFORM_CLASS, LIFECYCLE_STATUSES } from '../../../shared/constants/booking.constants';
 import {
   LucideAngularModule,
   CalendarDays,
@@ -116,6 +116,11 @@ export class BookingFormComponent implements OnInit {
   readonly ID_TYPES = ID_TYPES;
   readonly ID_LABELS = ID_LABELS;
   readonly PLATFORM_CLASS = PLATFORM_CLASS;
+  readonly LIFECYCLE_STATUSES = LIFECYCLE_STATUSES;
+  lifecycleOptions = (): AutocompleteOption[] => this.LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }));
+
+  apartmentOptions = (): AutocompleteOption[] =>
+    this.apartments().map(a => ({ label: a.internalName, value: a._id }));
 
   // Autocomplete helpers
   countryOptions = (): AutocompleteOption[] => this.COUNTRIES_DATA.map(c => ({ label: c.name, value: c.code }));
@@ -152,6 +157,7 @@ export class BookingFormComponent implements OnInit {
       checkOut: new Date(b.stay.checkOut).toISOString().slice(0, 10),
       platform: b.billing.platform,
       observations: b.observations,
+      status: b.stay.status || 'PENDIENTE',
     };
     this.formBilling = {
       basePrice: b.billing.basePrice,
@@ -224,7 +230,7 @@ export class BookingFormComponent implements OnInit {
           identifications: m.identifications,
         })),
       },
-      stay: { checkIn: this.formGeneral.checkIn, checkOut: this.formGeneral.checkOut },
+      stay: { checkIn: this.formGeneral.checkIn, checkOut: this.formGeneral.checkOut, status: this.formGeneral.status || 'PENDIENTE' },
       billing: {
         basePrice: this.formBilling.basePrice,
         extraServices: this.extraServices,
@@ -409,8 +415,9 @@ export class BookingFormComponent implements OnInit {
     checkOut: string;
     platform: string;
     observations: string;
+    status: string;
   } {
-    return { apartmentId: '', checkIn: '', checkOut: '', platform: 'Directo', observations: '' };
+    return { apartmentId: '', checkIn: '', checkOut: '', platform: 'Directo', observations: '', status: 'PENDIENTE' };
   }
   private blankBilling(): { basePrice: number; amountReceived: number; paymentMethod: string } {
     return { basePrice: 0, amountReceived: 0, paymentMethod: 'Efectivo' };

@@ -10,7 +10,7 @@ export class BookingsService {
   private http = inject(HttpClient);
   private uploadService = inject(UploadService);
 
-  findAll(query: { search?: string; status?: string; platform?: string; page?: number; fromDate?: string; toDate?: string } = {}) {
+  findAll(query: { search?: string; status?: string; lifecycle?: string; platform?: string; page?: number; fromDate?: string; toDate?: string } = {}) {
     return this.http.get<BookingPage>(`${API}/bookings`, { params: buildParams(query) });
   }
 
@@ -39,6 +39,10 @@ export class BookingsService {
 
   registerPayment(id: string, amount: number) {
     return this.http.patch<IBooking>(`${API}/bookings/${id}/payment`, { amount });
+  }
+
+  updateStatus(id: string, status: string) {
+    return this.http.patch<IBooking>(`${API}/bookings/${id}/status`, { status });
   }
 
   financialSummary(fromDate?: string, toDate?: string) {
