@@ -12,7 +12,7 @@ import { DateEsPipe } from '../../shared/pipes/date-es.pipe';
 import { fmtNumber } from '../../shared/utils/number.util';
 import { PLATFORMS, PLATFORM_CLASS, STATUSES } from '../../shared/constants/booking.constants';
 import { AlertService } from '../../shared/components/services/alert.service';
-import { LucideAngularModule, CalendarDays, LayoutGrid, Rows3 } from 'lucide-angular';
+import { LucideAngularModule, CalendarDays, LayoutGrid, Rows3, MessageSquare } from 'lucide-angular';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { loadList } from '../../shared/utils/list.util';
 import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delete.util';
@@ -27,6 +27,7 @@ export class BookingsComponent implements OnInit {
   readonly CalendarDays = CalendarDays;
   readonly LayoutGrid = LayoutGrid;
   readonly Rows3 = Rows3;
+  readonly MessageSquare = MessageSquare;
 
   private bookingsService    = inject(BookingsService);
   private router = inject(Router);
@@ -96,6 +97,14 @@ export class BookingsComponent implements OnInit {
 
   showPayment = signal(false);
   paymentSelected = signal<IBooking | null>(null);
+  observationsBooking = signal<IBooking | null>(null);
+
+  closeObservations() { this.observationsBooking.set(null); }
+
+  openObservations(b: IBooking, e: Event) {
+    e.stopPropagation();
+    this.observationsBooking.set(b);
+  }
   payAmount   = 0;
 
   deleteState: DeleteState<IBooking> = {

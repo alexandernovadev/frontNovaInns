@@ -107,6 +107,10 @@
             [class]="b.billing.status === 'PAGADO' ? 'bg-success' : b.billing.status === 'NO SHOW' ? 'bg-error' : 'bg-warning'">
           </span>
           <span class="hidden sm:flex"><status-badge [value]="b.billing.status" type="billing" /></span>
+          <button (click)="openObservations(b, $event)" title="Observaciones"
+            class="p-1 sm:p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
+            <lucide-icon [img]="MessageSquare" class="w-3 h-3 sm:w-3.5 sm:h-3.5" [strokeWidth]="2" />
+          </button>
           <button (click)="openEdit(b, $event)" title="Editar"
             class="p-1 sm:p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
             <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2"
@@ -287,6 +291,10 @@
           </td>
           <td class="px-2 py-3">
             <div class="flex items-center gap-1" (click)="$event.stopPropagation()">
+              <button (click)="openObservations(b, $event)" title="Observaciones"
+                class="p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
+                <lucide-icon [img]="MessageSquare" class="w-3.5 h-3.5" [strokeWidth]="2" />
+              </button>
               <button (click)="openEdit(b, $event)" title="Editar"
                 class="p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -352,6 +360,25 @@
       class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
             focus:outline-none focus:border-brand transition-colors" />
 </modal-nova>
+
+<!-- =============== MODAL OBSERVACIONES =============== -->
+<modal-nova [visible]="!!observationsBooking()" title="Observaciones" size="md" (closed)="closeObservations()">
+  @if (observationsBooking(); as b) {
+    @if (b.observations) {
+    <div class="bg-bg rounded-xl p-4 text-text-primary text-sm leading-relaxed whitespace-pre-wrap">
+      {{ b.observations }}
+    </div>
+    } @else {
+    <div class="text-center py-8 text-text-disabled text-sm">Sin observaciones</div>
+    }
+    <div class="mt-4 pt-3 border-t border-border flex items-center gap-3 text-xs text-text-secondary">
+      <span class="font-medium text-text-primary truncate">{{ b.group.host.fullName }}</span>
+      <span class="text-text-disabled">·</span>
+      <span>{{ aptName(b) }}</span>
+    </div>
+  }
+</modal-nova>
+
 <ng-template #paymentFooter>
   <div class="flex gap-3">
     <button (click)="showPayment.set(false)"
