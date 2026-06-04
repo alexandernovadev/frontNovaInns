@@ -70,24 +70,38 @@
     <input [(ngModel)]="search" (ngModelChange)="onFilterChange()" placeholder="Buscar por huésped..." class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
              text-text-primary placeholder:text-text-disabled text-sm
              focus:outline-none focus:border-brand transition-colors" />
+    <!-- Mobile: filter button -->
+    <button (click)="showFilters.set(true)"
+      class="sm:hidden w-10 h-10 flex items-center justify-center border border-border rounded-xl text-text-secondary hover:text-brand hover:border-brand transition-colors cursor-pointer shrink-0"
+      title="Filtros">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 007.92 12.446A9 9 0 1112 2.992z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v9m0 0-3-3m3 3 3-3" />
+        <circle cx="17" cy="17" r="3" fill="currentColor" />
+      </svg>
+    </button>
+    <!-- Desktop filters -->
     <autocomplete-select
       [options]="PLATFORMS.map(p => ({ label: p, value: p }))"
       [value]="platformFilter"
       (valueChange)="platformFilter = $event; onFilterChange()"
       [readonly]="true"
-      placeholder="Todas las plataformas" />
+      placeholder="Todas las plataformas"
+      class="hidden sm:block" />
     <autocomplete-select
       [options]="[{ label: 'Todos los estados', value: '' }, ...LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }))]"
       [value]="lifecycleFilter()"
       (valueChange)="lifecycleFilter.set($event); onFilterChange()"
       [readonly]="true"
-      placeholder="Todos los estados" />
+      placeholder="Todos los estados"
+      class="hidden sm:block" />
     <autocomplete-select
       [options]="STATUSES.filter(s => s !== 'NO SHOW').map(s => ({ label: s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s, value: s }))"
       [value]="statusFilter"
       (valueChange)="statusFilter = $event; onFilterChange()"
       [readonly]="true"
-      placeholder="Todos los pagos" />
+      placeholder="Todos los pagos"
+      class="hidden sm:block" />
   </div>
 
   @if (loading()) {
@@ -403,6 +417,30 @@
       <span>{{ aptName(b) }}</span>
     </div>
   }
+</modal-nova>
+
+<!-- =============== MODAL FILTROS MOBILE =============== -->
+<modal-nova [visible]="showFilters()" title="Filtros" size="sm" (closed)="showFilters.set(false)">
+  <div class="space-y-4">
+    <autocomplete-select
+      [options]="PLATFORMS.map(p => ({ label: p, value: p }))"
+      [value]="platformFilter"
+      (valueChange)="platformFilter = $event; onFilterChange()"
+      [readonly]="true"
+      placeholder="Todas las plataformas" />
+    <autocomplete-select
+      [options]="[{ label: 'Todos los estados', value: '' }, ...LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }))]"
+      [value]="lifecycleFilter()"
+      (valueChange)="lifecycleFilter.set($event); onFilterChange()"
+      [readonly]="true"
+      placeholder="Todos los estados" />
+    <autocomplete-select
+      [options]="STATUSES.filter(s => s !== 'NO SHOW').map(s => ({ label: s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s, value: s }))"
+      [value]="statusFilter"
+      (valueChange)="statusFilter = $event; onFilterChange()"
+      [readonly]="true"
+      placeholder="Todos los pagos" />
+  </div>
 </modal-nova>
 
 <ng-template #paymentFooter>

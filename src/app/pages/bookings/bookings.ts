@@ -50,6 +50,7 @@ export class BookingsComponent implements OnInit {
     });
   }
 
+  showFilters = signal(false);
   lifecycleFilter = signal('');
 
   updateLifecycleStatus(b: IBooking, e: Event) {
