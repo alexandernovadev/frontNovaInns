@@ -3,3 +3,8 @@
 
 [build.environment]
   NG_APP_API_URL = "https://backnovainns.fly.dev/api"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
