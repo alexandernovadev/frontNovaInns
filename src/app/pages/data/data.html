@@ -20,19 +20,19 @@
       Exportar
     </h2>
 
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
       <!-- Reservas -->
       <div class="bg-surface border border-border rounded-2xl p-5 flex flex-col gap-4">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 min-w-0">
           <div class="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center shrink-0">
             <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
           </div>
-          <div>
-            <p class="text-text-primary font-semibold text-sm">Reservas</p>
-            <p class="text-text-disabled text-xs">Todas las reservas</p>
+          <div class="min-w-0">
+            <p class="text-text-primary font-semibold text-sm truncate">Reservas</p>
+            <p class="text-text-disabled text-xs truncate">Todas las reservas</p>
           </div>
         </div>
         <button (click)="export('bookings')" [disabled]="getExportLoading('bookings')"
@@ -41,25 +41,25 @@
           @if (getExportLoading('bookings')) {
             <span>Generando...</span>
           } @else {
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
             </svg>
-            Descargar JSON
+            <span class="truncate">Descargar JSON</span>
           }
         </button>
       </div>
 
       <!-- Apartamentos -->
       <div class="bg-surface border border-border rounded-2xl p-5 flex flex-col gap-4">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 min-w-0">
           <div class="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center shrink-0">
             <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
             </svg>
           </div>
-          <div>
-            <p class="text-text-primary font-semibold text-sm">Apartamentos</p>
-            <p class="text-text-disabled text-xs">Todos los apartamentos</p>
+          <div class="min-w-0">
+            <p class="text-text-primary font-semibold text-sm truncate">Apartamentos</p>
+            <p class="text-text-disabled text-xs truncate">Todos los apartamentos</p>
           </div>
         </div>
         <button (click)="export('apartments')" [disabled]="getExportLoading('apartments')"
@@ -68,10 +68,10 @@
           @if (getExportLoading('apartments')) {
             <span>Generando...</span>
           } @else {
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"/>
             </svg>
-            Descargar JSON
+            <span class="truncate">Descargar JSON</span>
           }
         </button>
       </div>
@@ -92,19 +92,19 @@
     </h2>
     <p class="text-text-disabled text-xs -mt-2">Si el registro ya existe (mismo _id) se actualiza. Si no, se crea nuevo.</p>
 
-    <div class="grid grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
       <!-- Importar Reservas -->
       <div class="bg-surface border border-border rounded-2xl p-5 space-y-4">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 min-w-0">
           <div class="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center shrink-0">
             <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
             </svg>
           </div>
-          <div>
-            <p class="text-text-primary font-semibold text-sm">Reservas</p>
-            <p class="text-text-disabled text-xs">Sube un JSON de reservas</p>
+          <div class="min-w-0">
+            <p class="text-text-primary font-semibold text-sm truncate">Reservas</p>
+            <p class="text-text-disabled text-xs truncate">Sube un JSON de reservas</p>
           </div>
         </div>
 
@@ -124,7 +124,7 @@
             <svg class="w-6 h-6 text-text-disabled group-hover:text-brand transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
             </svg>
-            <span class="text-text-secondary text-sm group-hover:text-brand transition-colors">Seleccionar archivo .json</span>
+            <span class="text-text-secondary text-sm group-hover:text-brand transition-colors truncate max-w-full">Seleccionar archivo .json</span>
           }
         </label>
 
@@ -144,15 +144,15 @@
 
       <!-- Importar Apartamentos -->
       <div class="bg-surface border border-border rounded-2xl p-5 space-y-4">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 min-w-0">
           <div class="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center shrink-0">
             <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
             </svg>
           </div>
-          <div>
-            <p class="text-text-primary font-semibold text-sm">Apartamentos</p>
-            <p class="text-text-disabled text-xs">Sube un JSON de apartamentos</p>
+          <div class="min-w-0">
+            <p class="text-text-primary font-semibold text-sm truncate">Apartamentos</p>
+            <p class="text-text-disabled text-xs truncate">Sube un JSON de apartamentos</p>
           </div>
         </div>
 
@@ -172,7 +172,7 @@
             <svg class="w-6 h-6 text-text-disabled group-hover:text-brand transition-colors" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
             </svg>
-            <span class="text-text-secondary text-sm group-hover:text-brand transition-colors">Seleccionar archivo .json</span>
+            <span class="text-text-secondary text-sm group-hover:text-brand transition-colors truncate max-w-full">Seleccionar archivo .json</span>
           }
         </label>
 
