@@ -421,26 +421,36 @@
 
 <!-- =============== MODAL FILTROS MOBILE =============== -->
 <modal-nova [visible]="showFilters()" title="Filtros" size="sm" (closed)="showFilters.set(false)">
-  <div class="space-y-4">
-    <autocomplete-select
-      [options]="PLATFORMS.map(p => ({ label: p, value: p }))"
-      [value]="platformFilter"
-      (valueChange)="platformFilter = $event; onFilterChange()"
-      [readonly]="true"
-      placeholder="Todas las plataformas" />
-    <autocomplete-select
-      [options]="[{ label: 'Todos los estados', value: '' }, ...LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }))]"
-      [value]="lifecycleFilter()"
-      (valueChange)="lifecycleFilter.set($event); onFilterChange()"
-      [readonly]="true"
-      placeholder="Todos los estados" />
-    <autocomplete-select
-      [options]="STATUSES.filter(s => s !== 'NO SHOW').map(s => ({ label: s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s, value: s }))"
-      [value]="statusFilter"
-      (valueChange)="statusFilter = $event; onFilterChange()"
-      [readonly]="true"
-      placeholder="Todos los pagos" />
+  <div class="space-y-1">
+    <div class="py-2">
+      <autocomplete-select
+        [options]="PLATFORMS.map(p => ({ label: p, value: p }))"
+        [value]="platformFilter"
+        (valueChange)="platformFilter = $event; onFilterChange()"
+        [readonly]="true"
+        placeholder="Todas las plataformas" />
+    </div>
+    <div class="py-2">
+      <autocomplete-select
+        [options]="[{ label: 'Todos los estados', value: '' }, ...LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }))]"
+        [value]="lifecycleFilter()"
+        (valueChange)="lifecycleFilter.set($event); onFilterChange()"
+        [readonly]="true"
+        placeholder="Todos los estados" />
+    </div>
+    <div class="py-2">
+      <autocomplete-select
+        [options]="STATUSES.filter(s => s !== 'NO SHOW').map(s => ({ label: s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s, value: s }))"
+        [value]="statusFilter"
+        (valueChange)="statusFilter = $event; onFilterChange()"
+        [readonly]="true"
+        placeholder="Todos los pagos" />
+    </div>
   </div>
+  <button (click)="resetFilters(); showFilters.set(false)"
+    class="w-full mt-4 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">
+    Restablecer
+  </button>
 </modal-nova>
 
 <ng-template #paymentFooter>

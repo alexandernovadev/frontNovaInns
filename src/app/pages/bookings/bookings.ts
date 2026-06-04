@@ -53,6 +53,17 @@ export class BookingsComponent implements OnInit {
   showFilters = signal(false);
   lifecycleFilter = signal('');
 
+  resetFilters() {
+    this.search = '';
+    this.statusFilter = '';
+    this.platformFilter = '';
+    this.lifecycleFilter.set('');
+    this.yearFilter.set(String(new Date().getFullYear()));
+    this.monthFilter.set(BookingsComponent.defaultMonth());
+    this.load(1);
+    this.syncUrl();
+  }
+
   updateLifecycleStatus(b: IBooking, e: Event) {
     e.stopPropagation();
     if (b.stay.status === 'CHECK-OUT') return;
