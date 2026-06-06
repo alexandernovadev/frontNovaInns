@@ -3,3 +3,4 @@ export type { IApartment, IRoom, IBathroom, IPhoto, ApartmentPage } from './apar
 export type { IUser, UserPage, UserQuery } from './user.interface';
 export type { DashboardData, RegionData } from './analytics.interface';
 export type { VacancyData } from './analytics.interface';
+export type { IExpense, ExpenseCategory, ExpensePage, ExpenseQuery } from './expense.interface';

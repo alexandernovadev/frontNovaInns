@@ -1,0 +1,180 @@
+<div class="p-6 space-y-6">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2">
+        <lucide-icon [img]="ReceiptIcon" class="w-6 h-6 text-brand" [strokeWidth]="2"/>
+        Gastos
+      </h1>
+      <p class="text-text-secondary text-sm mt-0.5">{{ meta().total }} gastos registrados</p>
+    </div>
+    <button (click)="openCreate()"
+      class="sm:flex hidden items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
+             px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      Nuevo gasto
+    </button>
+    <button (click)="openCreate()"
+      class="sm:hidden w-10 h-10 flex items-center justify-center bg-brand hover:bg-brand-accent text-bg font-bold
+             rounded-full transition-colors cursor-pointer shrink-0">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Filtros -->
+  <div class="flex flex-wrap gap-3">
+    <input [(ngModel)]="search" (ngModelChange)="onSearch()" placeholder="Buscar gasto..."
+      class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
+             text-text-primary placeholder:text-text-disabled text-sm
+             focus:outline-none focus:border-brand transition-colors"/>
+    <autocomplete-select
+      [options]="categories.map(c => ({ label: categoryLabels[c], value: c }))"
+      [value]="categoryFilter"
+      (valueChange)="categoryFilter = $event; load(1)"
+      [readonly]="true"
+      placeholder="Todas las categorías" />
+  </div>
+
+  <!-- Tabla -->
+  <div class="bg-surface border border-border rounded-2xl overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-border">
+            <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Descripción</th>
+            <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Categoría</th>
+            <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Monto</th>
+            <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Fecha</th>
+            <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Método</th>
+            <th class="px-5 py-3.5"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (loading()) {
+            <tr><td colspan="6" class="text-center py-12 text-text-disabled">Cargando...</td></tr>
+          } @else if (expenses().length === 0) {
+            <tr><td colspan="6" class="text-center py-12 text-text-disabled">Sin resultados</td></tr>
+          } @else {
+            @for (expense of expenses(); track expense._id) {
+              <tr class="border-b border-border last:border-0 hover:bg-hover transition-colors">
+                <td class="px-5 py-4 text-text-primary font-medium">{{ expense.description }}</td>
+                <td class="px-5 py-4">
+                  <span class="px-2.5 py-1 rounded-lg text-xs font-medium" [class]="categoryClass[expense.category]">
+                    {{ categoryLabels[expense.category] }}
+                  </span>
+                </td>
+                <td class="px-5 py-4 text-text-primary font-medium">{{ expense.amount | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}</td>
+                <td class="px-5 py-4 text-text-secondary">{{ expense.date | date:'dd/MM/yyyy' }}</td>
+                <td class="px-5 py-4 text-text-secondary">{{ expense.paymentMethod }}</td>
+                <td class="px-5 py-4">
+                  <div class="flex items-center gap-2 justify-end">
+                    <button (click)="openEdit(expense)"
+                      class="p-2 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                      </svg>
+                    </button>
+                    <button (click)="openDelete(expense)"
+                      class="p-2 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                      </svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+    <app-pagination [page]="meta().page" [totalPages]="meta().totalPages" (pageChange)="load($event)" />
+  </div>
+</div>
+
+<!-- ======= MODAL CREAR/EDITAR ======= -->
+<modal-nova [visible]="showForm()" [title]="editing() ? 'Editar gasto' : 'Nuevo gasto'" size="md" (closed)="showForm.set(false)" [footerTemplate]="formFooter">
+  <div class="space-y-4">
+    <div>
+      <label class="block text-text-secondary text-sm mb-1.5">Descripción</label>
+      <input type="text" [(ngModel)]="form.description" placeholder="Ej: Reparación de aire acondicionado"
+        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand transition-colors"/>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-text-secondary text-sm mb-1.5">Categoría</label>
+        <autocomplete-select
+          [options]="categories.map(c => ({ label: categoryLabels[c], value: c }))"
+          [value]="form.category"
+          (valueChange)="form.category = $event"
+          [readonly]="true"
+          placeholder="Seleccionar categoría" />
+      </div>
+      <div>
+        <label class="block text-text-secondary text-sm mb-1.5">Monto ($)</label>
+        <input type="number" [(ngModel)]="form.amount" placeholder="0" min="0"
+          class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand transition-colors"/>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-text-secondary text-sm mb-1.5">Fecha</label>
+        <input type="date" [(ngModel)]="form.date"
+          class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm focus:outline-none focus:border-brand transition-colors"/>
+      </div>
+      <div>
+        <label class="block text-text-secondary text-sm mb-1.5">Método de pago</label>
+        <autocomplete-select
+          [options]="methods.map(m => ({ label: m, value: m }))"
+          [value]="form.paymentMethod"
+          (valueChange)="form.paymentMethod = $event"
+          [readonly]="true"
+          placeholder="Seleccionar método" />
+      </div>
+    </div>
+    <div>
+      <label class="block text-text-secondary text-sm mb-1.5">Notas (opcional)</label>
+      <textarea [(ngModel)]="form.notes" placeholder="Notas adicionales..." rows="3"
+        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand transition-colors resize-none"></textarea>
+    </div>
+  </div>
+</modal-nova>
+<ng-template #formFooter>
+  <div class="flex gap-3">
+    <button (click)="showForm.set(false)"
+      class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancelar</button>
+    <button (click)="submitForm()" [disabled]="saving()"
+      class="flex-1 bg-brand hover:bg-brand-accent text-bg font-bold py-2.5 rounded-xl text-sm transition-colors disabled:opacity-50 cursor-pointer">
+      {{ saving() ? 'Guardando...' : editing() ? 'Guardar cambios' : 'Crear gasto' }}
+    </button>
+  </div>
+</ng-template>
+
+<!-- ======= MODAL ELIMINAR ======= -->
+<modal-nova [visible]="deleteState.show()" title="Eliminar gasto" size="sm" (closed)="onDeleteClosed()" [footerTemplate]="deleteFooter">
+  <div class="flex flex-col items-center gap-3 py-2">
+    <div class="w-12 h-12 bg-error/10 rounded-full flex items-center justify-center">
+      <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+      </svg>
+    </div>
+    <p class="text-text-secondary text-sm text-center">
+      Se eliminará <strong class="text-text-primary">{{ deleteState.selected()?.description }}</strong> de forma permanente.
+    </p>
+  </div>
+</modal-nova>
+<ng-template #deleteFooter>
+  <div class="flex gap-3">
+    <button (click)="deleteState.show.set(false)"
+      class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancelar</button>
+    <button (click)="confirmDelete()" [disabled]="deleteState.saving()"
+      class="flex-1 bg-error hover:bg-error/80 text-white font-bold py-2.5 rounded-xl text-sm transition-colors disabled:opacity-50 cursor-pointer">
+      {{ deleteState.saving() ? 'Eliminando...' : 'Eliminar' }}
+    </button>
+  </div>
+</ng-template>
