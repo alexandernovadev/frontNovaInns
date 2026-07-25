@@ -15,7 +15,12 @@
     [class.-translate-x-full]="!sidebarOpen()"
   >
     <!-- Logo -->
-    <a routerLink="/bookings" class="flex items-center justify-center py-6 border-b border-border cursor-pointer">
+    @if (!collapsed()) {
+      <div class="flex items-center justify-center pt-4 pb-1">
+        <span class="text-xs text-gray-500">v{{ version() }}</span>
+      </div>
+    }
+    <a routerLink="/bookings" class="flex items-center justify-center pb-6 border-b border-border cursor-pointer" [class.pt-4]="!collapsed()" [class.pt-6]="collapsed()">
       @if (collapsed()) {
         <img src="assets/images/LogoNovaInns.png" alt="Nova Inns" class="hidden lg:block w-10 h-10 object-contain" />
       }
