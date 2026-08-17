@@ -1,12 +1,12 @@
 {
   "name": "nova-inns-apartments-front",
-  "version": "2.6.66",
+  "version": "2.6.67",
   "author": "Nova Alex Labs",
   "scripts": {
     "ng": "ng",
     "tw": "npx @tailwindcss/cli -i src/tailwind.input.css -o src/styles.css",
     "tw:watch": "npm run tw -- --watch",
-    "start": "yarn gen-api-url && concurrently \"yarn tw:watch\" \"ng serve\"",
+    "start": "node scripts/serve-static.mjs",
     "build": "yarn gen-version && node scripts/gen-api-url.mjs && yarn tw && ng build",
     "gen-api-url": "node scripts/gen-api-url.mjs",
     "gen-version": "node scripts/gen-version.mjs",
