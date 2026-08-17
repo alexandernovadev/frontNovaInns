@@ -26,19 +26,6 @@
 .day-cell.today { background: var(--color-brand); color: var(--color-bg); }
 .day-cell.today:hover { background: color-mix(in srgb, var(--color-brand) 85%, white); }
 
-/* Day 18 — violet bar */
-.day-cell.day-18::before {
-  content: '';
-  position: absolute;
-  left: 1px;
-  top: 3px;
-  bottom: 3px;
-  width: 2px;
-  border-radius: 2px;
-  background: #8B5CF6;
-  pointer-events: none;
-}
-
 /* White booking dot (on red backgrounds) */
 .booking-dot-white {
   width: 3px;

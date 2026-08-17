@@ -81,14 +81,9 @@ export class BookingsComponent implements OnInit {
   platformFilter = '';
   yearFilter = signal(String(new Date().getFullYear()));
 
-  // Mês padrão = ciclo atual (ex: se hoje é 11/mai, o ciclo é Abr 18 - Mai 18)
-  // O negócio fechou a primeira reserva no dia 18, por isso o ciclo é do dia 18 ao 18
+  // Mês padrão = mês calendário atual
   private static defaultMonth(): string {
-    const d = new Date();
-    let m = d.getMonth();
-    // Se ainda não passou do dia 18, o ciclo atual é o Mês anterior
-    if (d.getDate() < 18) m = m === 0 ? 11 : m - 1;
-    return String(m);
+    return String(new Date().getMonth());
   }
   monthFilter = signal(BookingsComponent.defaultMonth());
 
@@ -102,20 +97,13 @@ export class BookingsComponent implements OnInit {
     return opts;
   });
 
-  // 12 ciclos fixos de 18 do mês X até 18 do mês seguinte
-  // Ex: "Enero 18 - Febrero 18", ..., "Diciembre 18 - Enero 18"
+  // 12 meses del año, rango = mes completo (1ro → 1ro del mes siguiente)
   monthOptions = computed(() => {
-    //                         0                      1                   2
-    const ms = ['Enero 18 - Febrero 18','Febrero 18 - Marzo 18','Marzo 18 - Abril 18',
-    //           3                      4                    5
-                'Abril 18 - Mayo 18','Mayo 18 - Junio 18','Junio 18 - Julio 18',
-    //           6                       7                         8
-                'Julio 18 - Agosto 18','Agosto 18 - Septiembre 18','Septiembre 18 - Octubre 18',
-    //           9                        10                          11
-                'Octubre 18 - Noviembre 18','Noviembre 18 - Diciembre 18','Diciembre 18 - Enero 18'];
+    const ms = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
     const opts: { label: string; value: string }[] = [{ label: 'Todos', value: '' }];
     for (let m = 0; m < 12; m++) {
-      // value = índice 0-11, usado no load() para calcular datas com o ano selecionado
+      // value = índice 0-11, usado no load() para calcular datas do mês selecionado
       opts.push({ label: ms[m], value: String(m) });
     }
     return opts;
@@ -161,10 +149,9 @@ export class BookingsComponent implements OnInit {
     if (!this.yearFilter() || !this.monthFilter()) return {};
     const y = parseInt(this.yearFilter());
     const m = parseInt(this.monthFilter());
-    const fromDate = `${y}-${String(m + 1).padStart(2, '0')}-18`;
-    const toY = m === 11 ? y + 1 : y;
-    const toM = m === 11 ? 1 : m + 2;
-    const toDate = `${toY}-${String(toM).padStart(2, '0')}-18`;
+    const fromDate = `${y}-${String(m + 1).padStart(2, '0')}-01`;
+    const next = new Date(y, m + 1, 1);
+    const toDate = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}-01`;
     return { fromDate, toDate };
   }
 

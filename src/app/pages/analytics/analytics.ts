@@ -64,10 +64,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   });
 
   monthOptions = computed(() => {
-    const ms = ['Enero 18 - Febrero 18','Febrero 18 - Marzo 18','Marzo 18 - Abril 18',
-                'Abril 18 - Mayo 18','Mayo 18 - Junio 18','Junio 18 - Julio 18',
-                'Julio 18 - Agosto 18','Agosto 18 - Septiembre 18','Septiembre 18 - Octubre 18',
-                'Octubre 18 - Noviembre 18','Noviembre 18 - Diciembre 18','Diciembre 18 - Enero 18'];
+    const ms = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
     const opts: { label: string; value: string }[] = [{ label: 'Todos', value: '' }];
     for (let m = 0; m < 12; m++) {
       opts.push({ label: ms[m], value: String(m) });
@@ -158,10 +156,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     if (!this.yearFilter() || !this.monthFilter()) return {};
     const y = parseInt(this.yearFilter());
     const m = parseInt(this.monthFilter());
-    const fromDate = `${y}-${String(m + 1).padStart(2, '0')}-18`;
-    const toY = m === 11 ? y + 1 : y;
-    const toM = m === 11 ? 1 : m + 2;
-    const toDate = `${toY}-${String(toM).padStart(2, '0')}-18`;
+    const fromDate = `${y}-${String(m + 1).padStart(2, '0')}-01`;
+    const next = new Date(y, m + 1, 1);
+    const toDate = `${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}-01`;
     return { fromDate, toDate };
   }
 

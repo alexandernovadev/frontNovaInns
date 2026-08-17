@@ -514,9 +514,6 @@
   .min-h-screen {
     min-height: 100vh;
   }
-  .w-0\.5 {
-    width: calc(var(--spacing) * 0.5);
-  }
   .w-1\.5 {
     width: calc(var(--spacing) * 1.5);
   }
@@ -1279,9 +1276,6 @@
   }
   .bg-text-disabled {
     background-color: var(--color-text-disabled);
-  }
-  .bg-violet-400 {
-    background-color: var(--color-violet-400);
   }
   .bg-warning {
     background-color: var(--color-warning);

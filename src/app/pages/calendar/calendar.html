@@ -37,9 +37,6 @@
     <span class="flex items-center gap-2">
       <span class="w-3 h-3 rounded-sm bg-brand"></span> Hoy
     </span>
-    <span class="flex items-center gap-2">
-      <span class="w-0.5 h-3 rounded-full bg-violet-400"></span> Corte ciclo
-    </span>
   </div>
 
   <!-- Calendar grid -->
@@ -68,7 +65,6 @@
             'holiday': !!day.holiday,
             'today': day.isToday && !day.holiday,
             'has-booking': day.bookings.length > 0,
-            'day-18': day.day === 18,
             'plain': !day.holiday && !day.isToday
           }"
         >
