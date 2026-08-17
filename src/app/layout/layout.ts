@@ -3,7 +3,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../core/services/auth.service';
 import { AlertNova } from '../shared/components/alert-nova';
-import { LucideAngularModule, CalendarDays, Calendar, Building2, Users, ArrowUpDown, Info, BarChart3, MessageSquare, Receipt, LogOut, Menu, ChevronLeft } from 'lucide-angular';
+import { LucideAngularModule, CalendarDays, Calendar, Building2, Users, ArrowUpDown, Info, BarChart3, MessageSquare, Receipt, LogOut, Menu, ChevronLeft, Shield } from 'lucide-angular';
 
 @Component({
   selector: 'app-layout',
@@ -47,6 +47,7 @@ export class LayoutComponent {
   readonly LogOut = LogOut;
   readonly Menu = Menu;
   readonly ChevronLeft = ChevronLeft;
+  readonly Shield = Shield;
 
   toggleSidebar() { this.sidebarOpen.update(v => !v); }
   closeSidebar() { this.sidebarOpen.set(false); }
@@ -55,6 +56,8 @@ export class LayoutComponent {
     this.collapsed.set(v);
     localStorage.setItem('sidebar_collapsed', String(v));
   }
+
+  isAdmin() { return this.auth.role() === 'SUPER_ADMIN'; }
 
   navItems = [
     { label: 'Reservas', route: '/bookings', icon: CalendarDays },
@@ -66,5 +69,6 @@ export class LayoutComponent {
     { label: 'Analítica', route: '/analytics', icon: BarChart3 },
     { label: 'Mensajes', route: '/messages', icon: MessageSquare },
     { label: 'Info Sistema', route: '/info', icon: Info },
+    { label: 'Admin', route: '/admin', icon: Shield, adminOnly: true },
   ];
 }
