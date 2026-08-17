@@ -1,7 +1,7 @@
 import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../core/services/auth.service';
+import { EnvironmentService } from '../core/services/environment.service';
 import { AlertNova } from '../shared/components/alert-nova';
 import { LucideAngularModule, CalendarDays, Calendar, Building2, Users, ArrowUpDown, Info, BarChart3, MessageSquare, Receipt, LogOut, Menu, ChevronLeft, Shield } from 'lucide-angular';
 
@@ -13,17 +13,10 @@ import { LucideAngularModule, CalendarDays, Calendar, Building2, Users, ArrowUpD
 })
 export class LayoutComponent {
   auth = inject(AuthService);
-  private http = inject(HttpClient);
-  version = signal('');
+  environmentService = inject(EnvironmentService);
   collapsed = signal(localStorage.getItem('sidebar_collapsed') === 'true');
   sidebarOpen = signal(false);
   tooltip = signal<{ label: string; top: number } | null>(null);
-
-  constructor() {
-    this.http.get<{ version: string }>('/assets/version.json').subscribe({
-      next: (res) => this.version.set(res.version),
-    });
-  }
 
   setTooltip(label: string, e: Event) {
     const el = e.currentTarget as HTMLElement;
@@ -58,6 +51,12 @@ export class LayoutComponent {
   }
 
   isAdmin() { return this.auth.role() === 'SUPER_ADMIN'; }
+
+  logo() {
+    return this.environmentService.isDev()
+      ? 'assets/images/logodev.png'
+      : 'assets/images/LogoNovaInns.png';
+  }
 
   navItems = [
     { label: 'Reservas', route: '/bookings', icon: CalendarDays },
