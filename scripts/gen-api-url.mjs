@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 
 const dir = dirname(fileURLToPath(import.meta.url));
 const root = resolve(dir, '..');
-const apiUrl = process.env.NG_APP_API_URL || 'http://localhost:3000/api';
+const apiUrl = process.env.NG_APP_API_URL || 'http://localhost:3301/api';
 
 const content = `export const API = '${apiUrl}';\n`;
 
