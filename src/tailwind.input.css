@@ -46,6 +46,12 @@ body {
   min-height: 100vh;
 }
 
+app-root {
+  display: block;
+  min-height: 100vh;
+  background-color: #0B0B0C;
+}
+
 /* Scrollbar dark */
 ::-webkit-scrollbar {
   width: 6px;
