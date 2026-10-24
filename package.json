@@ -7,12 +7,13 @@
     "tw": "npx @tailwindcss/cli -i src/tailwind.input.css -o src/styles.css",
     "tw:watch": "npm run tw -- --watch",
     "start": "node scripts/serve-static.mjs",
-    "build": "yarn gen-version && node scripts/gen-api-url.mjs && yarn tw && ng build",
+    "build": "pnpm gen-version && node scripts/gen-api-url.mjs && pnpm tw && ng build",
     "gen-api-url": "node scripts/gen-api-url.mjs",
     "gen-version": "node scripts/gen-version.mjs",
     "test": "ng test"
   },
   "private": true,
+  "packageManager": "pnpm@12.11.2",
   "engines": {
     "node": ">=22 <23"
   },
