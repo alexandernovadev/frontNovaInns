@@ -79,6 +79,7 @@
     --default-mono-font-family: var(--font-mono);
     --color-bg: #0B0B0C;
     --color-surface: #151518;
+    --color-elevated: #1F1F23;
     --color-text-primary: #FFFFFF;
     --color-text-secondary: #B3B3B8;
     --color-text-disabled: #6E6E73;
@@ -268,6 +269,9 @@
   .top-1\/2 {
     top: calc(1 / 2 * 100%);
   }
+  .top-2 {
+    top: calc(var(--spacing) * 2);
+  }
   .top-4 {
     top: calc(var(--spacing) * 4);
   }
@@ -285,6 +289,9 @@
   }
   .right-1\.5 {
     right: calc(var(--spacing) * 1.5);
+  }
+  .right-2 {
+    right: calc(var(--spacing) * 2);
   }
   .right-3 {
     right: calc(var(--spacing) * 3);
@@ -369,6 +376,9 @@
   }
   .mt-2 {
     margin-top: calc(var(--spacing) * 2);
+  }
+  .mt-3 {
+    margin-top: calc(var(--spacing) * 3);
   }
   .mt-4 {
     margin-top: calc(var(--spacing) * 4);
@@ -504,6 +514,9 @@
   }
   .h-screen {
     height: 100vh;
+  }
+  .max-h-\[45vh\] {
+    max-height: 45vh;
   }
   .max-h-\[50\%\] {
     max-height: 50%;
@@ -700,6 +713,11 @@
   .gap-6 {
     gap: calc(var(--spacing) * 6);
   }
+  :where(.space-y-0\.5 > :not(:last-child)) {
+    --tw-space-y-reverse: 0;
+    margin-block-start: calc(calc(var(--spacing) * 0.5) * var(--tw-space-y-reverse));
+    margin-block-end: calc(calc(var(--spacing) * 0.5) * calc(1 - var(--tw-space-y-reverse)));
+  }
   :where(.space-y-1 > :not(:last-child)) {
     --tw-space-y-reverse: 0;
     margin-block-start: calc(var(--spacing) * var(--tw-space-y-reverse));
@@ -753,6 +771,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .overflow-auto {
+    overflow: auto;
   }
   .overflow-hidden {
     overflow: hidden;
@@ -898,6 +919,9 @@
     @supports (color: color-mix(in lab, red, red)) {
       border-color: color-mix(in oklab, var(--color-emerald-500) 30%, transparent);
     }
+  }
+  .border-error {
+    border-color: var(--color-error);
   }
   .border-error\/30 {
     border-color: color-mix(in srgb, #EF4444 30%, transparent);
@@ -1141,6 +1165,9 @@
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-cyan-500) 15%, transparent);
     }
+  }
+  .bg-elevated {
+    background-color: var(--color-elevated);
   }
   .bg-emerald-400 {
     background-color: var(--color-emerald-400);
@@ -1453,6 +1480,9 @@
   }
   .align-middle {
     vertical-align: middle;
+  }
+  .font-mono {
+    font-family: var(--font-mono);
   }
   .font-sans {
     font-family: var(--font-sans);

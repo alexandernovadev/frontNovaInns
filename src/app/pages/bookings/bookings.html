@@ -34,6 +34,12 @@
         (valueChange)="onFilterChange()"
         [readonly]="true"
         placeholder="Mes" />
+      <button (click)="showJson.set(true)"
+        class="w-10 h-10 flex items-center justify-center bg-surface border border-border text-brand hover:border-brand
+               rounded-full transition-colors cursor-pointer shrink-0"
+        title="Reserva desde JSON">
+        <lucide-icon [img]="Braces" class="w-5 h-5" [strokeWidth]="2.5" />
+      </button>
       <button (click)="openCreate()" 
         class="w-10 h-10 flex items-center justify-center bg-brand hover:bg-brand-accent text-bg font-bold
                rounded-full transition-colors cursor-pointer shrink-0"
@@ -350,6 +356,10 @@
   }
 
 </div>
+
+<!-- =============== MODAL JSON =============== -->
+<booking-json-modal [visible]="showJson()" [saving]="saving()"
+  (closed)="showJson.set(false)" (submitted)="createFromJson($event)" />
 
 <!-- =============== MODAL BORRAR =============== -->
 <modal-nova [visible]="deleteState.show()" title="Borrar reserva" size="sm" (closed)="onDeleteClosed()"

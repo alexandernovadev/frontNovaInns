@@ -12,15 +12,16 @@ import { DateEsPipe } from '../../shared/pipes/date-es.pipe';
 import { fmtNumber } from '../../shared/utils/number.util';
 import { PLATFORMS, PLATFORM_CLASS, STATUSES, LIFECYCLE_STATUSES, LIFECYCLE_CLASS } from '../../shared/constants/booking.constants';
 import { AlertService } from '../../shared/components/services/alert.service';
-import { LucideAngularModule, CalendarDays, LayoutGrid, Rows3, MessageSquare } from 'lucide-angular';
+import { LucideAngularModule, CalendarDays, LayoutGrid, Rows3, MessageSquare, Braces } from 'lucide-angular';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { loadList } from '../../shared/utils/list.util';
 import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delete.util';
+import { BookingJsonModal } from './booking-json/booking-json-modal';
 
 @Component({
   selector: 'app-bookings',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, PlatformIcon, Pagination, CurrencyCopPipe, DateEsPipe, AutocompleteSelect],
+  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, PlatformIcon, Pagination, CurrencyCopPipe, DateEsPipe, AutocompleteSelect, BookingJsonModal],
   templateUrl: './bookings.html',
 })
 export class BookingsComponent implements OnInit {
@@ -28,6 +29,7 @@ export class BookingsComponent implements OnInit {
   readonly LayoutGrid = LayoutGrid;
   readonly Rows3 = Rows3;
   readonly MessageSquare = MessageSquare;
+  readonly Braces = Braces;
 
   private bookingsService    = inject(BookingsService);
   private router = inject(Router);
@@ -192,6 +194,24 @@ export class BookingsComponent implements OnInit {
 
   openDetail(b: IBooking) { this.router.navigate(['/bookings', b._id]); }
   openCreate()            { this.router.navigate(['/bookings/new']); }
+
+  showJson = signal(false);
+
+  createFromJson(data: any) {
+    this.saving.set(true);
+    this.bookingsService.create(data).subscribe({
+      next: () => {
+        this.saving.set(false);
+        this.showJson.set(false);
+        this.load(1);
+        this.alert.success('Reserva creada desde JSON');
+      },
+      error: (err) => {
+        this.saving.set(false);
+        this.alert.error('Error al crear reserva', [].concat(err?.error?.message ?? []).join(', ') || undefined);
+      },
+    });
+  }
   openEdit(b: IBooking, e: Event) {
     e.stopPropagation();
     this.router.navigate(['/bookings', b._id, 'edit'], { queryParamsHandling: 'preserve' });
