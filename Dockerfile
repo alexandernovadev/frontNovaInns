@@ -7,8 +7,8 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 COPY . .
-# URL de la API: se pasa como build arg en Dokploy
-ARG NG_APP_API_URL
+# URL de la API: por defecto la de producción; se puede sobrescribir con un build arg en Dokploy
+ARG NG_APP_API_URL=https://reservationapi.nova-inns.pro/api
 ENV NG_APP_API_URL=$NG_APP_API_URL NODE_ENV=production
 RUN pnpm build
 
