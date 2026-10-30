@@ -1,27 +1,60 @@
 <div class="p-6 space-y-6">
 
-  <!-- Header -->
-  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-    <div>
-      <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2">
-        <lucide-icon [img]="CalendarDays" class="w-6 h-6 text-brand" [strokeWidth]="2" />
-        Reservas
-      </h1>
-      <p class="text-text-secondary text-sm mt-0.5 flex items-center gap-2">
-        <span>{{ meta().total }} reservas</span>
-        <span class="text-text-disabled">·</span>
-        <span class="bg-blue-800 text-blue-100 text-xs font-semibold px-2 py-0.5 rounded-lg">{{ today | dateEs }}</span>
-        <button (click)="toggleView()" title="{{ viewMode() === 'cards' ? 'Vista tabla' : 'Vista tarjetas' }}"
-          class="ml-1 p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-all cursor-pointer">
-          @if (viewMode() === 'cards') {
-          <lucide-icon [img]="Rows3" class="w-4 h-4" [strokeWidth]="2" />
-          } @else {
-          <lucide-icon [img]="LayoutGrid" class="w-4 h-4" [strokeWidth]="2" />
-          }
-        </button>
-      </p>
+  <!-- Header: título + acciones (fijo arriba en móvil) -->
+  <div class="page-header flex items-center justify-between gap-3">
+    <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2 min-w-0">
+      <lucide-icon [img]="CalendarDays" class="hidden min-[360px]:block w-6 h-6 text-brand shrink-0" [strokeWidth]="2" />
+      <span class="truncate">Reservas</span>
+    </h1>
+    <div class="flex items-center gap-1.5 min-[360px]:gap-2 shrink-0">
+      <button (click)="showFilters.set(true)"
+        class="relative w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 flex items-center justify-center bg-surface border border-border text-text-secondary hover:text-brand hover:border-brand
+               rounded-full transition-colors cursor-pointer shrink-0"
+        title="Filtros">
+        <lucide-icon [img]="SlidersHorizontal" class="w-5 h-5" [strokeWidth]="2" />
+        @if (hasActiveFilters()) {
+        <span class="absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full bg-brand border-2 border-bg"></span>
+        }
+      </button>
+      <button (click)="showJson.set(true)"
+        class="w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 flex items-center justify-center bg-surface border border-border text-brand hover:border-brand
+               rounded-full transition-colors cursor-pointer shrink-0"
+        title="Reserva desde JSON">
+        <lucide-icon [img]="Braces" class="w-5 h-5" [strokeWidth]="2.5" />
+      </button>
+      <button (click)="openCreate()"
+        class="w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 flex items-center justify-center bg-brand hover:bg-brand-accent text-bg font-bold
+               rounded-full transition-colors cursor-pointer shrink-0"
+        title="Nueva reserva">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+      </button>
     </div>
-    <div class="flex items-center gap-2">
+  </div>
+
+  <!-- Subtítulo + selects (se desplazan con la página) -->
+  <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+    <p class="text-text-secondary text-sm flex items-center gap-2">
+      <span>{{ meta().total }} reservas</span>
+      <span class="text-text-disabled">·</span>
+      <span class="bg-blue-800 text-blue-100 text-xs font-semibold px-2 py-0.5 rounded-lg">{{ today | dateEs }}</span>
+      <button (click)="toggleView()" title="{{ viewMode() === 'cards' ? 'Vista tabla' : 'Vista tarjetas' }}"
+        class="ml-1 p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-all cursor-pointer">
+        @if (viewMode() === 'cards') {
+        <lucide-icon [img]="Rows3" class="w-4 h-4" [strokeWidth]="2" />
+        } @else {
+        <lucide-icon [img]="LayoutGrid" class="w-4 h-4" [strokeWidth]="2" />
+        }
+      </button>
+    </p>
+    <div class="grid grid-cols-3 gap-2 xl:flex xl:items-center">
+      <autocomplete-select
+        [options]="apartmentOptions()"
+        [(value)]="apartmentFilter"
+        (valueChange)="onFilterChange()"
+        [readonly]="true"
+        placeholder="Apto" />
       <autocomplete-select
         [options]="yearOptions()"
         [(value)]="yearFilter"
@@ -34,80 +67,24 @@
         (valueChange)="onFilterChange()"
         [readonly]="true"
         placeholder="Mes" />
-      <button (click)="showJson.set(true)"
-        class="w-10 h-10 flex items-center justify-center bg-surface border border-border text-brand hover:border-brand
-               rounded-full transition-colors cursor-pointer shrink-0"
-        title="Reserva desde JSON">
-        <lucide-icon [img]="Braces" class="w-5 h-5" [strokeWidth]="2.5" />
-      </button>
-      <button (click)="openCreate()" 
-        class="w-10 h-10 flex items-center justify-center bg-brand hover:bg-brand-accent text-bg font-bold
-               rounded-full transition-colors cursor-pointer shrink-0"
-        title="Nueva reserva">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-        </svg>
-      </button>
     </div>
   </div>
 
-  <!-- Summary -->
-  <div class="grid grid-cols-3 gap-2 sm:gap-4">
-    <div class="bg-surface border border-border rounded-2xl p-3 sm:p-5">
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1 sm:mb-2 truncate">
-        <span class="hidden sm:inline">Total esperado</span>
-        <span class="sm:hidden">Esperado</span>
-      </p>
-      <p class="text-text-primary text-sm sm:text-2xl font-bold truncate">{{ summary().totalExpected | currencyCop }}
-      </p>
+  <!-- Summary: lista compacta en móvil (montos completos), 3 tarjetas en sm+ -->
+  <div class="bg-surface border border-border rounded-2xl divide-y divide-border
+              sm:grid sm:grid-cols-3 sm:gap-4 sm:bg-transparent sm:border-0 sm:rounded-none sm:divide-y-0">
+    <div class="px-4 py-2.5 flex items-center justify-between gap-3 min-w-0 sm:block sm:p-5 sm:bg-surface sm:border sm:border-border sm:rounded-2xl">
+      <p class="text-text-disabled text-xs uppercase tracking-wide sm:tracking-widest sm:mb-2 truncate">Total esperado</p>
+      <p class="text-text-primary text-sm sm:text-2xl font-bold whitespace-nowrap sm:truncate">{{ summary().totalExpected | currencyCop }}</p>
     </div>
-    <div class="bg-surface border border-border rounded-2xl p-3 sm:p-5">
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1 sm:mb-2">Recibido</p>
-      <p class="text-success text-sm sm:text-2xl font-bold truncate">{{ summary().totalReceived | currencyCop }}</p>
+    <div class="px-4 py-2.5 flex items-center justify-between gap-3 min-w-0 sm:block sm:p-5 sm:bg-surface sm:border sm:border-border sm:rounded-2xl">
+      <p class="text-text-disabled text-xs uppercase tracking-wide sm:tracking-widest sm:mb-2 truncate">Recibido</p>
+      <p class="text-success text-sm sm:text-2xl font-bold whitespace-nowrap sm:truncate">{{ summary().totalReceived | currencyCop }}</p>
     </div>
-    <div class="bg-surface border border-border rounded-2xl p-3 sm:p-5">
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1 sm:mb-2">Pendiente</p>
-      <p class="text-warning text-sm sm:text-2xl font-bold truncate">{{ summary().totalPending | currencyCop }}</p>
+    <div class="px-4 py-2.5 flex items-center justify-between gap-3 min-w-0 sm:block sm:p-5 sm:bg-surface sm:border sm:border-border sm:rounded-2xl">
+      <p class="text-text-disabled text-xs uppercase tracking-wide sm:tracking-widest sm:mb-2 truncate">Pendiente</p>
+      <p class="text-warning text-sm sm:text-2xl font-bold whitespace-nowrap sm:truncate">{{ summary().totalPending | currencyCop }}</p>
     </div>
-  </div>
-
-  <!-- Filtros -->
-  <div class="flex flex-wrap gap-3">
-    <input [(ngModel)]="search" (ngModelChange)="onFilterChange()" placeholder="Buscar por huésped..." class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
-             text-text-primary placeholder:text-text-disabled text-sm
-             focus:outline-none focus:border-brand transition-colors" />
-    <!-- Mobile: filter button -->
-    <button (click)="showFilters.set(true)"
-      class="sm:hidden w-10 h-10 flex items-center justify-center border border-border rounded-xl text-text-secondary hover:text-brand hover:border-brand transition-colors cursor-pointer shrink-0"
-      title="Filtros">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 007.92 12.446A9 9 0 1112 2.992z" />
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v9m0 0-3-3m3 3 3-3" />
-        <circle cx="17" cy="17" r="3" fill="currentColor" />
-      </svg>
-    </button>
-    <!-- Desktop filters -->
-    <autocomplete-select
-      [options]="PLATFORMS.map(p => ({ label: p, value: p }))"
-      [value]="platformFilter"
-      (valueChange)="platformFilter = $event; onFilterChange()"
-      [readonly]="true"
-      placeholder="Todas las plataformas"
-      class="hidden sm:block" />
-    <autocomplete-select
-      [options]="[{ label: 'Todos los estados', value: '' }, ...LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }))]"
-      [value]="lifecycleFilter()"
-      (valueChange)="lifecycleFilter.set($event); onFilterChange()"
-      [readonly]="true"
-      placeholder="Todos los estados"
-      class="hidden sm:block" />
-    <autocomplete-select
-      [options]="STATUSES.filter(s => s !== 'NO SHOW').map(s => ({ label: s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s, value: s }))"
-      [value]="statusFilter"
-      (valueChange)="statusFilter = $event; onFilterChange()"
-      [readonly]="true"
-      placeholder="Todos los pagos"
-      class="hidden sm:block" />
   </div>
 
   @if (loading()) {
@@ -120,7 +97,7 @@
   <div class="grid gap-4 grid-cols-2 xl:grid-cols-4">
     @for (b of bookings(); track b._id) {
     <div
-      class="bg-surface border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all cursor-pointer"
+      class="@container min-w-0 bg-surface border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all cursor-pointer"
       (click)="openDetail(b)">
 
       <!-- Top: platform + status + actions -->
@@ -130,11 +107,11 @@
         </span>
 
         <div class="flex items-center gap-1 sm:gap-2 ml-auto">
-          <!-- Status: dot only on mobile, full pill on sm+ -->
-          <span class="sm:hidden w-2 h-2 rounded-full shrink-0"
+          <!-- Status: solo punto si la tarjeta es angosta, pill completo si es ancha -->
+          <span class="@xs:hidden w-2 h-2 rounded-full shrink-0" [title]="b.billing.status"
             [class]="b.billing.status === 'PAGADO' ? 'bg-success' : b.billing.status === 'NO SHOW' ? 'bg-error' : 'bg-warning'">
           </span>
-          <span class="hidden sm:flex"><status-badge [value]="b.billing.status" type="billing" /></span>
+          <span class="hidden @xs:flex whitespace-nowrap"><status-badge [value]="b.billing.status" type="billing" /></span>
           <button (click)="openObservations(b, $event)" title="Observaciones"
             class="p-1 sm:p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
             <lucide-icon [img]="MessageSquare" class="w-3 h-3 sm:w-3.5 sm:h-3.5" [strokeWidth]="2" />
@@ -174,25 +151,27 @@
         </div>
       </div>
 
-      <!-- Dates: row on sm+, compact stacked on mobile -->
+      <!-- Dates: en fila si la tarjeta es ancha, apiladas si es angosta -->
       <div class="mx-3 mb-3 sm:mx-5 sm:mb-4 bg-bg rounded-xl px-3 py-2 sm:px-4 sm:py-3">
-        <!-- Mobile: compact single line -->
-        <div class="flex items-center justify-between sm:hidden">
-          <div>
-            <p class="text-text-disabled text-xs leading-none mb-0.5">Entrada</p>
-            <p class="text-text-primary font-bold text-xs">{{ b.stay.checkIn | dateEs:'short' }}</p>
+        <!-- Tarjeta angosta: apiladas -->
+        <div class="@xs:hidden space-y-1.5">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <p class="text-text-disabled text-xs leading-none mb-0.5">Entrada</p>
+              <p class="text-text-primary font-bold text-xs sm:text-sm whitespace-nowrap">{{ b.stay.checkIn | dateEs:'short' }}</p>
+            </div>
+            <span class="text-brand text-xs font-bold px-2 py-0.5 bg-brand/10 rounded-lg shrink-0">{{ nights(b) }}n</span>
           </div>
-          <span class="text-brand text-xs font-bold px-2 py-0.5 bg-brand/10 rounded-lg">{{ nights(b) }}n</span>
-          <div class="text-right">
+          <div class="min-w-0">
             <p class="text-text-disabled text-xs leading-none mb-0.5">Salida</p>
-            <p class="text-text-primary font-bold text-xs">{{ b.stay.checkOut | dateEs:'short' }}</p>
+            <p class="text-text-primary font-bold text-xs sm:text-sm whitespace-nowrap">{{ b.stay.checkOut | dateEs:'short' }}</p>
           </div>
         </div>
-        <!-- sm+: original layout -->
-        <div class="hidden sm:flex items-center justify-between">
+        <!-- Tarjeta ancha: layout original -->
+        <div class="hidden @xs:flex items-center justify-between gap-2">
           <div class="text-center">
-            <p class="text-text-disabled text-xs mb-0.5">Check-in</p>
-            <p class="text-text-primary font-bold text-sm">{{ b.stay.checkIn | dateEs:'short' }}</p>
+            <p class="text-text-disabled text-xs mb-0.5 whitespace-nowrap">Check-in</p>
+            <p class="text-text-primary font-bold text-sm whitespace-nowrap">{{ b.stay.checkIn | dateEs:'short' }}</p>
           </div>
           <div class="flex flex-col items-center gap-1">
             <div class="flex items-center gap-1">
@@ -206,29 +185,29 @@
             <span class="text-brand text-xs font-bold">{{ nights(b) }}n</span>
           </div>
           <div class="text-center">
-            <p class="text-text-disabled text-xs mb-0.5">Check-out</p>
-            <p class="text-text-primary font-bold text-sm">{{ b.stay.checkOut | dateEs:'short' }}</p>
+            <p class="text-text-disabled text-xs mb-0.5 whitespace-nowrap">Check-out</p>
+            <p class="text-text-primary font-bold text-sm whitespace-nowrap">{{ b.stay.checkOut | dateEs:'short' }}</p>
           </div>
         </div>
       </div>
 
       <!-- Billing -->
       <div class="border-t border-border px-3 py-3 sm:px-5 sm:py-4">
-        <!-- Mobile: total + pending in 2 cols -->
-        <div class="flex items-center justify-between mb-2 sm:mb-3">
+        <!-- Total + pendiente; si no caben en una línea, el pendiente baja -->
+        <div class="flex flex-wrap items-end justify-between gap-x-3 gap-y-1 mb-2 sm:mb-3">
           <div>
             <p class="text-text-disabled text-xs mb-0.5">Total</p>
-            <p class="text-text-primary text-sm sm:text-xl font-bold">{{ b.billing.totalAmount | currencyCop }}</p>
+            <p class="text-text-primary text-sm @xs:text-xl font-bold whitespace-nowrap">{{ b.billing.totalAmount | currencyCop }}</p>
           </div>
           @if (pending(b) > 0) {
-          <div class="text-right">
+          <div class="text-right ml-auto">
             <p class="text-text-disabled text-xs mb-0.5">Pendiente</p>
-            <p class="text-warning text-sm sm:text-xl font-bold">{{ pending(b) | currencyCop }}</p>
+            <p class="text-warning text-sm @xs:text-xl font-bold whitespace-nowrap">{{ pending(b) | currencyCop }}</p>
           </div>
           } @else {
-          <div class="text-right">
+          <div class="text-right ml-auto">
             <p class="text-text-disabled text-xs mb-0.5">Recibido</p>
-            <p class="text-success text-sm sm:text-base font-bold">{{ b.billing.amountReceived | currencyCop }}</p>
+            <p class="text-success text-sm @xs:text-base font-bold whitespace-nowrap">{{ b.billing.amountReceived | currencyCop }}</p>
           </div>
           }
         </div>
@@ -412,9 +391,14 @@
   }
 </modal-nova>
 
-<!-- =============== MODAL FILTROS MOBILE =============== -->
+<!-- =============== MODAL FILTROS =============== -->
 <modal-nova [visible]="showFilters()" title="Filtros" size="sm" (closed)="showFilters.set(false)">
   <div class="space-y-1">
+    <div class="py-2">
+      <input [(ngModel)]="search" (ngModelChange)="onFilterChange()" placeholder="Buscar por huésped..." class="w-full bg-input border border-border rounded-xl px-4 py-2.5
+               text-text-primary placeholder:text-text-disabled text-sm
+               focus:outline-none focus:border-brand transition-colors" />
+    </div>
     <div class="py-2">
       <autocomplete-select
         [options]="PLATFORMS.map(p => ({ label: p, value: p }))"

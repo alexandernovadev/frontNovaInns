@@ -52,6 +52,37 @@ app-root {
   background-color: #0B0B0C;
 }
 
+/* Header de página: fijo arriba en móvil/tablet (< lg), con hueco a la
+   izquierda para la hamburguesa del layout. --page-pad = padding del contenedor. */
+@media (width < 64rem) {
+  .page-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    margin-top: calc(-1 * var(--page-pad, 1.5rem));
+    margin-inline: calc(-1 * var(--page-pad, 1.5rem));
+    padding: 0.75rem 1rem 0.75rem 3.5rem;
+    min-height: 4rem;
+    background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Compacto: título en una línea y sin subtítulo */
+  .page-header h1 {
+    min-width: 0;
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .page-header h1 + p {
+    display: none;
+  }
+}
+
 /* Scrollbar dark */
 ::-webkit-scrollbar {
   width: 6px;

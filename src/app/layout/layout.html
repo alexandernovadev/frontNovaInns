@@ -93,14 +93,12 @@
   <!-- Main -->
   <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-    <!-- Topbar móvil -->
-    <header class="lg:hidden flex items-center gap-4 px-4 py-3 bg-surface border-b border-border">
-      <button (click)="toggleSidebar()" class="text-text-secondary hover:text-text-primary cursor-pointer">
-        <lucide-icon [img]="Menu" class="w-6 h-6" [strokeWidth]="2"/>
-      </button>
-      <img src="assets/images/LogoNovaInns.png" alt="Nova Inns" class="w-8 h-8 object-contain" />
-      <span class="text-text-primary font-bold">Nova Inns</span>
-    </header>
+    <!-- Hamburguesa móvil: flota sobre el .page-header de cada página -->
+    <button (click)="toggleSidebar()" title="Menú"
+      class="lg:hidden fixed top-3 left-3 z-[15] w-10 h-10 flex items-center justify-center rounded-xl
+             text-text-secondary hover:text-text-primary hover:bg-hover transition-colors cursor-pointer">
+      <lucide-icon [img]="Menu" class="w-6 h-6" [strokeWidth]="2"/>
+    </button>
 
     <!-- Content -->
     <main class="flex-1 overflow-y-auto">

@@ -10,7 +10,7 @@ export class BookingsService {
   private http = inject(HttpClient);
   private uploadService = inject(UploadService);
 
-  findAll(query: { search?: string; status?: string; lifecycle?: string; platform?: string; page?: number; fromDate?: string; toDate?: string } = {}) {
+  findAll(query: { search?: string; status?: string; lifecycle?: string; platform?: string; apartmentId?: string; page?: number; fromDate?: string; toDate?: string } = {}) {
     return this.http.get<BookingPage>(`${API}/bookings`, { params: buildParams(query) });
   }
 
@@ -45,8 +45,8 @@ export class BookingsService {
     return this.http.patch<IBooking>(`${API}/bookings/${id}/status`, { status });
   }
 
-  financialSummary(fromDate?: string, toDate?: string) {
-    return this.http.get<FinancialSummary>(`${API}/bookings/summary/financial`, { params: buildParams({ fromDate, toDate }) });
+  financialSummary(fromDate?: string, toDate?: string, apartmentId?: string) {
+    return this.http.get<FinancialSummary>(`${API}/bookings/summary/financial`, { params: buildParams({ fromDate, toDate, apartmentId }) });
   }
 
   uploadImage(file: File) {

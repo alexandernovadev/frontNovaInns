@@ -1,6 +1,6 @@
 {
   "name": "nova-inns-apartments-front",
-  "version": "3.5.12",
+  "version": "3.5.13",
   "author": "Nova Alex Labs",
   "scripts": {
     "ng": "ng",

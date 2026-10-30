@@ -4,13 +4,13 @@
 <div class="p-6 space-y-6">
 
   <!-- Header -->
-  <div class="flex items-center gap-4">
+  <div class="page-header flex items-center gap-4">
     <button (click)="goBack()"
       class="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-hover transition-colors cursor-pointer">
       <lucide-icon [img]="ArrowLeft" class="w-5 h-5" [strokeWidth]="2" />
     </button>
-    <div class="flex-1">
-      <h1 class="text-text-primary text-2xl font-bold">{{ apartment()!.internalName }}</h1>
+    <div class="flex-1 min-w-0 flex items-center gap-2">
+      <h1 class="text-text-primary text-2xl font-bold truncate">{{ apartment()!.internalName }}</h1>
       <status-badge [value]="apartment()!.status" type="apartment" />
     </div>
   </div>

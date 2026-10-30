@@ -2,6 +2,7 @@ import { Component, inject, signal, computed, OnInit, ChangeDetectionStrategy } 
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BookingsService } from '../../core/services/bookings.service';
+import { ApartmentsService } from '../../core/services/apartments.service';
 import { IBooking, FinancialSummary } from '../../core/interfaces';
 import { ModalNova } from '../../shared/components/modal-nova';
 import { StatusBadge } from '../../shared/components/status-badge';
@@ -12,7 +13,7 @@ import { DateEsPipe } from '../../shared/pipes/date-es.pipe';
 import { fmtNumber } from '../../shared/utils/number.util';
 import { PLATFORMS, PLATFORM_CLASS, STATUSES, LIFECYCLE_STATUSES, LIFECYCLE_CLASS } from '../../shared/constants/booking.constants';
 import { AlertService } from '../../shared/components/services/alert.service';
-import { LucideAngularModule, CalendarDays, LayoutGrid, Rows3, MessageSquare, Braces } from 'lucide-angular';
+import { LucideAngularModule, CalendarDays, LayoutGrid, Rows3, MessageSquare, Braces, SlidersHorizontal } from 'lucide-angular';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { loadList } from '../../shared/utils/list.util';
 import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delete.util';
@@ -30,8 +31,14 @@ export class BookingsComponent implements OnInit {
   readonly Rows3 = Rows3;
   readonly MessageSquare = MessageSquare;
   readonly Braces = Braces;
+  readonly SlidersHorizontal = SlidersHorizontal;
+
+  hasActiveFilters() {
+    return !!(this.search || this.statusFilter || this.platformFilter || this.lifecycleFilter());
+  }
 
   private bookingsService    = inject(BookingsService);
+  private apartmentsService  = inject(ApartmentsService);
   private router = inject(Router);
   private route  = inject(ActivatedRoute);
   private alert  = inject(AlertService);
@@ -60,6 +67,7 @@ export class BookingsComponent implements OnInit {
     this.statusFilter = '';
     this.platformFilter = '';
     this.lifecycleFilter.set('');
+    this.apartmentFilter.set('');
     this.yearFilter.set(String(new Date().getFullYear()));
     this.monthFilter.set(BookingsComponent.defaultMonth());
     this.load(1);
@@ -88,6 +96,18 @@ export class BookingsComponent implements OnInit {
     return String(new Date().getMonth());
   }
   monthFilter = signal(BookingsComponent.defaultMonth());
+
+  apartmentFilter = signal('');
+  apartmentOptions = signal<{ label: string; value: string }[]>([{ label: 'Todos', value: '' }]);
+
+  private loadApartments() {
+    this.apartmentsService.findAll().subscribe({
+      next: res => this.apartmentOptions.set([
+        { label: 'Todos', value: '' },
+        ...res.data.map(a => ({ label: a.internalName, value: a._id })),
+      ]),
+    });
+  }
 
   // Opções de ano: de 2026 (primeiro ano da empresa) até ano atual + 1
   yearOptions = computed(() => {
@@ -143,6 +163,8 @@ export class BookingsComponent implements OnInit {
     if (p['year']) this.yearFilter.set(p['year']);
     if (p['month']) this.monthFilter.set(p['month']);
     if (p['lifecycle']) this.lifecycleFilter.set(p['lifecycle']);
+    if (p['apt']) this.apartmentFilter.set(p['apt']);
+    this.loadApartments();
     this.load();
     this.syncUrl();
   }
@@ -163,14 +185,14 @@ export class BookingsComponent implements OnInit {
       this.loading,
       this.bookings,
       this.meta,
-      this.bookingsService.findAll({ search: this.search, status: this.statusFilter, lifecycle: this.lifecycleFilter(), platform: this.platformFilter, page, fromDate, toDate }),
+      this.bookingsService.findAll({ search: this.search, status: this.statusFilter, lifecycle: this.lifecycleFilter(), platform: this.platformFilter, apartmentId: this.apartmentFilter(), page, fromDate, toDate }),
     );
     this.loadSummary();
   }
 
   loadSummary() {
     const { fromDate, toDate } = this.dateRange();
-    this.bookingsService.financialSummary(fromDate, toDate).subscribe({ next: s => this.summary.set(s) });
+    this.bookingsService.financialSummary(fromDate, toDate, this.apartmentFilter()).subscribe({ next: s => this.summary.set(s) });
   }
 
   onFilterChange() {
@@ -185,6 +207,7 @@ export class BookingsComponent implements OnInit {
         status: this.statusFilter || undefined,
         platform: this.platformFilter || undefined,
         lifecycle: this.lifecycleFilter() || undefined,
+        apt: this.apartmentFilter() || undefined,
         year: this.yearFilter() || undefined,
         month: this.monthFilter() || undefined,
       },
