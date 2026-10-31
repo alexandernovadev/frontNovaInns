@@ -3,7 +3,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 import { EnvironmentService } from '../core/services/environment.service';
 import { AlertNova } from '../shared/components/alert-nova';
-import { LucideAngularModule, CalendarDays, Calendar, Building2, Users, ArrowUpDown, Info, BarChart3, MessageSquare, Receipt, LogOut, Menu, ChevronLeft, Shield } from 'lucide-angular';
+import { LucideAngularModule, CalendarDays, Calendar, Building2, BarChart3, Receipt, LogOut, Menu, ChevronLeft, Shield } from 'lucide-angular';
 
 @Component({
   selector: 'app-layout',
@@ -31,12 +31,8 @@ export class LayoutComponent {
   readonly CalendarDays = CalendarDays;
   readonly Calendar = Calendar;
   readonly Building2 = Building2;
-  readonly Users = Users;
-  readonly ArrowUpDown = ArrowUpDown;
   readonly BarChart3 = BarChart3;
-  readonly MessageSquare = MessageSquare;
   readonly Receipt = Receipt;
-  readonly Info = Info;
   readonly LogOut = LogOut;
   readonly Menu = Menu;
   readonly ChevronLeft = ChevronLeft;
@@ -50,8 +46,6 @@ export class LayoutComponent {
     localStorage.setItem('sidebar_collapsed', String(v));
   }
 
-  isAdmin() { return this.auth.role() === 'SUPER_ADMIN'; }
-
   logo() {
     return this.environmentService.isDev()
       ? 'assets/images/logodev.png'
@@ -61,13 +55,9 @@ export class LayoutComponent {
   navItems = [
     { label: 'Reservas', route: '/bookings', icon: CalendarDays },
     { label: 'Apartamentos', route: '/apartments', icon: Building2 },
-    { label: 'Usuarios', route: '/users', icon: Users },
-    { label: 'Import / Export', route: '/data', icon: ArrowUpDown },
     { label: 'Calendario', route: '/calendar', icon: Calendar },
     { label: 'Gastos', route: '/expenses', icon: Receipt },
     { label: 'Analítica', route: '/analytics', icon: BarChart3 },
-    { label: 'Mensajes', route: '/messages', icon: MessageSquare },
-    { label: 'Info Sistema', route: '/info', icon: Info },
-    { label: 'Admin', route: '/admin', icon: Shield, adminOnly: true },
+    { label: 'Admin', route: '/admin', icon: Shield },
   ];
 }

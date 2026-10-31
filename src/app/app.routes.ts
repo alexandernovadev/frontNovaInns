@@ -46,18 +46,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'users',
-        loadComponent: () => import('./pages/users/users').then((m) => m.UsersComponent),
-      },
-      {
-        path: 'data',
-        loadComponent: () => import('./pages/data/data').then((m) => m.DataComponent),
-      },
-      {
-        path: 'info',
-        loadComponent: () => import('./pages/info/info').then((m) => m.InfoComponent),
-      },
-      {
         path: 'analytics',
         loadComponent: () =>
           import('./pages/analytics/analytics').then((m) => m.AnalyticsComponent),
@@ -68,11 +56,6 @@ export const routes: Routes = [
           import('./pages/expenses/expenses').then((m) => m.ExpensesComponent),
       },
       {
-        path: 'messages',
-        loadComponent: () =>
-          import('./pages/messages/messages').then((m) => m.MessagesComponent),
-      },
-      {
         path: 'calendar',
         loadComponent: () =>
           import('./pages/calendar/calendar').then((m) => m.CalendarComponent),
@@ -80,8 +63,37 @@ export const routes: Routes = [
       {
         path: 'admin',
         loadComponent: () =>
-          import('./pages/admin/admin').then((m) => m.AdminComponent),
+          import('./pages/admin/admin-layout').then((m) => m.AdminLayoutComponent),
+        children: [
+          { path: '', redirectTo: 'users', pathMatch: 'full' },
+          {
+            path: 'users',
+            loadComponent: () => import('./pages/users/users').then((m) => m.UsersComponent),
+          },
+          {
+            path: 'messages',
+            loadComponent: () =>
+              import('./pages/messages/messages').then((m) => m.MessagesComponent),
+          },
+          {
+            path: 'data',
+            loadComponent: () => import('./pages/data/data').then((m) => m.DataComponent),
+          },
+          {
+            path: 'info',
+            loadComponent: () => import('./pages/info/info').then((m) => m.InfoComponent),
+          },
+          {
+            path: 'clear',
+            loadComponent: () => import('./pages/admin/admin').then((m) => m.AdminComponent),
+          },
+        ],
       },
+      // Rutas viejas → tabs de Admin
+      { path: 'users', redirectTo: '/admin/users', pathMatch: 'full' },
+      { path: 'messages', redirectTo: '/admin/messages', pathMatch: 'full' },
+      { path: 'data', redirectTo: '/admin/data', pathMatch: 'full' },
+      { path: 'info', redirectTo: '/admin/info', pathMatch: 'full' },
     ],
   },
   { path: '**', redirectTo: 'bookings' },

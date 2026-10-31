@@ -13,14 +13,14 @@ interface MessageTemplate {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LucideAngularModule],
   template: `
-    <div class="p-6 space-y-6">
+    <div class="space-y-6">
       <!-- Header -->
-      <div class="page-header flex items-center justify-between">
+      <div class="flex items-center justify-between gap-3">
         <div>
-          <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2">
-            <lucide-icon [img]="MessageSquare" class="w-6 h-6 text-brand" [strokeWidth]="2" />
+          <h2 class="text-text-primary text-lg font-semibold flex items-center gap-2">
+            <lucide-icon [img]="MessageSquare" class="w-5 h-5 text-brand" [strokeWidth]="2" />
             Mensajes
-          </h1>
+          </h2>
           <p class="text-text-secondary text-sm mt-0.5">Plantillas de mensajes para huéspedes</p>
         </div>
       </div>
