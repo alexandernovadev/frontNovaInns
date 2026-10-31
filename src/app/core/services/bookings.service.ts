@@ -45,8 +45,8 @@ export class BookingsService {
     return this.http.patch<IBooking>(`${API}/bookings/${id}/status`, { status });
   }
 
-  financialSummary(fromDate?: string, toDate?: string, apartmentId?: string) {
-    return this.http.get<FinancialSummary>(`${API}/bookings/summary/financial`, { params: buildParams({ fromDate, toDate, apartmentId }) });
+  financialSummary(query: { search?: string; status?: string; lifecycle?: string; platform?: string; apartmentId?: string; fromDate?: string; toDate?: string } = {}) {
+    return this.http.get<FinancialSummary>(`${API}/bookings/summary/financial`, { params: buildParams(query) });
   }
 
   uploadImage(file: File) {

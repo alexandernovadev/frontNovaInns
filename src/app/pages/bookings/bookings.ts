@@ -179,20 +179,23 @@ export class BookingsComponent implements OnInit {
     return { fromDate, toDate };
   }
 
+  // Mismos filtros para la lista y el resumen, así los totales cuadran con lo que se ve
+  private filters() {
+    return { search: this.search, status: this.statusFilter, lifecycle: this.lifecycleFilter(), platform: this.platformFilter, apartmentId: this.apartmentFilter(), ...this.dateRange() };
+  }
+
   load(page = 1) {
-    const { fromDate, toDate } = this.dateRange();
     loadList(
       this.loading,
       this.bookings,
       this.meta,
-      this.bookingsService.findAll({ search: this.search, status: this.statusFilter, lifecycle: this.lifecycleFilter(), platform: this.platformFilter, apartmentId: this.apartmentFilter(), page, fromDate, toDate }),
+      this.bookingsService.findAll({ ...this.filters(), page }),
     );
     this.loadSummary();
   }
 
   loadSummary() {
-    const { fromDate, toDate } = this.dateRange();
-    this.bookingsService.financialSummary(fromDate, toDate, this.apartmentFilter()).subscribe({ next: s => this.summary.set(s) });
+    this.bookingsService.financialSummary(this.filters()).subscribe({ next: s => this.summary.set(s) });
   }
 
   onFilterChange() {
