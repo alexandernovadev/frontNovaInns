@@ -16,7 +16,13 @@
   </div>
 
   <!-- Filtros (se desplazan con la página) -->
-  <div class="grid grid-cols-2 gap-2 sm:flex sm:justify-end">
+  <div class="grid grid-cols-3 gap-2 sm:flex sm:justify-end">
+      <autocomplete-select
+        [options]="apartmentOptions()"
+        [(value)]="apartmentFilter"
+        (valueChange)="onFilterChange()"
+        [readonly]="true"
+        placeholder="Apto" />
       <autocomplete-select
         [options]="yearOptions()"
         [(value)]="yearFilter"
@@ -96,6 +102,47 @@
     </h3>
     <div echarts [options]="monthlyOptions" class="w-full" style="height:300px"></div>
   </div>
+
+  <!-- Comparativo por apartamento (solo con "Todos" y más de un apto) -->
+  @if (!apartmentFilter() && d.apartments.length > 1) {
+  <div class="glass rounded-2xl p-5">
+    <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
+      <lucide-icon [img]="Building2" class="w-4 h-4 text-brand" [strokeWidth]="2" />
+      Por apartamento
+    </h3>
+    <div echarts [options]="apartmentsOptions" class="w-full" style="height:260px"></div>
+    <div class="overflow-x-auto mt-3">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-text-disabled text-xs uppercase tracking-wide border-b border-border">
+            <th class="text-left font-medium py-2 pr-3">Apto</th>
+            <th class="text-right font-medium py-2 px-3">Reservas</th>
+            <th class="text-right font-medium py-2 px-3">Noches</th>
+            <th class="text-right font-medium py-2 px-3">Esperado</th>
+            <th class="text-right font-medium py-2 px-3">Ticket prom.</th>
+            <th class="text-right font-medium py-2 pl-3 whitespace-nowrap">Ocupación{{ monthFilter() ? '' : ' (mes actual)' }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of d.apartments; track a.apartmentId) {
+          <tr class="border-b border-border last:border-0">
+            <td class="text-text-primary py-2 pr-3 whitespace-nowrap">{{ a.name }}</td>
+            <td class="text-text-secondary text-right py-2 px-3">{{ a.count }}</td>
+            <td class="text-text-secondary text-right py-2 px-3">{{ a.nights }}</td>
+            <td class="text-amber-400 text-right py-2 px-3 whitespace-nowrap">{{ a.expected | currencyCop }}</td>
+            <td class="text-text-secondary text-right py-2 px-3 whitespace-nowrap">{{ a.expected / a.count | currencyCop }}</td>
+            <td class="text-teal-400 text-right py-2 pl-3">
+              @if (occupancyOf(a.apartmentId); as o) {
+              {{ o.occupancyPct }}% <span class="text-text-disabled text-xs">({{ o.occupiedDays }}/{{ o.availableDays }}d)</span>
+              } @else { — }
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  }
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
     <div class="glass rounded-2xl p-5">

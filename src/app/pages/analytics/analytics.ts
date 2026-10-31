@@ -5,6 +5,7 @@ import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts';
 import * as L from 'leaflet';
 import { AnalyticsService } from '../../core/services/analytics.service';
+import { ApartmentsService } from '../../core/services/apartments.service';
 import { DashboardData, VacancyData } from '../../core/interfaces';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
@@ -41,6 +42,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   readonly ArrowLeft = ArrowLeft;
 
   private analytics = inject(AnalyticsService);
+  private apartmentsService = inject(ApartmentsService);
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -53,6 +55,18 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   yearFilter = signal(String(new Date().getFullYear()));
   monthFilter = signal('');
+
+  apartmentFilter = signal('');
+  apartmentOptions = signal<{ label: string; value: string }[]>([{ label: 'Todos', value: '' }]);
+
+  private loadApartments() {
+    this.apartmentsService.findAll().subscribe({
+      next: res => this.apartmentOptions.set([
+        { label: 'Todos', value: '' },
+        ...res.data.map(a => ({ label: a.internalName, value: a._id })),
+      ]),
+    });
+  }
 
   yearOptions = computed(() => {
     const y = new Date().getFullYear();
@@ -97,6 +111,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   platformOptions: any = {};
   paymentOptions: any = {};
   dayOfWeekOptions: any = {};
+  apartmentsOptions: any = {};
 
   // Leaflet map
   private map: L.Map | null = null;
@@ -118,6 +133,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     const p = this.route.snapshot.queryParams;
     if (p['year']) this.yearFilter.set(p['year']);
     if (p['month']) this.monthFilter.set(p['month']);
+    if (p['apt']) this.apartmentFilter.set(p['apt']);
+    this.loadApartments();
     this.loadData();
     this.syncUrl();
   }
@@ -132,7 +149,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     this.error.set(null);
     this.vacancyLoading.set(true);
-    this.analytics.dashboard(fromDate, toDate).subscribe({
+    this.analytics.dashboard(fromDate, toDate, this.apartmentFilter()).subscribe({
       next: (d) => {
         this.data.set(d);
         this.buildCharts(d);
@@ -143,7 +160,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         this.loading.set(false);
       },
     });
-    this.analytics.vacancy(fromDate, toDate).subscribe({
+    this.analytics.vacancy(fromDate, toDate, this.apartmentFilter()).subscribe({
       next: (v) => {
         this.vacancy.set(v);
         this.vacancyLoading.set(false);
@@ -175,6 +192,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       queryParams: {
         year: this.yearFilter() || undefined,
         month: this.monthFilter() || undefined,
+        apt: this.apartmentFilter() || undefined,
       },
       replaceUrl: true,
       queryParamsHandling: 'merge',
@@ -260,7 +278,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     // Load both GeoJSON and department data, then draw
     this.http.get(`/assets/geo/${file}_departments.json`, { responseType: 'json' }).subscribe({
       next: (geo: any) => {
-        this.analytics.regions(countryCode, 'department', fromDate, toDate).subscribe((r) => {
+        this.analytics.regions(countryCode, 'department', fromDate, toDate, this.apartmentFilter()).subscribe((r) => {
           this.departmentData.set(r);
           this.drawDeptLayer(geo, countryCode);
         });
@@ -367,7 +385,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     );
     this.selectedDeptInfo.set(dept ? { guests: dept.guests, revenue: dept.revenue } : null);
     this.cityData.set(null);
-    this.analytics.regions(countryCode, undefined, fromDate, toDate).subscribe({
+    this.analytics.regions(countryCode, undefined, fromDate, toDate, this.apartmentFilter()).subscribe({
       next: (r) =>
         this.cityData.set(
           r.filter((c) => this.normalizeDeptName(c.department, countryCode) === deptName),
@@ -388,6 +406,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.buildPlatformOptions(d);
     this.buildPaymentOptions(d);
     this.buildDayOfWeekOptions(d);
+    this.buildApartmentsOptions(d);
   }
 
   // (intentionally empty — vacancy chart removed)
@@ -514,6 +533,55 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
 
+
+  // Comparativo por apartamento: recibido + pendiente apilados (mismos colores que mensual)
+  private buildApartmentsOptions(d: DashboardData) {
+    this.apartmentsOptions = {
+      tooltip: {
+        trigger: 'axis',
+        valueFormatter: (v: number) => `$${fmtNumber(Math.round(v))}`,
+      },
+      legend: { data: ['Recibido', 'Pendiente'], textStyle: { color: '#B3B3B8' } },
+      grid: { left: 60, right: 20, top: 40, bottom: 40 },
+      xAxis: {
+        type: 'category',
+        data: d.apartments.map((a) => a.name.replace(/^Apartamento /, '')),
+        axisLabel: { color: '#6E6E73', fontSize: 11 },
+        axisLine: { lineStyle: { color: '#2A2A2E' } },
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          color: '#6E6E73',
+          formatter: (v: number) =>
+            v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`,
+        },
+        splitLine: { lineStyle: { color: '#2A2A2E' } },
+      },
+      series: [
+        {
+          name: 'Recibido',
+          type: 'bar',
+          stack: 'total',
+          barMaxWidth: 80,
+          data: d.apartments.map((a) => a.received),
+          itemStyle: { color: '#22C55E' },
+        },
+        {
+          name: 'Pendiente',
+          type: 'bar',
+          stack: 'total',
+          barMaxWidth: 80,
+          data: d.apartments.map((a) => a.pending),
+          itemStyle: { color: '#F2C200', borderRadius: [4, 4, 0, 0] },
+        },
+      ],
+    };
+  }
+
+  occupancyOf(apartmentId: string) {
+    return this.vacancy()?.byApartment.find((a) => a.apartmentId === apartmentId);
+  }
 
   pct(v: number) {
     const d = this.data();

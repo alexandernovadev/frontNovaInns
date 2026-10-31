@@ -8,6 +8,7 @@ export interface DashboardData {
   payments: { method: string; total: number; count: number }[];
   dayOfWeek: { day: string; count: number; revenue: number }[];
   countries: { code: string; name: string; guests: number; revenue: number }[];
+  apartments: { apartmentId: string; name: string; expected: number; received: number; pending: number; count: number; nights: number }[];
 }
 
 export interface RegionData {
@@ -24,4 +25,5 @@ export interface VacancyData {
   totalApts: number;
   daily: { date: string; booked: number; vacant: number }[];
   monthly: { label: string; unsoldDays: number; availableDays: number; vacancyPct: number; daysInCycle: number; avgUnsoldPerApt: number; avgOccupiedPerApt: number }[];
+  byApartment: { apartmentId: string; name: string; occupiedDays: number; availableDays: number; occupancyPct: number }[];
 }
