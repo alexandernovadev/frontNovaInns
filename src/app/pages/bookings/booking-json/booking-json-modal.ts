@@ -1,9 +1,11 @@
-import { Component, inject, input, output, signal, computed, effect, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, input, output, signal, computed, effect, untracked, OnInit, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Braces, FileCode, Copy, Check, ClipboardPaste, Building2 } from 'lucide-angular';
+import { LucideAngularModule, Braces, FileCode, Copy, Check, ClipboardPaste, Building2, ImageUp, Sparkles, LoaderCircle } from 'lucide-angular';
 import { ModalNova } from '../../../shared/components/modal-nova';
 import { AutocompleteSelect, AutocompleteOption } from '../../../shared/components/autocomplete-select';
 import { ApartmentsService } from '../../../core/services/apartments.service';
+import { AssistantService } from '../../../core/services/assistant.service';
 import { PLATFORMS, METHODS, STATUSES } from '../../../shared/constants/booking.constants';
 
 // Plantilla del tab "Modelo" (forma de POST /bookings, sin apartmentId: sale del select)
@@ -32,7 +34,7 @@ const BOOKING_MODEL = {
 
 const MODEL_TEXT = JSON.stringify(BOOKING_MODEL, null, 2);
 
-type Tab = 'model' | 'json';
+type Tab = 'model' | 'json' | 'image';
 
 @Component({
   selector: 'booking-json-modal',
@@ -72,6 +74,12 @@ type Tab = 'model' | 'json';
           [class]="tab() === 'json' ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
           <lucide-icon [img]="Braces" class="w-4 h-4" [strokeWidth]="2" />
           Insertar JSON
+        </button>
+        <button (click)="tab.set('image')"
+          class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+          [class]="tab() === 'image' ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
+          <lucide-icon [img]="ImageUp" class="w-4 h-4" [strokeWidth]="2" />
+          Imagen
         </button>
       </div>
 
@@ -119,22 +127,65 @@ type Tab = 'model' | 'json';
           <p class="mt-2 text-xs text-success">JSON válido</p>
         }
       }
+
+      <!-- ══════ TAB: IMAGEN (screenshot → JSON con IA) ══════ -->
+      @if (tab() === 'image') {
+        <p class="text-text-secondary text-sm mb-3">
+          Sube o pega (Ctrl/Cmd+V) el screenshot de Booking o AirBnB. La IA arma el JSON y lo revisas antes de crear.
+        </p>
+        <label
+          class="block border-2 border-dashed rounded-xl p-4 text-center transition-colors"
+          [class]="reading() ? 'border-border opacity-60' : dragging() ? 'border-brand bg-brand/5 cursor-pointer' : 'border-border hover:border-brand cursor-pointer'"
+          (dragover)="$event.preventDefault(); dragging.set(true)"
+          (dragleave)="dragging.set(false)"
+          (drop)="onDrop($event)">
+          <input type="file" accept="image/*" class="hidden" (change)="onFileInput($event)" [disabled]="reading()" />
+          @if (imagePreview(); as src) {
+            <img [src]="src" alt="Screenshot de la reserva" class="max-h-[35vh] mx-auto rounded-lg" />
+            <p class="mt-2 text-xs text-text-secondary truncate">{{ imageFile()?.name }} · clic para cambiar</p>
+          } @else {
+            <lucide-icon [img]="ImageUp" class="w-8 h-8 text-text-disabled mx-auto mb-2" [strokeWidth]="1.5" />
+            <p class="text-sm text-text-secondary">Arrastra, pega o haz clic para elegir la imagen</p>
+          }
+        </label>
+        <input [ngModel]="hint()" (ngModelChange)="hint.set($event)" [disabled]="reading()"
+          placeholder="Nota opcional para la IA (ej: son 2 adultos y un niño)"
+          class="mt-3 w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
+                 placeholder:text-text-disabled focus:outline-none focus:border-brand transition-colors" />
+        @if (reading()) {
+          <p class="mt-3 text-xs text-text-secondary flex items-center gap-1.5">
+            <lucide-icon [img]="LoaderCircle" class="w-4 h-4 animate-spin text-brand" [strokeWidth]="2" />
+            Leyendo imagen… puede tardar hasta un par de minutos.
+          </p>
+        } @else if (readError(); as err) {
+          <p class="mt-3 text-xs text-error">{{ err }}</p>
+        }
+      }
     </modal-nova>
 
     <ng-template #footer>
       <div class="flex gap-3">
         <button (click)="closed.emit()"
           class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">Cancelar</button>
-        <button (click)="submit()" [disabled]="tab() !== 'json' || !parsed() || !selectedApt() || saving()"
-          class="flex-1 bg-brand hover:bg-brand-accent text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
-          {{ saving() ? 'Guardando...' : 'Crear reserva' }}
-        </button>
+        @if (tab() === 'image') {
+          <button (click)="readImage()" [disabled]="!imageFile() || reading()"
+            class="flex-1 bg-brand hover:bg-brand-accent text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5">
+            <lucide-icon [img]="reading() ? LoaderCircle : Sparkles" class="w-4 h-4" [class.animate-spin]="reading()" [strokeWidth]="2" />
+            {{ reading() ? 'Leyendo...' : 'Leer con IA' }}
+          </button>
+        } @else {
+          <button (click)="submit()" [disabled]="tab() !== 'json' || !parsed() || !selectedApt() || saving()"
+            class="flex-1 bg-brand hover:bg-brand-accent text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+            {{ saving() ? 'Guardando...' : 'Crear reserva' }}
+          </button>
+        }
       </div>
     </ng-template>
   `,
 })
 export class BookingJsonModal implements OnInit {
   private apartmentsService = inject(ApartmentsService);
+  private assistantService = inject(AssistantService);
 
   readonly Braces = Braces;
   readonly FileCode = FileCode;
@@ -142,6 +193,9 @@ export class BookingJsonModal implements OnInit {
   readonly Check = Check;
   readonly ClipboardPaste = ClipboardPaste;
   readonly Building2 = Building2;
+  readonly ImageUp = ImageUp;
+  readonly Sparkles = Sparkles;
+  readonly LoaderCircle = LoaderCircle;
   readonly PLATFORMS = PLATFORMS;
   readonly METHODS = METHODS;
   readonly STATUSES = STATUSES;
@@ -160,14 +214,31 @@ export class BookingJsonModal implements OnInit {
   text = signal('');
   copied = signal(false);
 
+  // Tab "Imagen"
+  imageFile = signal<File | null>(null);
+  imagePreview = signal<string | null>(null);
+  hint = signal('');
+  dragging = signal(false);
+  reading = signal(false);
+  readError = signal<string | null>(null);
+  private readSub: Subscription | null = null;
+
   constructor() {
-    // Al abrir: arranca en "Modelo" con el textarea limpio
+    // Al abrir: arranca en "Modelo" con todo limpio. Al cerrar: cancela la lectura en curso.
+    // untracked: el effect solo debe depender de visible(), no de las señales que limpia
     effect(() => {
-      if (this.visible()) {
-        this.tab.set('model');
-        this.text.set('');
-        this.selectedApt.set('');
-      }
+      const open = this.visible();
+      untracked(() => {
+        if (open) {
+          this.tab.set('model');
+          this.text.set('');
+          this.selectedApt.set('');
+          this.setImage(null);
+          this.hint.set('');
+        } else {
+          this.cancelRead();
+        }
+      });
     });
   }
 
@@ -205,6 +276,65 @@ export class BookingJsonModal implements OnInit {
 
   useModel() {
     this.text.set(this.modelText);
+  }
+
+  // Pegar un screenshot con Ctrl/Cmd+V mientras está abierto el tab "Imagen"
+  @HostListener('document:paste', ['$event'])
+  onPaste(e: ClipboardEvent) {
+    if (!this.visible() || this.tab() !== 'image' || this.reading()) return;
+    const file = Array.from(e.clipboardData?.files ?? []).find((f) => f.type.startsWith('image/'));
+    if (file) {
+      e.preventDefault();
+      this.setImage(file);
+    }
+  }
+
+  onDrop(e: DragEvent) {
+    e.preventDefault();
+    this.dragging.set(false);
+    if (this.reading()) return;
+    const file = Array.from(e.dataTransfer?.files ?? []).find((f) => f.type.startsWith('image/'));
+    if (file) this.setImage(file);
+  }
+
+  onFileInput(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) this.setImage(file);
+    input.value = '';
+  }
+
+  private setImage(file: File | null) {
+    const prev = this.imagePreview();
+    if (prev) URL.revokeObjectURL(prev);
+    this.imageFile.set(file);
+    this.imagePreview.set(file ? URL.createObjectURL(file) : null);
+    this.readError.set(null);
+  }
+
+  readImage() {
+    const file = this.imageFile();
+    if (!file || this.reading()) return;
+    this.reading.set(true);
+    this.readError.set(null);
+    this.readSub = this.assistantService.extractBooking(file, this.hint()).subscribe({
+      next: (r) => {
+        this.reading.set(false);
+        // Pasa al tab JSON con el resultado para revisarlo, elegir apto y crear
+        this.text.set(JSON.stringify(r.booking, null, 2));
+        this.tab.set('json');
+      },
+      error: (err) => {
+        this.reading.set(false);
+        this.readError.set(err?.error?.message ?? 'No se pudo leer la imagen. Intenta de nuevo.');
+      },
+    });
+  }
+
+  private cancelRead() {
+    this.readSub?.unsubscribe();
+    this.readSub = null;
+    this.reading.set(false);
   }
 
   submit() {
