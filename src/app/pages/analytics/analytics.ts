@@ -413,10 +413,32 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   // (intentionally blank — vacancy chart removed)
 
+  // Estilo Nova para todos los gráficos: tooltip oscuro y barras con degradé
+  private readonly TOOLTIP = {
+    backgroundColor: 'rgba(21,21,24,0.96)',
+    borderColor: '#2A2A2E',
+    borderWidth: 1,
+    padding: [8, 12],
+    textStyle: { color: '#FFFFFF', fontSize: 12 },
+    extraCssText: 'border-radius:12px;box-shadow:0 12px 30px -10px rgba(0,0,0,0.7);',
+  };
+  private readonly AXIS_TOOLTIP = {
+    ...this.TOOLTIP,
+    trigger: 'axis',
+    axisPointer: { type: 'shadow', shadowStyle: { color: 'rgba(242,194,0,0.06)' } },
+  };
+  private grad(top: string, bottom: string) {
+    return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+      { offset: 0, color: top },
+      { offset: 1, color: bottom },
+    ]);
+  }
+  private readonly PIE_ITEM = { borderRadius: 6, borderColor: '#151518', borderWidth: 3 };
+
   private buildMonthlyOptions(d: DashboardData) {
     const months = d.monthly.map((m) => m.month);
     this.monthlyOptions = {
-      tooltip: { trigger: 'axis' },
+      tooltip: { ...this.AXIS_TOOLTIP, valueFormatter: (v: number) => `$${fmtNumber(Math.round(v)) || '0'}` },
       // Leyenda arriba: abajo chocaba con las etiquetas del eje
       legend: { data: ['Pendiente', 'Recibido'], top: 0, right: 0, textStyle: { color: '#B3B3B8' } },
       grid: { left: 60, right: 20, top: 40, bottom: months.length > 6 ? 50 : 30 },
@@ -441,14 +463,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           type: 'bar',
           barMaxWidth: 56,
           data: d.monthly.map((m) => m.pending),
-          itemStyle: { color: '#F2C200', borderRadius: [4, 4, 0, 0] },
+          itemStyle: { color: this.grad('#FFD21A', 'rgba(242,194,0,0.35)'), borderRadius: [6, 6, 0, 0] },
         },
         {
           name: 'Recibido',
           type: 'bar',
           barMaxWidth: 56,
           data: d.monthly.map((m) => m.received),
-          itemStyle: { color: '#22C55E', borderRadius: [4, 4, 0, 0] },
+          itemStyle: { color: this.grad('#4ADE80', 'rgba(34,197,94,0.35)'), borderRadius: [6, 6, 0, 0] },
         },
       ],
     };
@@ -456,7 +478,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   private buildPlatformOptions(d: DashboardData) {
     this.platformOptions = {
-      tooltip: { trigger: 'item', formatter: (p: any) => `${p.name}: $${fmtNumber(p.value)} (${p.percent}%)` },
+      tooltip: { ...this.TOOLTIP, trigger: 'item', formatter: (p: any) => `${p.name}: $${fmtNumber(p.value)} (${p.percent}%)` },
       series: [
         {
           type: 'pie',
@@ -464,7 +486,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           center: ['50%', '46%'],
           label: { color: '#B3B3B8', fontSize: 11 },
           data: d.platforms.map((p) => ({ value: p.total, name: p.platform, itemStyle: { color: this.resolvePlatformColor(p.platform) } })),
-          itemStyle: { borderRadius: 4 },
+          itemStyle: this.PIE_ITEM,
+          emphasis: { scale: true, scaleSize: 6 },
         },
       ],
     };
@@ -481,7 +504,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   private buildPaymentOptions(d: DashboardData) {
     this.paymentOptions = {
-      tooltip: { trigger: 'item', formatter: (p: any) => `${p.name}: $${fmtNumber(p.value)} (${p.percent}%)` },
+      tooltip: { ...this.TOOLTIP, trigger: 'item', formatter: (p: any) => `${p.name}: $${fmtNumber(p.value)} (${p.percent}%)` },
       series: [
         {
           type: 'pie',
@@ -489,7 +512,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           center: ['50%', '46%'],
           label: { color: '#B3B3B8', fontSize: 11 },
           data: d.payments.map((p) => ({ value: p.total, name: p.method, itemStyle: { color: this.resolvePaymentColor(p.method) } })),
-          itemStyle: { borderRadius: 4 },
+          itemStyle: this.PIE_ITEM,
+          emphasis: { scale: true, scaleSize: 6 },
         },
       ],
     };
@@ -513,7 +537,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   private buildDayOfWeekOptions(d: DashboardData) {
     const colors = ['#F97316','#EAB308','#22C55E','#06B6D4','#3B82F6','#8B5CF6','#EC4899'];
     this.dayOfWeekOptions = {
-      tooltip: { trigger: 'axis' },
+      tooltip: this.AXIS_TOOLTIP,
       grid: { left: 50, right: 20, top: 20, bottom: 30 },
       xAxis: {
         type: 'category',
@@ -529,7 +553,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       series: [
         {
           type: 'bar',
-          data: d.dayOfWeek.map((dw, i) => ({ value: dw.count, itemStyle: { color: colors[i], borderRadius: [4, 4, 0, 0] } })),
+          barMaxWidth: 56,
+          data: d.dayOfWeek.map((dw, i) => ({ value: dw.count, itemStyle: { color: this.grad(colors[i], colors[i] + '40'), borderRadius: [6, 6, 0, 0] } })),
         },
       ],
     };
@@ -541,7 +566,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   private buildApartmentsOptions(d: DashboardData) {
     this.apartmentsOptions = {
       tooltip: {
-        trigger: 'axis',
+        ...this.AXIS_TOOLTIP,
         valueFormatter: (v: number) => `$${fmtNumber(Math.round(v))}`,
       },
       legend: { data: ['Recibido', 'Pendiente'], top: 0, right: 0, textStyle: { color: '#B3B3B8' } },
@@ -569,7 +594,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           stack: 'total',
           barMaxWidth: 80,
           data: d.apartments.map((a) => a.received),
-          itemStyle: { color: '#22C55E' },
+          itemStyle: { color: this.grad('#4ADE80', 'rgba(34,197,94,0.45)') },
         },
         {
           name: 'Pendiente',
@@ -577,7 +602,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           stack: 'total',
           barMaxWidth: 80,
           data: d.apartments.map((a) => a.pending),
-          itemStyle: { color: '#F2C200', borderRadius: [4, 4, 0, 0] },
+          itemStyle: { color: this.grad('#FFD21A', 'rgba(242,194,0,0.5)'), borderRadius: [6, 6, 0, 0] },
         },
       ],
     };
