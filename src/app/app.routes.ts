@@ -88,6 +88,11 @@ export const routes: Routes = [
             loadComponent: () => import('./pages/info/info').then((m) => m.InfoComponent),
           },
           {
+            path: 'nova-history',
+            loadComponent: () =>
+              import('./pages/admin/nova-history').then((m) => m.NovaHistoryComponent),
+          },
+          {
             path: 'clear',
             loadComponent: () => import('./pages/admin/admin').then((m) => m.AdminComponent),
           },

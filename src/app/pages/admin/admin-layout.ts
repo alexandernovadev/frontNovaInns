@@ -1,7 +1,7 @@
 import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { LucideAngularModule, Shield, Users, MessageSquare, ArrowUpDown, Info, Trash2 } from 'lucide-angular';
+import { LucideAngularModule, Shield, Users, MessageSquare, ArrowUpDown, Info, Trash2, History } from 'lucide-angular';
 
 // Contenedor de Admin: header + tabs; cada tab es una sub-ruta (/admin/users, /admin/messages...)
 @Component({
@@ -48,6 +48,7 @@ export class AdminLayoutComponent {
     { label: 'Mensajes', route: 'messages', icon: MessageSquare },
     { label: 'Import / Export', route: 'data', icon: ArrowUpDown },
     { label: 'Info Sistema', route: 'info', icon: Info },
+    { label: 'Historial NovaAI', route: 'nova-history', icon: History },
     { label: 'Vaciar datos', route: 'clear', icon: Trash2, superAdminOnly: true },
   ];
 

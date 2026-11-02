@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API } from '../../shared/constants/api.constant';
+import { buildParams } from '../../shared/utils/http-params.util';
 
 export interface ActionChange {
   field: string;
@@ -11,7 +12,7 @@ export interface ActionChange {
 // Propuesta de NovaAI: el usuario la confirma o la cancela en una tarjeta
 export interface ActionCard {
   id: string;
-  type: 'update' | 'delete';
+  type: 'update' | 'delete' | 'undo';
   collection: 'bookings' | 'apartments' | 'expenses';
   status: string;
   summary: string;
@@ -23,6 +24,19 @@ export interface ActionCard {
     details: { field: string; value: unknown }[];
   }[];
 }
+
+// Admin → Historial NovaAI
+export interface HistoryItem extends ActionCard {
+  request: string;
+  error: string | null;
+  createdAt: string;
+  confirmedAt: string | null;
+  undoneAt: string | null;
+  undoOf: string | null;
+  undoActionId: string | null;
+}
+
+export type HistoryFilter = '' | 'applied' | 'undone' | 'other';
 
 export interface ChatMessage {
   role: 'user' | 'model';
@@ -62,6 +76,18 @@ export class AssistantService {
   // Ejecuta la propuesta. 409 si venció, ya no estaba pendiente o el documento cambió
   confirmAction(id: string) {
     return this.http.post<{ id: string; status: string }>(`${API}/assistant/actions/${id}/confirm`, {});
+  }
+
+  listActions(filter: HistoryFilter, page = 1) {
+    return this.http.get<{ data: HistoryItem[]; meta: { total: number; page: number; limit: number; totalPages: number } }>(
+      `${API}/assistant/actions`,
+      { params: buildParams({ filter, page }) },
+    );
+  }
+
+  // 409 con status "changed" + drift si el documento cambió después; force = deshacer igual
+  undoAction(id: string, force = false) {
+    return this.http.post<{ id: string; status: string; undoActionId: string }>(`${API}/assistant/actions/${id}/undo`, { force });
   }
 
   cancelAction(id: string) {
