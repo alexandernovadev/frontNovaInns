@@ -44,14 +44,19 @@ const STATUS_TEXT: Record<string, string> = {
   template: `
     @let c = card();
     @let isDelete = c.type === 'delete';
-    <div class="w-full max-w-[85%] sm:max-w-[75%] mt-2 bg-surface border rounded-2xl overflow-hidden"
-      [class]="isDelete ? 'border-error/50' : 'border-brand/50'"
-      [class.opacity-60]="c.status !== 'pending'">
-      <div class="px-4 py-3 border-b border-border flex items-start gap-2.5">
-        <lucide-icon [img]="isDelete ? Trash2 : Pencil" class="w-4 h-4 mt-0.5 shrink-0"
-          [class]="isDelete ? 'text-error' : 'text-brand'" [strokeWidth]="2" />
+    <div class="w-full sm:max-w-[85%] mt-2.5 rounded-2xl overflow-hidden border nova-in bg-gradient-to-b from-elevated to-surface"
+      [class]="isDelete
+        ? 'border-error/40 shadow-[0_8px_30px_-12px_rgba(239,68,68,0.35)]'
+        : 'border-brand/40 shadow-[0_8px_30px_-12px_rgba(242,194,0,0.35)]'"
+      [class.opacity-60]="c.status !== 'pending' && c.status !== 'confirmed'">
+      <div class="h-1" [class]="isDelete ? 'bg-gradient-to-r from-error to-rose-400' : 'bg-gradient-to-r from-brand-accent to-brand-pressed'"></div>
+      <div class="px-4 py-3 border-b border-border flex items-start gap-3">
+        <span class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0"
+          [class]="isDelete ? 'bg-error/15 text-error' : 'bg-brand/15 text-brand'">
+          <lucide-icon [img]="isDelete ? Trash2 : Pencil" class="w-4 h-4" [strokeWidth]="2" />
+        </span>
         <div class="min-w-0">
-          <p class="text-text-primary text-sm font-semibold">{{ isDelete ? '¿Eliminar?' : '¿Editar?' }}</p>
+          <p class="text-sm font-semibold" [class]="isDelete ? 'text-error' : 'text-brand'">{{ isDelete ? '¿Eliminar?' : '¿Editar?' }}</p>
           <p class="text-text-secondary text-xs">{{ c.summary }}</p>
         </div>
       </div>
@@ -74,7 +79,7 @@ const STATUS_TEXT: Record<string, string> = {
                   <span class="flex flex-wrap items-center gap-1.5 min-w-0">
                     <span class="text-text-disabled line-through break-words">{{ format(ch.field, ch.before) }}</span>
                     <lucide-icon [img]="ArrowRight" class="w-3 h-3 text-text-disabled shrink-0" [strokeWidth]="2" />
-                    <span class="text-text-primary font-semibold break-words">{{ format(ch.field, ch.after) }}</span>
+                    <span class="px-1.5 py-px rounded-md bg-brand/10 text-brand-accent font-semibold break-words">{{ format(ch.field, ch.after) }}</span>
                   </span>
                 </div>
               }

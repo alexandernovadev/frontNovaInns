@@ -83,6 +83,27 @@ app-root {
   }
 }
 
+/* NovaAI: entrada suave de mensajes y resplandor que "respira" */
+@keyframes novaIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.nova-in {
+  animation: novaIn 0.35s ease-out both;
+}
+
+@keyframes novaGlow {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.12); }
+}
+.nova-glow {
+  animation: novaGlow 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nova-in, .nova-glow { animation: none; }
+}
+
 /* Scrollbar dark */
 ::-webkit-scrollbar {
   width: 6px;

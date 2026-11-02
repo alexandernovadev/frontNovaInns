@@ -1,29 +1,35 @@
 import { Component, inject, signal, effect, viewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Sparkles, SendHorizontal, RotateCcw, LoaderCircle, Database } from 'lucide-angular';
+import { LucideAngularModule, Sparkles, SendHorizontal, RotateCcw, Database } from 'lucide-angular';
 import { AssistantService, ChatMessage } from '../../core/services/assistant.service';
 import { ApartmentsService } from '../../core/services/apartments.service';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { NovaActionCard } from './action-card';
+import { renderRich } from './rich-text';
 
 @Component({
   selector: 'app-nova-ai',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule, NovaActionCard],
   template: `
-    <div class="p-6 h-full flex flex-col gap-4">
+    <div class="p-6 h-full flex flex-col gap-4 relative">
+      <!-- Resplandor decorativo -->
+      <div class="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(60%_100%_at_50%_0%,rgba(242,194,0,0.10),transparent)]"></div>
+
       <!-- Header -->
-      <div class="page-header flex items-center justify-between gap-3">
+      <div class="page-header relative flex items-center justify-between gap-3">
         <div>
-          <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2">
-            <lucide-icon [img]="Sparkles" class="w-6 h-6 text-brand" [strokeWidth]="2" />
-            NovaAI
+          <h1 class="text-2xl font-bold flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-accent to-brand-pressed flex items-center justify-center lg:shadow-[0_0_20px_rgba(242,194,0,0.35)] shrink-0">
+              <lucide-icon [img]="Sparkles" class="w-4.5 h-4.5 text-bg" [strokeWidth]="2.2" />
+            </span>
+            <span class="bg-gradient-to-r from-white via-brand-accent to-brand bg-clip-text text-transparent">NovaAI</span>
           </h1>
           <p class="text-text-secondary text-sm mt-0.5">Pregúntale a tu negocio</p>
         </div>
         @if (messages().length) {
           <button (click)="reset()" [disabled]="sending()" title="Nueva conversación"
-            class="flex items-center gap-1.5 text-sm text-text-secondary hover:text-brand transition-colors cursor-pointer disabled:opacity-50 shrink-0">
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-sm text-text-secondary hover:text-brand hover:border-brand/50 transition-colors cursor-pointer disabled:opacity-50 shrink-0">
             <lucide-icon [img]="RotateCcw" class="w-4 h-4" [strokeWidth]="2" />
             <span class="hidden sm:inline">Nueva conversación</span>
           </button>
@@ -31,65 +37,100 @@ import { NovaActionCard } from './action-card';
       </div>
 
       <!-- Mensajes -->
-      <div #scroller class="flex-1 min-h-0 overflow-y-auto space-y-3 pr-1">
+      <div #scroller class="relative flex-1 min-h-0 overflow-y-auto space-y-5 pr-1 -mr-1">
         @if (!messages().length) {
-          <div class="h-full flex flex-col items-center justify-center text-center gap-4 py-8">
-            <lucide-icon [img]="Sparkles" class="w-10 h-10 text-brand" [strokeWidth]="1.5" />
-            <p class="text-text-secondary text-sm max-w-sm">Pregunta lo que quieras sobre Nova Inns: reservas, pagos, gastos, huéspedes…</p>
-            <div class="flex flex-wrap justify-center gap-2 max-w-xl">
-              @for (s of suggestions; track s) {
-                <button (click)="send(s)"
-                  class="px-3 py-1.5 rounded-full border border-border bg-surface text-xs text-text-secondary hover:border-brand hover:text-brand transition-colors cursor-pointer">
-                  {{ s }}
+          <div class="min-h-full flex flex-col items-center justify-center text-center gap-6 py-8 nova-in">
+            <div class="relative">
+              <div class="absolute inset-0 rounded-full bg-brand/30 blur-2xl nova-glow"></div>
+              <div class="relative w-20 h-20 rounded-full bg-gradient-to-br from-brand-accent via-brand to-brand-pressed flex items-center justify-center shadow-[0_0_40px_rgba(242,194,0,0.35)]">
+                <lucide-icon [img]="Sparkles" class="w-9 h-9 text-bg" [strokeWidth]="1.8" />
+              </div>
+            </div>
+            <div class="space-y-1.5">
+              <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white via-brand-accent to-brand bg-clip-text text-transparent">Hola, ¿qué quieres saber?</h2>
+              <p class="text-text-secondary text-sm max-w-sm mx-auto">Reservas, pagos, gastos, huéspedes… pregunta como le hablarías a tu socio.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-xl">
+              @for (s of suggestions; track s.text) {
+                <button (click)="send(s.text)"
+                  class="group flex items-center gap-3 px-4 py-3 rounded-2xl border border-border bg-surface/80 text-left text-sm text-text-secondary
+                         hover:border-brand/50 hover:text-text-primary hover:bg-elevated hover:-translate-y-0.5 transition-all cursor-pointer">
+                  <span class="text-lg shrink-0 group-hover:scale-110 transition-transform">{{ s.icon }}</span>
+                  <span>{{ s.text }}</span>
                 </button>
               }
             </div>
           </div>
         }
+
         @for (m of messages(); track $index) {
-          <div class="flex flex-col" [class.items-end]="m.role === 'user'">
-            <div class="max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap break-words"
-              [class]="m.role === 'user'
-                ? 'bg-brand text-bg rounded-br-md'
-                : 'bg-surface border border-border text-text-primary rounded-bl-md'">{{ m.text }}</div>
-            @if (m.queries?.length) {
-              <p class="mt-1 ml-1 text-[11px] text-text-disabled flex items-center gap-1">
-                <lucide-icon [img]="Database" class="w-3 h-3 shrink-0" [strokeWidth]="2" />
-                Consulté: {{ querySummary(m.queries!) }}
-              </p>
-            }
-            @for (a of m.actions ?? []; track a.id) {
-              <nova-action-card [card]="a" [busy]="busyAction() === a.id" [apartmentNames]="apartmentNames()"
-                (cancel)="cancelAction($event)" (confirm)="confirmAction($event)" />
-            }
-          </div>
+          @if (m.role === 'user') {
+            <div class="flex justify-end nova-in">
+              <div data-msg="user"
+                class="max-w-[85%] sm:max-w-[70%] rounded-2xl rounded-br-md px-4 py-2.5 text-sm font-medium whitespace-pre-wrap break-words
+                       bg-gradient-to-br from-brand-accent to-brand text-bg shadow-[0_4px_20px_-6px_rgba(242,194,0,0.45)]">{{ m.text }}</div>
+            </div>
+          } @else {
+            <div class="flex gap-3 nova-in">
+              <span class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-accent to-brand-pressed flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_14px_rgba(242,194,0,0.25)]">
+                <lucide-icon [img]="Sparkles" class="w-4 h-4 text-bg" [strokeWidth]="2.2" />
+              </span>
+              <div class="min-w-0 flex-1 flex flex-col items-start">
+                <div data-msg="model"
+                  class="max-w-full sm:max-w-[85%] rounded-2xl rounded-tl-md px-4 py-3 text-sm leading-relaxed text-text-secondary break-words
+                         bg-gradient-to-b from-elevated to-surface border border-border shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+                  [innerHTML]="rich(m.text)"></div>
+                @if (m.queries?.length) {
+                  <span class="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface/60 border border-border text-[11px] text-text-disabled">
+                    <lucide-icon [img]="Database" class="w-3 h-3 shrink-0 text-brand/70" [strokeWidth]="2" />
+                    Consulté: {{ querySummary(m.queries!) }}
+                  </span>
+                }
+                @for (a of m.actions ?? []; track a.id) {
+                  <nova-action-card class="w-full" [card]="a" [busy]="busyAction() === a.id" [apartmentNames]="apartmentNames()"
+                    (cancel)="cancelAction($event)" (confirm)="confirmAction($event)" />
+                }
+              </div>
+            </div>
+          }
         }
+
         @if (sending()) {
-          <div class="flex">
-            <div class="bg-surface border border-border rounded-2xl rounded-bl-md px-4 py-2.5 text-sm text-text-secondary flex items-center gap-2">
-              <lucide-icon [img]="LoaderCircle" class="w-4 h-4 animate-spin text-brand" [strokeWidth]="2" />
-              Pensando…
+          <div class="flex gap-3 nova-in">
+            <span class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-accent to-brand-pressed flex items-center justify-center shrink-0 nova-glow">
+              <lucide-icon [img]="Sparkles" class="w-4 h-4 text-bg" [strokeWidth]="2.2" />
+            </span>
+            <div class="rounded-2xl rounded-tl-md px-4 py-3 bg-gradient-to-b from-elevated to-surface border border-border flex items-center gap-3">
+              <span class="flex gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand animate-bounce [animation-delay:-0.3s]"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-brand animate-bounce [animation-delay:-0.15s]"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-brand animate-bounce"></span>
+              </span>
+              <span class="text-xs text-text-secondary">Consultando tu negocio…</span>
             </div>
           </div>
         }
         @if (error(); as err) {
-          <div class="flex items-center gap-3 text-xs text-error">
+          <div class="flex items-center gap-3 ml-11 px-3 py-2 rounded-xl bg-error/10 border border-error/30 text-xs text-error w-fit nova-in">
             <span>{{ err }}</span>
-            <button (click)="retry()" class="underline cursor-pointer hover:text-text-primary">Reintentar</button>
+            <button (click)="retry()" class="font-semibold underline underline-offset-2 cursor-pointer hover:text-text-primary">Reintentar</button>
           </div>
         }
       </div>
 
       <!-- Caja de texto -->
-      <form (submit)="$event.preventDefault(); send(draft())" class="flex items-end gap-2">
+      <form (submit)="$event.preventDefault(); send(draft())"
+        class="relative flex items-end gap-2 p-1.5 rounded-2xl bg-surface border border-border transition-all
+               focus-within:border-brand/60 focus-within:shadow-[0_0_0_4px_rgba(242,194,0,0.08),0_0_24px_-4px_rgba(242,194,0,0.25)]">
         <textarea [ngModel]="draft()" (ngModelChange)="draft.set($event)" name="draft"
           (keydown.enter)="onEnter($any($event))"
           rows="1" placeholder="Pregúntale a NovaAI…"
-          class="flex-1 bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm resize-none max-h-40
-                 placeholder:text-text-disabled focus:outline-none focus:border-brand transition-colors"></textarea>
+          class="flex-1 bg-transparent px-3 py-2.5 text-text-primary text-sm resize-none max-h-40
+                 placeholder:text-text-disabled focus:outline-none"></textarea>
         <button type="submit" [disabled]="!draft().trim() || sending()" title="Enviar"
-          class="w-11 h-11 flex items-center justify-center rounded-xl bg-brand hover:bg-brand-accent text-bg transition-colors cursor-pointer disabled:opacity-50 shrink-0">
-          <lucide-icon [img]="SendHorizontal" class="w-5 h-5" [strokeWidth]="2" />
+          class="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-brand-accent to-brand text-bg cursor-pointer shrink-0
+                 transition-all hover:scale-105 hover:shadow-[0_0_16px_rgba(242,194,0,0.5)] disabled:opacity-30 disabled:hover:scale-100 disabled:hover:shadow-none">
+          <lucide-icon [img]="SendHorizontal" class="w-5 h-5" [strokeWidth]="2.2" />
         </button>
       </form>
     </div>
@@ -99,7 +140,6 @@ export class NovaAiComponent {
   readonly Sparkles = Sparkles;
   readonly SendHorizontal = SendHorizontal;
   readonly RotateCcw = RotateCcw;
-  readonly LoaderCircle = LoaderCircle;
   readonly Database = Database;
 
   private assistant = inject(AssistantService);
@@ -115,11 +155,22 @@ export class NovaAiComponent {
   apartmentNames = signal<Record<string, string>>({});
 
   readonly suggestions = [
-    '¿Cuánto gané este mes?',
-    '¿Quién entra mañana?',
-    '¿Qué falta por cobrar?',
-    'Escribe un mensaje de bienvenida para un huésped',
+    { icon: '💰', text: '¿Cuánto gané este mes?' },
+    { icon: '🛬', text: '¿Quién entra mañana?' },
+    { icon: '🧾', text: '¿Qué falta por cobrar?' },
+    { icon: '✍️', text: 'Escribe un mensaje de bienvenida para un huésped' },
   ];
+
+  // El texto de cada respuesta se formatea una sola vez
+  private richCache = new Map<string, string>();
+  rich(text: string) {
+    let html = this.richCache.get(text);
+    if (html === undefined) {
+      html = renderRich(text);
+      this.richCache.set(text, html);
+    }
+    return html;
+  }
 
   constructor() {
     this.apartmentsService.findAll().subscribe({
