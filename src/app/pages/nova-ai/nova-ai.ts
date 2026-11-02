@@ -1,6 +1,6 @@
 import { Component, inject, signal, effect, viewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Sparkles, SendHorizontal, RotateCcw, LoaderCircle } from 'lucide-angular';
+import { LucideAngularModule, Sparkles, SendHorizontal, RotateCcw, LoaderCircle, Database } from 'lucide-angular';
 import { AssistantService, ChatMessage } from '../../core/services/assistant.service';
 
 @Component({
@@ -44,11 +44,17 @@ import { AssistantService, ChatMessage } from '../../core/services/assistant.ser
           </div>
         }
         @for (m of messages(); track $index) {
-          <div class="flex" [class.justify-end]="m.role === 'user'">
+          <div class="flex flex-col" [class.items-end]="m.role === 'user'">
             <div class="max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap break-words"
               [class]="m.role === 'user'
                 ? 'bg-brand text-bg rounded-br-md'
                 : 'bg-surface border border-border text-text-primary rounded-bl-md'">{{ m.text }}</div>
+            @if (m.queries?.length) {
+              <p class="mt-1 ml-1 text-[11px] text-text-disabled flex items-center gap-1">
+                <lucide-icon [img]="Database" class="w-3 h-3 shrink-0" [strokeWidth]="2" />
+                Consulté: {{ querySummary(m.queries!) }}
+              </p>
+            }
           </div>
         }
         @if (sending()) {
@@ -87,6 +93,7 @@ export class NovaAiComponent {
   readonly SendHorizontal = SendHorizontal;
   readonly RotateCcw = RotateCcw;
   readonly LoaderCircle = LoaderCircle;
+  readonly Database = Database;
 
   private assistant = inject(AssistantService);
   private scroller = viewChild<ElementRef<HTMLElement>>('scroller');
@@ -136,12 +143,19 @@ export class NovaAiComponent {
     this.error.set(null);
   }
 
+  // "bookings (find) ×2, apartments (find)"
+  querySummary(queries: string[]) {
+    const counts = new Map<string, number>();
+    for (const q of queries) counts.set(q, (counts.get(q) ?? 0) + 1);
+    return [...counts].map(([q, n]) => (n > 1 ? `${q} ×${n}` : q)).join(', ');
+  }
+
   private request() {
     this.sending.set(true);
     this.error.set(null);
     this.assistant.sendChat(this.messages()).subscribe({
       next: (r) => {
-        this.messages.update((m) => [...m, { role: 'model', text: r.reply } as ChatMessage]);
+        this.messages.update((m) => [...m, { role: 'model', text: r.reply, queries: r.queries } as ChatMessage]);
         this.sending.set(false);
       },
       error: (err) => {

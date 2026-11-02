@@ -5,6 +5,8 @@ import { API } from '../../shared/constants/api.constant';
 export interface ChatMessage {
   role: 'user' | 'model';
   text: string;
+  // Consultas a la base que hizo NovaAI para esta respuesta (solo para mostrar)
+  queries?: string[];
 }
 
 export interface ExtractedBooking {
@@ -29,8 +31,8 @@ export class AssistantService {
 
   // El back recibe el historial completo (máx. 40 mensajes, empezando por el usuario)
   sendChat(messages: ChatMessage[]) {
-    let history = messages.slice(-40);
+    let history = messages.slice(-40).map(({ role, text }) => ({ role, text }));
     if (history[0]?.role === 'model') history = history.slice(1);
-    return this.http.post<{ reply: string; model: string }>(`${API}/assistant/chat`, { messages: history });
+    return this.http.post<{ reply: string; model: string; queries: string[] }>(`${API}/assistant/chat`, { messages: history });
   }
 }
