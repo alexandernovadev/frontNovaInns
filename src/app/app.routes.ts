@@ -61,6 +61,10 @@ export const routes: Routes = [
           import('./pages/calendar/calendar').then((m) => m.CalendarComponent),
       },
       {
+        path: 'nova-ai',
+        loadComponent: () => import('./pages/nova-ai/nova-ai').then((m) => m.NovaAiComponent),
+      },
+      {
         path: 'admin',
         loadComponent: () =>
           import('./pages/admin/admin-layout').then((m) => m.AdminLayoutComponent),

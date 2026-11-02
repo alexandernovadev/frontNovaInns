@@ -3,7 +3,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 import { EnvironmentService } from '../core/services/environment.service';
 import { AlertNova } from '../shared/components/alert-nova';
-import { LucideAngularModule, CalendarDays, Calendar, Building2, BarChart3, Receipt, LogOut, Menu, ChevronLeft, Shield } from 'lucide-angular';
+import { LucideAngularModule, CalendarDays, Calendar, Building2, BarChart3, Receipt, LogOut, Menu, ChevronLeft, Shield, Sparkles } from 'lucide-angular';
 
 @Component({
   selector: 'app-layout',
@@ -58,6 +58,7 @@ export class LayoutComponent {
     { label: 'Calendario', route: '/calendar', icon: Calendar },
     { label: 'Gastos', route: '/expenses', icon: Receipt },
     { label: 'Analítica', route: '/analytics', icon: BarChart3 },
+    { label: 'NovaAI', route: '/nova-ai', icon: Sparkles },
     { label: 'Admin', route: '/admin', icon: Shield },
   ];
 }
