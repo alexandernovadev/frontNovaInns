@@ -417,12 +417,13 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     const months = d.monthly.map((m) => m.month);
     this.monthlyOptions = {
       tooltip: { trigger: 'axis' },
-      legend: { data: ['Pendiente', 'Recibido'], textStyle: { color: '#B3B3B8' } },
-      grid: { left: 60, right: 20, top: 40, bottom: 60 },
+      // Leyenda arriba: abajo chocaba con las etiquetas del eje
+      legend: { data: ['Pendiente', 'Recibido'], top: 0, right: 0, textStyle: { color: '#B3B3B8' } },
+      grid: { left: 60, right: 20, top: 40, bottom: months.length > 6 ? 50 : 30 },
       xAxis: {
         type: 'category',
         data: months,
-        axisLabel: { color: '#6E6E73', rotate: 30, fontSize: 11 },
+        axisLabel: { color: '#6E6E73', rotate: months.length > 6 ? 30 : 0, fontSize: 11 },
         axisLine: { lineStyle: { color: '#2A2A2E' } },
       },
       yAxis: {
@@ -438,12 +439,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         {
           name: 'Pendiente',
           type: 'bar',
+          barMaxWidth: 56,
           data: d.monthly.map((m) => m.pending),
           itemStyle: { color: '#F2C200', borderRadius: [4, 4, 0, 0] },
         },
         {
           name: 'Recibido',
           type: 'bar',
+          barMaxWidth: 56,
           data: d.monthly.map((m) => m.received),
           itemStyle: { color: '#22C55E', borderRadius: [4, 4, 0, 0] },
         },
@@ -457,8 +460,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       series: [
         {
           type: 'pie',
-          radius: ['45%', '70%'],
-          center: ['50%', '50%'],
+          radius: ['38%', '60%'],
+          center: ['50%', '46%'],
           label: { color: '#B3B3B8', fontSize: 11 },
           data: d.platforms.map((p) => ({ value: p.total, name: p.platform, itemStyle: { color: this.resolvePlatformColor(p.platform) } })),
           itemStyle: { borderRadius: 4 },
@@ -482,8 +485,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       series: [
         {
           type: 'pie',
-          radius: ['45%', '70%'],
-          center: ['50%', '50%'],
+          radius: ['38%', '60%'],
+          center: ['50%', '46%'],
           label: { color: '#B3B3B8', fontSize: 11 },
           data: d.payments.map((p) => ({ value: p.total, name: p.method, itemStyle: { color: this.resolvePaymentColor(p.method) } })),
           itemStyle: { borderRadius: 4 },
@@ -541,12 +544,13 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         trigger: 'axis',
         valueFormatter: (v: number) => `$${fmtNumber(Math.round(v))}`,
       },
-      legend: { data: ['Recibido', 'Pendiente'], textStyle: { color: '#B3B3B8' } },
-      grid: { left: 60, right: 20, top: 40, bottom: 40 },
+      legend: { data: ['Recibido', 'Pendiente'], top: 0, right: 0, textStyle: { color: '#B3B3B8' } },
+      grid: { left: 60, right: 20, top: 40, bottom: 30 },
       xAxis: {
         type: 'category',
         data: d.apartments.map((a) => a.name.replace(/^Apartamento /, '')),
-        axisLabel: { color: '#6E6E73', fontSize: 11 },
+        // interval 0: en móvil ECharts escondía nombres de apartamentos
+        axisLabel: { color: '#6E6E73', fontSize: 11, interval: 0 },
         axisLine: { lineStyle: { color: '#2A2A2E' } },
       },
       yAxis: {

@@ -13,11 +13,11 @@
       </div>
       @if (frontInfo(); as f) {
       <div class="p-4 space-y-3 text-sm">
-        <div class="flex justify-between"><span class="text-text-secondary">App</span><span class="text-text-primary font-medium">{{ f.name }}</span></div>
-        <div class="flex justify-between"><span class="text-text-secondary">Versión</span><span class="text-text-primary font-medium">{{ f.version }}</span></div>
-        <div class="flex justify-between"><span class="text-text-secondary">Entorno</span><span class="text-text-primary font-medium">{{ f.environment }}</span></div>
-        <div class="flex justify-between"><span class="text-text-secondary">Release</span><span class="text-text-primary font-medium">{{ f.releaseDate }}</span></div>
-        <div class="flex justify-between"><span class="text-text-secondary">Node</span><span class="text-text-primary font-medium">{{ f.nodeVersion }}</span></div>
+        <div class="flex justify-between gap-4"><span class="text-text-secondary">App</span><span class="text-text-primary font-medium text-right">{{ f.name }}</span></div>
+        <div class="flex justify-between gap-4"><span class="text-text-secondary">Versión</span><span class="text-text-primary font-medium text-right">{{ f.version }}</span></div>
+        <div class="flex justify-between gap-4"><span class="text-text-secondary">Entorno</span><span class="text-text-primary font-medium text-right">{{ f.environment }}</span></div>
+        <div class="flex justify-between gap-4"><span class="text-text-secondary">Release</span><span class="text-text-primary font-medium text-right">{{ f.releaseDate }}</span></div>
+        <div class="flex justify-between gap-4"><span class="text-text-secondary">Node</span><span class="text-text-primary font-medium text-right">{{ f.nodeVersion }}</span></div>
       </div>
       } @else if (frontError(); as e) {
       <div class="p-4 text-sm text-error">{{ e }}</div>
@@ -34,11 +34,11 @@
       </div>
       @if (backInfo(); as b) {
       <div class="p-4 space-y-3 text-sm">
-        <div class="flex justify-between"><span class="text-text-secondary">App</span><span class="text-text-primary font-medium">{{ b.name }}</span></div>
-        <div class="flex justify-between"><span class="text-text-secondary">Versión</span><span class="text-text-primary font-medium">{{ b.version }}</span></div>
-        <div class="flex justify-between"><span class="text-text-secondary">Entorno</span><span class="text-text-primary font-medium">{{ b.environment }}</span></div>
-        <div class="flex justify-between"><span class="text-text-secondary">Release</span><span class="text-text-primary font-medium">{{ b.releaseDate }}</span></div>
-        <div class="flex justify-between"><span class="text-text-secondary">Node</span><span class="text-text-primary font-medium">{{ b.nodeVersion }}</span></div>
+        <div class="flex justify-between gap-4"><span class="text-text-secondary">App</span><span class="text-text-primary font-medium text-right">{{ b.name }}</span></div>
+        <div class="flex justify-between gap-4"><span class="text-text-secondary">Versión</span><span class="text-text-primary font-medium text-right">{{ b.version }}</span></div>
+        <div class="flex justify-between gap-4"><span class="text-text-secondary">Entorno</span><span class="text-text-primary font-medium text-right">{{ b.environment }}</span></div>
+        <div class="flex justify-between gap-4"><span class="text-text-secondary">Release</span><span class="text-text-primary font-medium text-right">{{ b.releaseDate }}</span></div>
+        <div class="flex justify-between gap-4"><span class="text-text-secondary">Node</span><span class="text-text-primary font-medium text-right">{{ b.nodeVersion }}</span></div>
       </div>
       } @else if (backError(); as e) {
       <div class="p-4 text-sm text-error">{{ e }}</div>

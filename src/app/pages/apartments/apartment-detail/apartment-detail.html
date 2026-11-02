@@ -16,10 +16,10 @@
   </div>
 
   <!-- Tabs -->
-  <div class="flex gap-1 bg-surface border border-border rounded-2xl p-1">
+  <div class="flex gap-1 bg-surface border border-border rounded-2xl p-1 overflow-x-auto">
     @for (t of TABS; track t.key) {
     <button (click)="tab.set(t.key)"
-      class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+      class="flex-1 shrink-0 px-3 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap"
       [class]="tab() === t.key
           ? 'bg-brand text-bg'
           : 'text-text-secondary hover:text-text-primary'">
@@ -39,7 +39,7 @@
     </div>
     <div>
       <label class="block text-text-secondary text-sm mb-2">Estado</label>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
         <button (click)="editStatus = 'ACTIVE'"
           class="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors cursor-pointer"
           [class]="editStatus === 'ACTIVE'

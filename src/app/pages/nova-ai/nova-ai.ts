@@ -62,7 +62,7 @@ import { renderRich } from './rich-text';
             </div>
             <div class="space-y-1.5">
               <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white via-brand-accent to-brand bg-clip-text text-transparent">Hola, ¿qué quieres saber?</h2>
-              <p class="text-text-secondary text-sm max-w-sm mx-auto">Reservas, pagos, gastos, huéspedes… pregunta como le hablarías a tu socio.</p>
+              <p class="text-text-secondary text-sm max-w-sm mx-auto">Reservas, pagos, gastos, huéspedes… pregunta como le hablarías a tu socio, o arrastra el screenshot de una reserva.</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-xl">
               @for (s of suggestions; track s.text) {
@@ -147,7 +147,7 @@ import { renderRich } from './rich-text';
         </button>
         <textarea [ngModel]="draft()" (ngModelChange)="draft.set($event)" name="draft"
           (keydown.enter)="onEnter($any($event))"
-          rows="1" placeholder="Pregúntale a NovaAI… o arrastra un screenshot"
+          rows="1" placeholder="Pregúntale a NovaAI…"
           class="flex-1 bg-transparent px-3 py-2.5 text-text-primary text-sm resize-none max-h-40
                  placeholder:text-text-disabled focus:outline-none"></textarea>
         <button type="submit" [disabled]="!draft().trim() || sending()" title="Enviar"

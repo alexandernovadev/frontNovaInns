@@ -2,7 +2,7 @@ import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@ang
 import { DataService, ClearableModel } from '../../core/services/data.service';
 import { ModalNova } from '../../shared/components/modal-nova';
 import { AlertService } from '../../shared/components/services/alert.service';
-import { LucideAngularModule, Shield, CalendarDays, Building2, Receipt } from 'lucide-angular';
+import { LucideAngularModule, Trash2, CalendarDays, Building2, Receipt } from 'lucide-angular';
 
 interface AdminModel {
   key: ClearableModel;
@@ -18,7 +18,7 @@ interface AdminModel {
   templateUrl: './admin.html',
 })
 export class AdminComponent implements OnInit {
-  readonly ShieldIcon = Shield;
+  readonly TrashIcon = Trash2;
 
   private dataService = inject(DataService);
   private alert = inject(AlertService);
