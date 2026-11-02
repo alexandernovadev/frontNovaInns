@@ -528,6 +528,9 @@
   .table {
     display: table;
   }
+  .field-sizing-content {
+    field-sizing: content;
+  }
   .aspect-\[4\/3\] {
     aspect-ratio: 4/3;
   }
@@ -627,6 +630,9 @@
   .max-h-\[50\%\] {
     max-height: 50%;
   }
+  .max-h-\[60vh\] {
+    max-height: 60vh;
+  }
   .max-h-\[75vh\] {
     max-height: 75vh;
   }
@@ -635,6 +641,9 @@
   }
   .min-h-0 {
     min-height: 0px;
+  }
+  .min-h-28 {
+    min-height: calc(var(--spacing) * 28);
   }
   .min-h-full {
     min-height: 100%;
@@ -931,6 +940,9 @@
   .gap-x-3 {
     column-gap: calc(var(--spacing) * 3);
   }
+  .gap-x-6 {
+    column-gap: calc(var(--spacing) * 6);
+  }
   .gap-y-0\.5 {
     row-gap: calc(var(--spacing) * 0.5);
   }
@@ -939,6 +951,9 @@
   }
   .gap-y-1\.5 {
     row-gap: calc(var(--spacing) * 1.5);
+  }
+  .gap-y-2 {
+    row-gap: calc(var(--spacing) * 2);
   }
   :where(.divide-y > :not(:last-child)) {
     --tw-divide-y-reverse: 0;
@@ -2785,8 +2800,8 @@
     }
   }
   @media (width >= 48rem) {
-    .md\:grid-cols-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .md\:grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   @media (width >= 64rem) {
@@ -2843,11 +2858,17 @@
     }
   }
   @media (width >= 80rem) {
+    .xl\:col-span-2 {
+      grid-column: span 2 / span 2;
+    }
     .xl\:flex {
       display: flex;
     }
     .xl\:grid-cols-4 {
       grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .xl\:grid-cols-5 {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
     }
     .xl\:flex-row {
       flex-direction: row;

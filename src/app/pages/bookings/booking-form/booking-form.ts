@@ -34,6 +34,7 @@ import {
   Package,
   Bike,
   Plus,
+  Moon,
 } from 'lucide-angular';
 
 type FormTab = 'general' | 'guests' | 'billing';
@@ -67,6 +68,7 @@ export class BookingFormComponent implements OnInit {
   readonly LogIn = LogIn;
   readonly LogOut = LogOut;
   readonly MessageSquare = MessageSquare;
+  readonly Moon = Moon;
   readonly User = User;
   readonly UserPlus = UserPlus;
   readonly X = X;
@@ -361,6 +363,14 @@ export class BookingFormComponent implements OnInit {
   get totalAmount(): number {
     const extrasTotal = this.extraServices.reduce((sum, s) => sum + s.price * s.quantity, 0);
     return this.formBilling.basePrice + extrasTotal;
+  }
+
+  // Noches según las fechas del formulario (0 si faltan o están al revés)
+  formNights(): number {
+    const { checkIn, checkOut } = this.formGeneral;
+    if (!checkIn || !checkOut) return 0;
+    const n = Math.round((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / 86400000);
+    return n > 0 ? n : 0;
   }
 
   extrasTotal(): number {

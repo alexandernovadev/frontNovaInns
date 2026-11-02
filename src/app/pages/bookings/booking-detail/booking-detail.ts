@@ -20,6 +20,7 @@ import { LucideAngularModule } from 'lucide-angular';
 import { AlertService } from '../../../shared/components/services/alert.service';
 import { PLATFORM_CLASS, ID_LABELS } from '../../../shared/constants/booking.constants';
 import { DeleteState, openDelete, confirmDelete } from '../../../shared/utils/delete.util';
+import { apartmentColor, apartmentShortName } from '../../../shared/utils/apartment-color';
 
 @Component({
   selector: 'app-booking-detail',
@@ -111,6 +112,11 @@ export class BookingDetailComponent implements OnInit {
   nights()      { const b = this.booking(); return b ? this.bookingsService.nights(b) : 0; }
   pending()     { const b = this.booking(); return b ? this.bookingsService.pending(b) : 0; }
   aptName()     { const b = this.booking(); return b ? this.bookingsService.aptName(b) : ''; }
+  aptShort()    { return apartmentShortName(this.aptName()); }
+  aptColor()    {
+    const a = this.booking()?.apartmentId;
+    return apartmentColor(typeof a === 'string' ? a : a?._id);
+  }
   totalGuests() { const b = this.booking(); return b ? this.bookingsService.totalGuests(b) : 0; }
 
   paidPct() {
