@@ -1,7 +1,7 @@
 import { Component, input, output, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, Pencil, Trash2, ArrowRight, CalendarPlus, TriangleAlert, Building2 } from 'lucide-angular';
 import { ActionCard } from '../../core/services/assistant.service';
-import { ACTION_STATUS_TEXT, fieldLabel, formatValue } from './nova-format';
+import { ACTION_STATUS_TEXT, fieldLabel, formatValue, prettyDatesIn } from './nova-format';
 
 // Estilo de cada tipo de propuesta
 const KIND = {
@@ -67,7 +67,7 @@ const KIND = {
 
       @for (t of c.targets; track t.id) {
         <div class="px-4 py-3 border-b border-border last:border-0">
-          <p class="text-text-primary text-xs font-medium mb-2">{{ t.label }}</p>
+          <p class="text-text-primary text-xs font-medium mb-2">{{ pretty(t.label) }}</p>
           @if (c.type !== 'update') {
             <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
               @for (d of t.details; track d.field) {
@@ -155,6 +155,10 @@ export class NovaActionCard {
 
   label(field: string) {
     return fieldLabel(field);
+  }
+
+  pretty(text: string) {
+    return prettyDatesIn(text);
   }
 
   statusText(status: string) {

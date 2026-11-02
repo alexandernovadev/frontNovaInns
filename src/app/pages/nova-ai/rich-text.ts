@@ -1,6 +1,8 @@
 // Markdown ligero de NovaAI → HTML con clases de Tailwind.
 // Primero se escapa todo el HTML: lo que venga del modelo nunca se interpreta como código.
 
+import { prettyDate } from '../../shared/utils/pretty-date';
+
 const STATUS_CLASS: Record<string, string> = {
   PAGADO: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
   'FALTA PAGO': 'bg-amber-500/15 text-amber-400 border-amber-500/30',
@@ -23,6 +25,13 @@ function inline(raw: string): string {
   s = s.replace(/\*\*(.+?)\*\*/g, '<strong class="text-text-primary font-semibold">$1</strong>');
   s = s.replace(/(^|[\s(])_(?!_)(.+?)_(?=[\s).,;:!?]|$)/g, '$1<em class="text-text-secondary">$2</em>');
   s = s.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded-md bg-bg border border-border text-[0.8em] text-brand-accent font-mono">$1</code>');
+  // Fechas: NovaAI las escribe como YYYY-MM-DD y aquí se muestran con el día de la semana
+  s = s.replace(/\b\d{4}-\d{2}-\d{2}(?:T[\d:.]+Z?)?\b/g, (m) => {
+    const pretty = prettyDate(m);
+    return pretty
+      ? `<span class="inline-flex items-center px-1.5 py-px rounded-md bg-sky-500/10 text-sky-300 font-medium whitespace-nowrap">${pretty}</span>`
+      : m;
+  });
   // Montos: $1.234.567
   s = s.replace(
     /\$\s?\d{1,3}(?:\.\d{3})+(?:,\d+)?|\$\s?\d+(?:,\d+)?/g,

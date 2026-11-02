@@ -1,4 +1,5 @@
 import { fmtNumber } from '../../shared/utils/number.util';
+import { prettyDate } from '../../shared/utils/pretty-date';
 
 // Nombre legible de cada campo que NovaAI puede cambiar (tarjetas e historial)
 const FIELD_LABELS: Record<string, string> = {
@@ -37,6 +38,11 @@ export const ACTION_STATUS_TEXT: Record<string, string> = {
   undone: '↩️ Deshecho',
 };
 
+// Fechas ISO dentro de un texto (ej: el título de una tarjeta) → formato bonito
+export function prettyDatesIn(text: string): string {
+  return text.replace(/\d{4}-\d{2}-\d{2}/g, (m) => prettyDate(m) ?? m);
+}
+
 export function fieldLabel(field: string) {
   return FIELD_LABELS[field] ?? field;
 }
@@ -46,7 +52,7 @@ export function formatValue(field: string, value: unknown, apartmentNames: Recor
   if (field === 'apartmentId') return apartmentNames[String(value)] ?? String(value);
   // fmtNumber(0) devuelve '' → se muestra $0
   if (MONEY_FIELDS.has(field) && typeof value === 'number') return `$${fmtNumber(Math.round(value)) || '0'}`;
-  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) return value.slice(0, 10);
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) return prettyDate(value) ?? value.slice(0, 10);
   if (field === 'observations' && typeof value === 'string') return value.split('\n').join(' · ');
   if (Array.isArray(value)) return value.length ? `${value.length} elemento(s)` : 'ninguno';
   if (typeof value === 'object') return JSON.stringify(value);

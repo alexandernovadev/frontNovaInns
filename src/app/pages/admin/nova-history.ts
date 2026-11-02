@@ -4,7 +4,7 @@ import { AssistantService, HistoryFilter, HistoryItem } from '../../core/service
 import { ApartmentsService } from '../../core/services/apartments.service';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { ModalNova } from '../../shared/components/modal-nova';
-import { ACTION_STATUS_TEXT, fieldLabel, formatValue } from '../nova-ai/nova-format';
+import { ACTION_STATUS_TEXT, fieldLabel, formatValue, prettyDatesIn } from '../nova-ai/nova-format';
 
 const STATUS_PILL: Record<string, string> = {
   confirmed: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
@@ -90,7 +90,7 @@ const STATUS_PILL: Record<string, string> = {
 
                 @for (t of it.targets; track t.id) {
                   <div class="px-4 py-3 border-t border-border">
-                    <p class="text-text-primary text-xs font-medium mb-2">{{ t.label }}</p>
+                    <p class="text-text-primary text-xs font-medium mb-2">{{ pretty(t.label) }}</p>
                     @if (t.changes.length) {
                       <div class="space-y-1.5">
                         @for (ch of t.changes; track ch.field) {
@@ -181,7 +181,7 @@ const STATUS_PILL: Record<string, string> = {
           }
           @for (t of it.targets; track t.id) {
             <div class="rounded-xl border border-border p-3">
-              <p class="text-text-primary text-xs font-medium mb-1.5">{{ t.label }}</p>
+              <p class="text-text-primary text-xs font-medium mb-1.5">{{ pretty(t.label) }}</p>
               @for (ch of t.changes; track ch.field) {
                 <p class="text-xs text-text-secondary">
                   {{ label(ch.field) }}: <span class="line-through text-text-disabled">{{ format(ch.field, ch.after) }}</span>
@@ -312,6 +312,10 @@ export class NovaHistoryComponent implements OnInit {
     if (it.undoneAt) return `Deshecho el ${fmt(it.undoneAt)}`;
     if (it.confirmedAt) return `${it.type === 'undo' ? 'Hecho' : 'Confirmado'} el ${fmt(it.confirmedAt)}`;
     return `Propuesto el ${fmt(it.createdAt)}`;
+  }
+
+  pretty(text: string) {
+    return prettyDatesIn(text);
   }
 
   pill(status: string) {
