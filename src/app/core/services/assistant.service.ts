@@ -59,6 +59,11 @@ export class AssistantService {
     return this.http.post<{ reply: string; model: string; queries: string[]; actions: ActionCard[] }>(`${API}/assistant/chat`, { messages: history });
   }
 
+  // Ejecuta la propuesta. 409 si venció, ya no estaba pendiente o el documento cambió
+  confirmAction(id: string) {
+    return this.http.post<{ id: string; status: string }>(`${API}/assistant/actions/${id}/confirm`, {});
+  }
+
   cancelAction(id: string) {
     return this.http.post<{ id: string; status: string }>(`${API}/assistant/actions/${id}/cancel`, {});
   }

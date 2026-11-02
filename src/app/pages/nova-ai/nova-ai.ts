@@ -60,7 +60,7 @@ import { NovaActionCard } from './action-card';
             }
             @for (a of m.actions ?? []; track a.id) {
               <nova-action-card [card]="a" [busy]="busyAction() === a.id" [apartmentNames]="apartmentNames()"
-                (cancel)="cancelAction($event)" />
+                (cancel)="cancelAction($event)" (confirm)="confirmAction($event)" />
             }
           </div>
         }
@@ -156,6 +156,24 @@ export class NovaAiComponent {
   reset() {
     this.messages.set([]);
     this.error.set(null);
+  }
+
+  confirmAction(id: string) {
+    this.busyAction.set(id);
+    this.assistant.confirmAction(id).subscribe({
+      next: (r) => {
+        this.setActionStatus(id, r.status);
+        this.busyAction.set(null);
+        const action = this.messages().flatMap((m) => m.actions ?? []).find((a) => a.id === id);
+        this.messages.update((m) => [...m, { role: 'model', text: `Listo ✅ ${action?.summary ?? 'Cambio aplicado'}.` }]);
+      },
+      error: (err) => {
+        this.busyAction.set(null);
+        // 409: venció, ya no estaba pendiente, o el documento cambió desde la propuesta
+        if (err?.error?.status) this.setActionStatus(id, err.error.status);
+        this.alert.error('No se aplicó el cambio', err?.error?.message);
+      },
+    });
   }
 
   cancelAction(id: string) {

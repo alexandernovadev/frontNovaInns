@@ -32,8 +32,8 @@ const MONEY_FIELDS = new Set(['billing.basePrice', 'billing.totalAmount', 'billi
 const STATUS_TEXT: Record<string, string> = {
   cancelled: 'Cancelada',
   expired: 'Vencida',
-  confirmed: 'Confirmada',
-  failed: 'Falló',
+  confirmed: '✅ Hecho',
+  failed: 'No se aplicó',
   undone: 'Deshecha',
 };
 
@@ -89,13 +89,15 @@ const STATUS_TEXT: Record<string, string> = {
             class="px-4 py-2 rounded-xl border border-border text-text-secondary hover:text-text-primary text-xs font-medium transition-colors cursor-pointer disabled:opacity-50">
             Cancelar
           </button>
-          <button disabled title="Confirmar llega en el siguiente paso"
-            class="px-4 py-2 rounded-xl text-xs font-bold opacity-40 cursor-not-allowed"
-            [class]="isDelete ? 'bg-error text-white' : 'bg-brand text-bg'">
-            Confirmar
+          <button (click)="confirm.emit(c.id)" [disabled]="busy()"
+            class="px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
+            [class]="isDelete ? 'bg-error hover:bg-error/80 text-white' : 'bg-brand hover:bg-brand-accent text-bg'">
+            {{ busy() ? 'Guardando…' : isDelete ? 'Eliminar' : 'Confirmar' }}
           </button>
         } @else {
-          <span class="text-xs text-text-disabled">{{ statusText(c.status) }}</span>
+          <span class="text-xs" [class]="c.status === 'confirmed' ? 'text-success font-semibold' : c.status === 'failed' ? 'text-error' : 'text-text-disabled'">
+            {{ statusText(c.status) }}
+          </span>
         }
       </div>
     </div>
@@ -112,6 +114,7 @@ export class NovaActionCard {
   apartmentNames = input<Record<string, string>>({});
 
   cancel = output<string>();
+  confirm = output<string>();
 
   label(field: string) {
     return FIELD_LABELS[field] ?? field;
