@@ -21,7 +21,7 @@
     <button (click)="tab.set(t.key)"
       class="flex-1 shrink-0 px-3 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap"
       [class]="tab() === t.key
-          ? 'bg-brand text-bg'
+          ? 'tab-active'
           : 'text-text-secondary hover:text-text-primary'">
       <lucide-icon [img]="t.icon" class="w-4 h-4" [strokeWidth]="2" />
       {{ t.label }}

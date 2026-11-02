@@ -43,13 +43,13 @@
   <div class="flex gap-1 glass rounded-2xl p-1">
     <button (click)="onTabChange('dashboard')"
       class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-      [class]="tab() === 'dashboard' ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
+      [class]="tab() === 'dashboard' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
       <lucide-icon [img]="BarChart3" class="w-4 h-4" [strokeWidth]="2" />
       Dashboard
     </button>
     <button (click)="onTabChange('map')"
       class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-      [class]="tab() === 'map' ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
+      [class]="tab() === 'map' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
       <lucide-icon [img]="Globe" class="w-4 h-4" [strokeWidth]="2" />
       Mapa
     </button>
@@ -218,7 +218,7 @@
       @for (c of availableCountries; track c.code) {
       <button (click)="switchCountry(c.code)"
         class="px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer"
-        [class]="selectedMapCountry() === c.code ? 'bg-brand text-bg' : 'glass text-text-secondary hover:text-text-primary'">
+        [class]="selectedMapCountry() === c.code ? 'tab-active' : 'glass text-text-secondary hover:text-text-primary'">
         {{ c.name }}
       </button>
       }

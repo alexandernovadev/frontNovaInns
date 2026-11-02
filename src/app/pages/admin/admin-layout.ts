@@ -25,7 +25,7 @@ import { LucideAngularModule, Shield, Users, MessageSquare, ArrowUpDown, Info, T
       <nav class="flex gap-1 glass rounded-2xl p-1 overflow-x-auto">
         @for (t of tabs(); track t.route) {
           <a [routerLink]="t.route"
-            routerLinkActive="bg-brand text-bg"
+            routerLinkActive="tab-active"
             #rla="routerLinkActive"
             class="flex-1 py-2 px-3 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap"
             [class.text-text-secondary]="!rla.isActive"

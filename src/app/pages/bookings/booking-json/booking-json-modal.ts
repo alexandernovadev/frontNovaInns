@@ -65,19 +65,19 @@ type Tab = 'model' | 'json' | 'image';
       <div class="flex gap-1 bg-bg border border-border rounded-2xl p-1 mb-4">
         <button (click)="tab.set('model')"
           class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-          [class]="tab() === 'model' ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
+          [class]="tab() === 'model' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
           <lucide-icon [img]="FileCode" class="w-4 h-4" [strokeWidth]="2" />
           Modelo
         </button>
         <button (click)="tab.set('json')"
           class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-          [class]="tab() === 'json' ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
+          [class]="tab() === 'json' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
           <lucide-icon [img]="Braces" class="w-4 h-4" [strokeWidth]="2" />
           Insertar JSON
         </button>
         <button (click)="tab.set('image')"
           class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-          [class]="tab() === 'image' ? 'bg-brand text-bg' : 'text-text-secondary hover:text-text-primary'">
+          [class]="tab() === 'image' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
           <lucide-icon [img]="ImageUp" class="w-4 h-4" [strokeWidth]="2" />
           Imagen
         </button>
