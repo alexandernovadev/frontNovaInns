@@ -36,7 +36,7 @@ const STATUS_PILL: Record<string, string> = {
       <div class="flex flex-wrap gap-2">
         @for (f of filters; track f.value) {
           <button (click)="setFilter(f.value)"
-            class="px-3.5 py-1.5 rounded-full border text-xs font-medium transition-colors cursor-pointer"
+            class="px-3.5 py-1.5 min-h-9 rounded-full border text-xs font-medium transition-colors cursor-pointer"
             [class]="filter() === f.value
               ? 'bg-brand text-bg border-brand'
               : 'border-border text-text-secondary hover:text-text-primary hover:border-brand/50'">
@@ -129,7 +129,7 @@ const STATUS_PILL: Record<string, string> = {
                 @if (it.status === 'confirmed' && !isUndo) {
                   <div class="px-4 py-2.5 border-t border-border bg-bg/40 flex justify-end">
                     <button (click)="openUndo(it)"
-                      class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-purple-500/40 text-purple-300 text-xs font-semibold
+                      class="flex items-center gap-1.5 px-3.5 py-1.5 min-h-9 rounded-xl border border-purple-500/40 text-purple-300 text-xs font-semibold
                              hover:bg-purple-500/10 transition-colors cursor-pointer">
                       <lucide-icon [img]="Undo2" class="w-3.5 h-3.5" [strokeWidth]="2.2" />
                       Deshacer

@@ -37,7 +37,7 @@ interface MessageTemplate {
                 <h2 class="text-text-primary font-semibold text-sm">{{ tpl.title }}</h2>
               </div>
               <button (click)="copy(tpl.text, tpl.id)"
-                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0"
+                class="flex items-center gap-1.5 px-3 py-1.5 min-h-9 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0"
                 [class]="copiedId() === tpl.id ? 'bg-success/15 text-success' : 'bg-brand/10 text-brand hover:bg-brand/20'">
                 <lucide-icon [img]="copiedId() === tpl.id ? ClipboardCheck : ClipboardCopy" class="w-3.5 h-3.5" [strokeWidth]="2" />
                 {{ copiedId() === tpl.id ? 'Copiado' : 'Copiar' }}

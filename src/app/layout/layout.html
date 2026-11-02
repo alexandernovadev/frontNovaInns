@@ -20,7 +20,7 @@
         <span class="text-xs text-gray-500">v{{ environmentService.version() }}</span>
       </div>
     }
-    <a routerLink="/bookings" class="flex items-center justify-center pb-6 border-b border-border cursor-pointer" [class.pt-4]="!collapsed()" [class.pt-6]="collapsed()">
+    <a routerLink="/bookings" aria-label="Nova Inns — ir a Reservas" class="flex items-center justify-center pb-6 border-b border-border cursor-pointer" [class.pt-4]="!collapsed()" [class.pt-6]="collapsed()">
       @if (collapsed()) {
         <img [src]="logo()" alt="Nova Inns" class="hidden lg:block w-10 h-10 object-contain" />
       }
@@ -28,7 +28,7 @@
     </a>
 
     <!-- Collapse toggle (desktop only) -->
-    <button (click)="toggleCollapsed()"
+    <button (click)="toggleCollapsed()" [attr.aria-label]="collapsed() ? 'Expandir menú' : 'Contraer menú'" [attr.title]="collapsed() ? 'Expandir menú' : 'Contraer menú'"
       class="hidden lg:flex absolute -right-3 top-24 w-6 h-6 bg-surface border border-border rounded-full items-center justify-center cursor-pointer z-10 hover:bg-hover transition-colors"
       [class.rotate-180]="collapsed()">
       <lucide-icon [img]="ChevronLeft" class="w-3.5 h-3.5 text-text-secondary" [strokeWidth]="2"/>

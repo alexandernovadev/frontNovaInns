@@ -42,7 +42,7 @@
       <span class="text-text-disabled">·</span>
       <span class="px-2.5 py-0.5 rounded-full border border-brand/30 bg-brand/10 text-brand-accent text-xs font-semibold">{{ today | dateEs }}</span>
       <button (click)="toggleView()" title="{{ viewMode() === 'cards' ? 'Vista tabla' : 'Vista tarjetas' }}"
-        class="ml-1 p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-all cursor-pointer">
+        class="ml-1 w-9 h-9 flex items-center justify-center rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-all cursor-pointer">
         @if (viewMode() === 'cards') {
         <lucide-icon [img]="Rows3" class="w-4 h-4" [strokeWidth]="2" />
         } @else {
