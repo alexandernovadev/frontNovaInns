@@ -2,14 +2,20 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { LucideAngularModule, Mail, Lock, ArrowRight, LoaderCircle } from 'lucide-angular';
 
 @Component({
   selector: 'app-login',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule],
+  imports: [FormsModule, LucideAngularModule],
   templateUrl: './login.html',
 })
 export class LoginComponent {
+  readonly Mail = Mail;
+  readonly Lock = Lock;
+  readonly ArrowRight = ArrowRight;
+  readonly LoaderCircle = LoaderCircle;
+
   private auth = inject(AuthService);
   private router = inject(Router);
 
