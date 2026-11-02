@@ -2,11 +2,14 @@ import { Component, inject, signal, effect, viewChild, ElementRef, ChangeDetecti
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Sparkles, SendHorizontal, RotateCcw, LoaderCircle, Database } from 'lucide-angular';
 import { AssistantService, ChatMessage } from '../../core/services/assistant.service';
+import { ApartmentsService } from '../../core/services/apartments.service';
+import { AlertService } from '../../shared/components/services/alert.service';
+import { NovaActionCard } from './action-card';
 
 @Component({
   selector: 'app-nova-ai',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule],
+  imports: [FormsModule, LucideAngularModule, NovaActionCard],
   template: `
     <div class="p-6 h-full flex flex-col gap-4">
       <!-- Header -->
@@ -55,6 +58,10 @@ import { AssistantService, ChatMessage } from '../../core/services/assistant.ser
                 Consulté: {{ querySummary(m.queries!) }}
               </p>
             }
+            @for (a of m.actions ?? []; track a.id) {
+              <nova-action-card [card]="a" [busy]="busyAction() === a.id" [apartmentNames]="apartmentNames()"
+                (cancel)="cancelAction($event)" />
+            }
           </div>
         }
         @if (sending()) {
@@ -96,12 +103,16 @@ export class NovaAiComponent {
   readonly Database = Database;
 
   private assistant = inject(AssistantService);
+  private apartmentsService = inject(ApartmentsService);
+  private alert = inject(AlertService);
   private scroller = viewChild<ElementRef<HTMLElement>>('scroller');
 
   messages = this.assistant.chat;
   draft = signal('');
   sending = signal(false);
   error = signal<string | null>(null);
+  busyAction = signal<string | null>(null);
+  apartmentNames = signal<Record<string, string>>({});
 
   readonly suggestions = [
     '¿Cuánto gané este mes?',
@@ -111,6 +122,10 @@ export class NovaAiComponent {
   ];
 
   constructor() {
+    this.apartmentsService.findAll().subscribe({
+      next: (res) => this.apartmentNames.set(Object.fromEntries(res.data.map((a) => [a._id, a.internalName]))),
+    });
+
     // Baja al último mensaje cuando llega uno nuevo
     effect(() => {
       this.messages();
@@ -143,6 +158,30 @@ export class NovaAiComponent {
     this.error.set(null);
   }
 
+  cancelAction(id: string) {
+    this.busyAction.set(id);
+    this.assistant.cancelAction(id).subscribe({
+      next: (r) => {
+        this.setActionStatus(id, r.status);
+        this.busyAction.set(null);
+      },
+      error: () => {
+        this.busyAction.set(null);
+        this.alert.error('No se pudo cancelar la propuesta');
+      },
+    });
+  }
+
+  private setActionStatus(id: string, status: string) {
+    this.messages.update((msgs) =>
+      msgs.map((m) =>
+        m.actions?.some((a) => a.id === id)
+          ? { ...m, actions: m.actions.map((a) => (a.id === id ? { ...a, status } : a)) }
+          : m,
+      ),
+    );
+  }
+
   // "bookings (find) ×2, apartments (find)"
   querySummary(queries: string[]) {
     const counts = new Map<string, number>();
@@ -155,7 +194,7 @@ export class NovaAiComponent {
     this.error.set(null);
     this.assistant.sendChat(this.messages()).subscribe({
       next: (r) => {
-        this.messages.update((m) => [...m, { role: 'model', text: r.reply, queries: r.queries } as ChatMessage]);
+        this.messages.update((m) => [...m, { role: 'model', text: r.reply, queries: r.queries, actions: r.actions } as ChatMessage]);
         this.sending.set(false);
       },
       error: (err) => {
