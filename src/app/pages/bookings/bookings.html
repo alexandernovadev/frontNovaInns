@@ -2,8 +2,10 @@
 
   <!-- Header: título + acciones (fijo arriba en móvil) -->
   <div class="page-header flex items-center justify-between gap-3">
-    <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2 min-w-0">
-      <lucide-icon [img]="CalendarDays" class="hidden min-[360px]:block w-6 h-6 text-brand shrink-0" [strokeWidth]="2" />
+    <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2.5 min-w-0">
+      <span class="nova-icon-tile hidden min-[360px]:inline-flex w-8 h-8 shrink-0">
+        <lucide-icon [img]="CalendarDays" class="w-4.5 h-4.5" [strokeWidth]="2.2" />
+      </span>
       <span class="truncate">Reservas</span>
     </h1>
     <div class="flex items-center gap-1.5 min-[360px]:gap-2 shrink-0">
@@ -38,7 +40,7 @@
     <p class="text-text-secondary text-sm flex items-center gap-2">
       <span>{{ meta().total }} reservas</span>
       <span class="text-text-disabled">·</span>
-      <span class="bg-blue-800 text-blue-100 text-xs font-semibold px-2 py-0.5 rounded-lg">{{ today | dateEs }}</span>
+      <span class="px-2.5 py-0.5 rounded-full border border-brand/30 bg-brand/10 text-brand-accent text-xs font-semibold">{{ today | dateEs }}</span>
       <button (click)="toggleView()" title="{{ viewMode() === 'cards' ? 'Vista tabla' : 'Vista tarjetas' }}"
         class="ml-1 p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-all cursor-pointer">
         @if (viewMode() === 'cards') {
@@ -70,35 +72,40 @@
     </div>
   </div>
 
-  <!-- Summary: lista compacta en móvil (montos completos), 3 tarjetas en sm+ -->
-  <div class="bg-surface border border-border rounded-2xl divide-y divide-border
-              sm:grid sm:grid-cols-3 sm:gap-4 sm:bg-transparent sm:border-0 sm:rounded-none sm:divide-y-0">
-    <div class="px-4 py-2.5 flex items-center justify-between gap-3 min-w-0 sm:block sm:p-5 sm:bg-surface sm:border sm:border-border sm:rounded-2xl">
-      <p class="text-text-disabled text-xs uppercase tracking-wide sm:tracking-widest sm:mb-2 truncate">Total esperado</p>
-      <p class="text-text-primary text-sm sm:text-2xl font-bold whitespace-nowrap sm:truncate">{{ summary().totalExpected | currencyCop }}</p>
+  <!-- Summary: lista compacta en móvil (montos completos), 3 tarjetas con franja de color en sm+ -->
+  <div class="nova-surface rounded-2xl divide-y divide-border overflow-hidden
+              sm:grid sm:grid-cols-3 sm:gap-4 sm:bg-none sm:border-0 sm:shadow-none sm:rounded-none sm:divide-y-0 sm:overflow-visible">
+    @for (k of kpis(); track k.label) {
+    <div class="relative px-4 py-2.5 flex items-center justify-between gap-3 min-w-0
+                sm:block sm:p-5 sm:nova-surface sm:rounded-2xl sm:overflow-hidden">
+      <span class="hidden sm:block absolute inset-x-0 top-0 h-0.5" [style.background]="k.bar"></span>
+      <p class="text-text-disabled text-xs uppercase tracking-wide sm:tracking-widest sm:mb-2 truncate">{{ k.label }}</p>
+      <p class="text-sm sm:text-2xl font-bold whitespace-nowrap sm:truncate tabular-nums"
+        [style.color]="k.color" [style.text-shadow]="'0 0 22px ' + k.glow">{{ k.value | currencyCop }}</p>
     </div>
-    <div class="px-4 py-2.5 flex items-center justify-between gap-3 min-w-0 sm:block sm:p-5 sm:bg-surface sm:border sm:border-border sm:rounded-2xl">
-      <p class="text-text-disabled text-xs uppercase tracking-wide sm:tracking-widest sm:mb-2 truncate">Recibido</p>
-      <p class="text-success text-sm sm:text-2xl font-bold whitespace-nowrap sm:truncate">{{ summary().totalReceived | currencyCop }}</p>
-    </div>
-    <div class="px-4 py-2.5 flex items-center justify-between gap-3 min-w-0 sm:block sm:p-5 sm:bg-surface sm:border sm:border-border sm:rounded-2xl">
-      <p class="text-text-disabled text-xs uppercase tracking-wide sm:tracking-widest sm:mb-2 truncate">Pendiente</p>
-      <p class="text-warning text-sm sm:text-2xl font-bold whitespace-nowrap sm:truncate">{{ summary().totalPending | currencyCop }}</p>
-    </div>
+    }
   </div>
 
   @if (loading()) {
   <div class="text-center py-16 text-text-disabled">Cargando...</div>
   } @else if (bookings().length === 0) {
-  <div class="text-center py-16 text-text-disabled">Sin reservas</div>
+  <div class="flex flex-col items-center gap-3 py-16 text-center nova-in">
+    <span class="nova-icon-tile w-14 h-14 rounded-2xl">
+      <lucide-icon [img]="CalendarDays" class="w-7 h-7" [strokeWidth]="2" />
+    </span>
+    <p class="text-text-primary font-semibold">No hay reservas con estos filtros</p>
+    <p class="text-text-secondary text-sm">Cambia el mes o el apartamento, o crea una nueva con <span class="text-brand font-semibold">+</span></p>
+  </div>
   } @else {
 
   @if (viewMode() === 'cards') {
-  <div class="grid gap-4 grid-cols-2 xl:grid-cols-4">
+  <div class="grid gap-4 grid-cols-1 min-[420px]:grid-cols-2 xl:grid-cols-4">
     @for (b of bookings(); track b._id) {
     <div
-      class="@container min-w-0 bg-surface border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all cursor-pointer"
+      class="@container min-w-0 nova-card overflow-hidden cursor-pointer nova-in"
+      [style.--nova-glow]="accent(b)"
       (click)="openDetail(b)">
+      <div class="h-1" [style.background]="'linear-gradient(90deg, ' + accent(b) + ', transparent)'"></div>
 
       <!-- Top: platform + status + actions -->
       <div class="px-3 pt-3 pb-2 sm:px-5 sm:pt-4 sm:pb-3 flex items-center justify-between gap-2">
@@ -112,21 +119,22 @@
             [class]="b.billing.status === 'PAGADO' ? 'bg-success' : b.billing.status === 'NO SHOW' ? 'bg-error' : 'bg-warning'">
           </span>
           <span class="hidden @xs:flex whitespace-nowrap"><status-badge [value]="b.billing.status" type="billing" /></span>
-          <button (click)="openObservations(b, $event)" title="Observaciones"
-            class="p-1 sm:p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
-            <lucide-icon [img]="MessageSquare" class="w-3 h-3 sm:w-3.5 sm:h-3.5" [strokeWidth]="2" />
+          <button (click)="openObservations(b, $event)" title="Observaciones" aria-label="Observaciones"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
+            <lucide-icon [img]="MessageSquare" class="w-4 h-4" [strokeWidth]="2" />
           </button>
-          <button (click)="openEdit(b, $event)" title="Editar"
-            class="p-1 sm:p-1.5 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
-            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+          <button (click)="openEdit(b, $event)" title="Editar" aria-label="Editar reserva"
+            class="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
               viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round"
                 d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
             </svg>
           </button>
-          <button (click)="openDeleteConfirm(b, $event)" title="Borrar"
-            class="p-1 sm:p-1.5 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
-            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+          <span class="hidden sm:block w-px h-4 bg-border mx-0.5"></span>
+          <button (click)="openDeleteConfirm(b, $event)" title="Borrar" aria-label="Borrar reserva"
+            class="hidden sm:flex w-8 h-8 items-center justify-center rounded-lg text-text-disabled hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
               viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round"
                 d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -135,20 +143,19 @@
         </div>
       </div>
 
-      <!-- Apt name + host -->
-      <div class="px-3 pb-2 sm:px-5 sm:pb-3 space-y-1">
-        <h2 class="text-text-primary text-sm sm:text-lg font-bold leading-tight truncate">{{ aptName(b) }}</h2>
-        <div class="flex items-center gap-1.5 min-w-0">
-          <svg class="w-3 h-3 sm:w-4 sm:h-4 text-text-disabled shrink-0" fill="none" stroke="currentColor"
-            stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-          <span class="text-text-secondary text-xs sm:text-sm font-medium truncate">{{ b.group.host.fullName }}</span>
-          <span class="text-text-disabled text-xs shrink-0 ml-auto hidden sm:inline">
+      <!-- Huésped (protagonista) + apartamento como etiqueta de color -->
+      <div class="px-3 pb-2 sm:px-5 sm:pb-3 space-y-1.5">
+        <div class="flex items-start gap-2 min-w-0">
+          <h2 class="text-text-primary text-base sm:text-lg font-bold leading-tight line-clamp-2 break-words min-w-0">{{ b.group.host.fullName }}</h2>
+          <span class="ml-auto shrink-0 mt-0.5 px-1.5 py-px rounded-md bg-white/5 text-text-secondary text-[11px] font-semibold" [title]="totalGuests(b) + ' huéspedes'">
             {{ totalGuests(b) }}p
           </span>
         </div>
+        <span class="inline-flex items-center gap-1.5 max-w-full px-2 py-0.5 rounded-full text-[11px] font-semibold border"
+          [style.color]="aptColor(b)" [style.border-color]="aptColor(b) + '55'" [style.background]="aptColor(b) + '14'">
+          <span class="w-1.5 h-1.5 rounded-full shrink-0" [style.background]="aptColor(b)"></span>
+          <span class="truncate">{{ aptShort(b) }}</span>
+        </span>
       </div>
 
       <!-- Dates: en fila si la tarjeta es ancha, apiladas si es angosta -->
@@ -214,7 +221,7 @@
 
         <div class="h-1.5 bg-bg rounded-full overflow-hidden mb-2 sm:mb-3">
           <div class="h-full rounded-full transition-all" [style.width.%]="paidPct(b)"
-            [class]="paidPct(b) === 100 ? 'bg-success' : 'bg-warning'">
+            [class]="paidPct(b) === 100 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-amber-500 to-brand-accent'">
           </div>
         </div>
 

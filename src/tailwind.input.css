@@ -81,6 +81,58 @@ app-root {
   .page-header h1 + p {
     display: none;
   }
+
+  /* El h1 compacto recorta lo que se sale: el brillo del ícono dejaba una franja */
+  .page-header .nova-icon-tile {
+    box-shadow: none;
+  }
+}
+
+/* ── Sistema visual Nova (nació en NovaAI) ──────────────────────────────
+   nova-surface: superficie con degradé y brillo interior sutil
+   nova-card:    tarjeta que se eleva y brilla al pasar el mouse;
+                 el color del brillo sale de --nova-glow (ej: color de la plataforma)
+   nova-icon-tile: caja de ícono con degradé dorado (encabezados)
+   nova-gradient-text: texto con degradé blanco → dorado */
+@utility nova-surface {
+  background-image: linear-gradient(to bottom, var(--color-elevated), var(--color-surface));
+  border: 1px solid var(--color-border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+@utility nova-card {
+  background-image: linear-gradient(to bottom, var(--color-elevated), var(--color-surface));
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  &:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--nova-glow, #F2C200) 45%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04),
+      0 14px 34px -16px color-mix(in srgb, var(--nova-glow, #F2C200) 60%, transparent);
+  }
+}
+
+@utility nova-icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  color: var(--color-bg);
+  background-image: linear-gradient(135deg, var(--color-brand-accent), var(--color-brand-pressed));
+  box-shadow: 0 0 18px rgba(242, 194, 0, 0.28);
+}
+
+@utility nova-gradient-text {
+  background-image: linear-gradient(to right, #ffffff, var(--color-brand-accent), var(--color-brand));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nova-card:hover { transform: none; }
 }
 
 /* NovaAI: entrada suave de mensajes y resplandor que "respira" */

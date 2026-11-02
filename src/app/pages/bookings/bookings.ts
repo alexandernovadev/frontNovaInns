@@ -11,7 +11,8 @@ import { Pagination } from '../../shared/components/pagination';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { DateEsPipe } from '../../shared/pipes/date-es.pipe';
 import { fmtNumber } from '../../shared/utils/number.util';
-import { PLATFORMS, PLATFORM_CLASS, STATUSES, LIFECYCLE_STATUSES, LIFECYCLE_CLASS } from '../../shared/constants/booking.constants';
+import { PLATFORMS, PLATFORM_CLASS, PLATFORM_ACCENT, STATUSES, LIFECYCLE_STATUSES, LIFECYCLE_CLASS } from '../../shared/constants/booking.constants';
+import { apartmentColor, apartmentShortName } from '../../shared/utils/apartment-color';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, CalendarDays, LayoutGrid, Rows3, MessageSquare, Braces, SlidersHorizontal } from 'lucide-angular';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
@@ -300,6 +301,23 @@ export class BookingsComponent implements OnInit {
   aptName(b: IBooking)     { return this.bookingsService.aptName(b); }
 
   paidPct(b: IBooking) { return this.bookingsService.paidPct(b); }
+
+  accent(b: IBooking) { return PLATFORM_ACCENT[b.billing.platform] ?? '#F2C200'; }
+  aptColor(b: IBooking) {
+    const a = b.apartmentId;
+    return apartmentColor(typeof a === 'string' ? a : a?._id);
+  }
+  aptShort(b: IBooking) { return apartmentShortName(this.aptName(b)); }
+
+  // Indicadores del encabezado: color del número, franja superior y brillo
+  kpis = computed(() => {
+    const s = this.summary();
+    return [
+      { label: 'Total esperado', value: s.totalExpected, color: '#FFFFFF', glow: 'rgba(255,255,255,0.12)', bar: 'linear-gradient(90deg, #FFD21A, transparent)' },
+      { label: 'Recibido', value: s.totalReceived, color: '#22C55E', glow: 'rgba(34,197,94,0.35)', bar: 'linear-gradient(90deg, #22C55E, transparent)' },
+      { label: 'Pendiente', value: s.totalPending, color: '#FACC15', glow: 'rgba(250,204,21,0.30)', bar: 'linear-gradient(90deg, #F59E0B, transparent)' },
+    ];
+  });
 
   readonly today = new Date().toISOString().split('T')[0];
 

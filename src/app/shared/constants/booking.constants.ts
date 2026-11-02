@@ -6,6 +6,13 @@ export const PLATFORM_CLASS: Record<string, string> = {
   Directo: 'bg-brand/15 text-brand border-2 border-brand/40',
 };
 
+// Color de acento por plataforma (franja de las tarjetas y brillo al pasar el mouse)
+export const PLATFORM_ACCENT: Record<string, string> = {
+  Booking: '#3B82F6',
+  AirBnB: '#F43F5E',
+  Directo: '#F2C200',
+};
+
 export const METHODS = ['Efectivo', 'Nequi', 'Bancolombia', 'None'] as const;
 
 export const STATUSES = ['PAGADO', 'FALTA PAGO', 'NO SHOW'] as const;
