@@ -1,11 +1,12 @@
 import { Component, inject, signal, computed, OnInit, HostListener } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { BookingsService } from '../../core/services/bookings.service';
 import type { IBooking } from '../../core/interfaces';
 import { isHoliday } from '../../shared/constants/holidays.constant';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
+import { apartmentColor, apartmentShortName } from '../../shared/utils/apartment-color';
 
 interface DayInfo {
   dateStr: string;
@@ -14,6 +15,8 @@ interface DayInfo {
   holiday: string | null;
   isToday: boolean;
   isPadding: boolean;
+  // Colores de los apartamentos ocupados ese día (uno por apartamento)
+  aptColors: string[];
 }
 
 interface PopoverData {
@@ -21,11 +24,12 @@ interface PopoverData {
   y: number;
   dayStr: string;
   bookings: IBooking[];
+  holiday: string | null;
 }
 
 @Component({
   standalone: true,
-  imports: [NgClass, RouterLink, LucideAngularModule, CurrencyCopPipe],
+  imports: [NgClass, NgTemplateOutlet, RouterLink, LucideAngularModule, CurrencyCopPipe],
   selector: 'app-calendar',
   templateUrl: './calendar.html',
   styleUrl: './calendar.css',
@@ -42,6 +46,27 @@ export class CalendarComponent implements OnInit {
   loading = signal(true);
 
   popover = signal<PopoverData | null>(null);
+
+  // Móvil: un mes a la vez (empieza en el mes actual)
+  mobileMonth = signal(new Date().getMonth());
+  prevMonth() {
+    if (this.mobileMonth() === 0) { this.mobileMonth.set(11); this.prevYear(); }
+    else this.mobileMonth.update(m => m - 1);
+  }
+  nextMonth() {
+    if (this.mobileMonth() === 11) { this.mobileMonth.set(0); this.nextYear(); }
+    else this.mobileMonth.update(m => m + 1);
+  }
+
+  // Leyenda: apartamentos con reservas este año, con su color
+  apartments = computed(() => {
+    const seen = new Map<string, { name: string; color: string }>();
+    for (const b of this.rawBookings()) {
+      const id = this.aptId(b);
+      if (id && !seen.has(id)) seen.set(id, { name: apartmentShortName(this.aptName(b)), color: apartmentColor(id) });
+    }
+    return [...seen.values()];
+  });
 
   monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   dayHeaders = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'];
@@ -67,26 +92,29 @@ export class CalendarComponent implements OnInit {
       }
     }
 
-    const result: { month: number; name: string; days: DayInfo[] }[] = [];
+    const result: { month: number; name: string; days: DayInfo[]; holidays: { day: number; name: string }[] }[] = [];
     for (let m = 0; m < 12; m++) {
       const daysInMonth = new Date(y, m + 1, 0).getDate();
       const firstDay = (new Date(y, m, 1).getDay() + 6) % 7;
       const days: DayInfo[] = [];
       for (let p = 0; p < firstDay; p++) {
-        days.push({ dateStr: '', day: 0, bookings: [], holiday: null, isToday: false, isPadding: true });
+        days.push({ dateStr: '', day: 0, bookings: [], holiday: null, isToday: false, isPadding: true, aptColors: [] });
       }
       for (let d = 1; d <= daysInMonth; d++) {
         const dateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const bookings = bkMap.get(dateStr) || [];
         days.push({
           dateStr,
           day: d,
-          bookings: bkMap.get(dateStr) || [],
+          bookings,
           holiday: isHoliday(dateStr),
           isToday: dateStr === todayStr,
           isPadding: false,
+          aptColors: [...new Set(bookings.map(b => apartmentColor(this.aptId(b))))],
         });
       }
-      result.push({ month: m, name: this.monthNames[m], days });
+      const holidays = days.filter(x => x.holiday).map(x => ({ day: x.day, name: x.holiday! }));
+      result.push({ month: m, name: this.monthNames[m], days, holidays });
     }
     return result;
   });
@@ -96,7 +124,8 @@ export class CalendarComponent implements OnInit {
 
   onDayClick(e: MouseEvent, day: DayInfo) {
     e.stopPropagation();
-    if (day.isPadding || !day.bookings.length) {
+    // Sin reservas ni festivo no hay nada que mostrar
+    if (day.isPadding || (!day.bookings.length && !day.holiday)) {
       this.popover.set(null);
       return;
     }
@@ -112,6 +141,7 @@ export class CalendarComponent implements OnInit {
       y: Math.max(8, y),
       dayStr: day.dateStr,
       bookings: day.bookings,
+      holiday: day.holiday,
     });
   }
 
@@ -124,6 +154,13 @@ export class CalendarComponent implements OnInit {
     const to   = new Date(+co[0], +co[1] - 1, +co[2]);
     return Math.round((to.getTime() - from.getTime()) / 86400000);
   }
+
+  aptId(b: IBooking): string {
+    const a = b.apartmentId as any;
+    return typeof a === 'string' ? a : a?._id ?? '';
+  }
+
+  aptColor(b: IBooking) { return apartmentColor(this.aptId(b)); }
 
   aptName(b: IBooking) {
     const a = b.apartmentId as any;

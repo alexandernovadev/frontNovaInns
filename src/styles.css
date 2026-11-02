@@ -8,6 +8,7 @@
       "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
+    --color-red-300: oklch(80.8% 0.114 19.571);
     --color-red-400: oklch(70.4% 0.191 22.216);
     --color-red-500: oklch(63.7% 0.237 25.331);
     --color-orange-400: oklch(75% 0.183 55.934);
@@ -68,6 +69,7 @@
     --tracking-wider: 0.05em;
     --tracking-widest: 0.1em;
     --leading-tight: 1.25;
+    --leading-snug: 1.375;
     --leading-relaxed: 1.625;
     --radius-sm: 0.25rem;
     --radius-md: 0.375rem;
@@ -586,6 +588,9 @@
   .h-10 {
     height: calc(var(--spacing) * 10);
   }
+  .h-11 {
+    height: calc(var(--spacing) * 11);
+  }
   .h-12 {
     height: calc(var(--spacing) * 12);
   }
@@ -691,6 +696,9 @@
   .w-10 {
     width: calc(var(--spacing) * 10);
   }
+  .w-11 {
+    width: calc(var(--spacing) * 11);
+  }
   .w-12 {
     width: calc(var(--spacing) * 12);
   }
@@ -756,6 +764,9 @@
   }
   .min-w-52 {
     min-width: calc(var(--spacing) * 52);
+  }
+  .min-w-\[88px\] {
+    min-width: 88px;
   }
   .min-w-\[280px\] {
     min-width: 280px;
@@ -944,6 +955,9 @@
   .gap-x-3 {
     column-gap: calc(var(--spacing) * 3);
   }
+  .gap-x-5 {
+    column-gap: calc(var(--spacing) * 5);
+  }
   .gap-x-6 {
     column-gap: calc(var(--spacing) * 6);
   }
@@ -1018,9 +1032,6 @@
   }
   .rounded-md {
     border-radius: var(--radius-md);
-  }
-  .rounded-sm {
-    border-radius: var(--radius-sm);
   }
   .rounded-xl {
     border-radius: var(--radius-xl);
@@ -1229,6 +1240,12 @@
     border-color: color-mix(in srgb, oklch(62.7% 0.265 303.9) 40%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       border-color: color-mix(in oklab, var(--color-purple-500) 40%, transparent);
+    }
+  }
+  .border-red-400\/40 {
+    border-color: color-mix(in srgb, oklch(70.4% 0.191 22.216) 40%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-red-400) 40%, transparent);
     }
   }
   .border-red-500\/30 {
@@ -1546,16 +1563,16 @@
       background-color: color-mix(in oklab, var(--color-purple-500) 15%, transparent);
     }
   }
-  .bg-red-400\/60 {
-    background-color: color-mix(in srgb, oklch(70.4% 0.191 22.216) 60%, transparent);
-    @supports (color: color-mix(in lab, red, red)) {
-      background-color: color-mix(in oklab, var(--color-red-400) 60%, transparent);
-    }
-  }
   .bg-red-500\/15 {
     background-color: color-mix(in srgb, oklch(63.7% 0.237 25.331) 15%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-red-500) 15%, transparent);
+    }
+  }
+  .bg-red-500\/25 {
+    background-color: color-mix(in srgb, oklch(63.7% 0.237 25.331) 25%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-red-500) 25%, transparent);
     }
   }
   .bg-rose-500\/15 {
@@ -1958,6 +1975,10 @@
     --tw-leading: var(--leading-relaxed);
     line-height: var(--leading-relaxed);
   }
+  .leading-snug {
+    --tw-leading: var(--leading-snug);
+    line-height: var(--leading-snug);
+  }
   .leading-tight {
     --tw-leading: var(--leading-tight);
     line-height: var(--leading-tight);
@@ -2063,6 +2084,9 @@
   }
   .text-purple-400 {
     color: var(--color-purple-400);
+  }
+  .text-red-300 {
+    color: var(--color-red-300);
   }
   .text-red-400 {
     color: var(--color-red-400);
@@ -2630,14 +2654,8 @@
     .sm\:inline {
       display: inline;
     }
-    .sm\:h-9 {
-      height: calc(var(--spacing) * 9);
-    }
     .sm\:h-full {
       height: 100%;
-    }
-    .sm\:w-9 {
-      width: calc(var(--spacing) * 9);
     }
     .sm\:w-px {
       width: 1px;
@@ -2650,9 +2668,6 @@
     }
     .sm\:max-w-\[280px\] {
       max-width: 280px;
-    }
-    .sm\:min-w-\[88px\] {
-      min-width: 88px;
     }
     .sm\:flex-none {
       flex: none;
@@ -2786,10 +2801,6 @@
     .sm\:text-sm {
       font-size: var(--text-sm);
       line-height: var(--tw-leading, var(--text-sm--line-height));
-    }
-    .sm\:text-xl {
-      font-size: var(--text-xl);
-      line-height: var(--tw-leading, var(--text-xl--line-height));
     }
     .sm\:tracking-widest {
       --tw-tracking: var(--tracking-widest);
