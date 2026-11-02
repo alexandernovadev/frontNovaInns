@@ -22,7 +22,9 @@
     --color-teal-500: oklch(70.4% 0.14 182.503);
     --color-cyan-400: oklch(78.9% 0.154 211.53);
     --color-cyan-500: oklch(71.5% 0.143 215.221);
+    --color-sky-300: oklch(82.8% 0.111 230.318);
     --color-sky-400: oklch(74.6% 0.16 232.661);
+    --color-sky-500: oklch(68.5% 0.169 237.323);
     --color-blue-400: oklch(70.7% 0.165 254.624);
     --color-blue-500: oklch(62.3% 0.214 259.815);
     --color-indigo-400: oklch(67.3% 0.182 276.935);
@@ -1068,10 +1070,6 @@
     border-bottom-style: var(--tw-border-style);
     border-bottom-width: 1px;
   }
-  .border-l-2 {
-    border-left-style: var(--tw-border-style);
-    border-left-width: 2px;
-  }
   .border-dashed {
     --tw-border-style: dashed;
     border-style: dashed;
@@ -1285,9 +1283,6 @@
     @supports (color: color-mix(in lab, red, red)) {
       border-color: color-mix(in oklab, var(--color-success) 40%, transparent);
     }
-  }
-  .border-transparent {
-    border-color: transparent;
   }
   .border-warning\/20 {
     border-color: color-mix(in srgb, #FACC15 20%, transparent);
@@ -1581,6 +1576,12 @@
     background-color: color-mix(in srgb, oklch(64.5% 0.246 16.439) 15%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-rose-500) 15%, transparent);
+    }
+  }
+  .bg-sky-500\/10 {
+    background-color: color-mix(in srgb, oklch(68.5% 0.169 237.323) 10%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      background-color: color-mix(in oklab, var(--color-sky-500) 10%, transparent);
     }
   }
   .bg-success {
@@ -2095,6 +2096,9 @@
   }
   .text-rose-400 {
     color: var(--color-rose-400);
+  }
+  .text-sky-300 {
+    color: var(--color-sky-300);
   }
   .text-sky-400 {
     color: var(--color-sky-400);
@@ -2656,6 +2660,9 @@
     .sm\:inline {
       display: inline;
     }
+    .sm\:inline-flex {
+      display: inline-flex;
+    }
     .sm\:h-full {
       height: 100%;
     }
@@ -2862,10 +2869,6 @@
     .lg\:justify-center {
       justify-content: center;
     }
-    .lg\:border-l-0 {
-      border-left-style: var(--tw-border-style);
-      border-left-width: 0px;
-    }
     .lg\:px-0 {
       padding-inline: 0px;
     }
@@ -3012,6 +3015,26 @@ app-root {
     justify-content: center;
     text-align: center;
   }
+}
+.nav-active {
+  position: relative;
+  color: var(--color-brand-accent) !important;
+  background-image: linear-gradient(90deg, rgba(242, 194, 0, 0.16), rgba(242, 194, 0, 0.02));
+  box-shadow: inset 0 0 0 1px rgba(242, 194, 0, 0.12);
+}
+.nav-active::before {
+  content: '';
+  position: absolute;
+  left: -0.75rem;
+  top: 20%;
+  bottom: 20%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(to bottom, var(--color-brand-accent), var(--color-brand-pressed));
+  box-shadow: 0 0 12px rgba(242, 194, 0, 0.7);
+}
+.nav-active lucide-icon {
+  filter: drop-shadow(0 0 6px rgba(242, 194, 0, 0.55));
 }
 @keyframes novaIn {
   from {

@@ -12,8 +12,10 @@ import { LucideAngularModule, Shield, Users, MessageSquare, ArrowUpDown, Info, T
     <div class="p-6 space-y-6">
       <div class="page-header flex items-center justify-between">
         <div>
-          <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2">
-            <lucide-icon [img]="ShieldIcon" class="w-6 h-6 text-brand" [strokeWidth]="2" />
+          <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2.5">
+            <span class="nova-icon-tile w-8 h-8 shrink-0">
+              <lucide-icon [img]="ShieldIcon" class="w-4.5 h-4.5" [strokeWidth]="2.2" />
+            </span>
             Admin
           </h1>
           <p class="text-text-secondary text-sm mt-0.5">Usuarios, mensajes, datos y sistema</p>

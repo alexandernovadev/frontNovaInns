@@ -10,9 +10,9 @@
       <lucide-icon [img]="ArrowLeft" class="w-5 h-5" [strokeWidth]="2" />
     </button>
     <div class="flex items-center gap-2 flex-1 min-w-0">
-      <div class="hidden sm:flex w-8 h-8 rounded-xl bg-brand/10 items-center justify-center shrink-0">
-        <lucide-icon [img]="CalendarDays" class="w-4 h-4 text-brand" [strokeWidth]="2" />
-      </div>
+      <span class="nova-icon-tile hidden sm:inline-flex w-8 h-8 shrink-0">
+        <lucide-icon [img]="CalendarDays" class="w-4.5 h-4.5" [strokeWidth]="2.2" />
+      </span>
       <h1 class="text-text-primary text-xl sm:text-2xl font-bold truncate">
         {{ isEditing ? 'Editar reserva' : 'Nueva reserva' }}
       </h1>

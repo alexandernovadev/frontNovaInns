@@ -39,14 +39,14 @@
       @for (item of navItems; track item.route) {
         <a
           [routerLink]="item.route"
-          routerLinkActive="bg-brand/10 text-brand border-l-2 border-brand"
+          routerLinkActive="nav-active"
           [routerLinkActiveOptions]="{ exact: false }"
           (click)="closeSidebar()"
           (mouseenter)="setTooltip(item.label, $event)"
           (mouseleave)="clearTooltip()"
           class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary
                  hover:bg-hover hover:text-text-primary transition-colors"
-          [class]="collapsed() ? 'lg:border-l-0 lg:justify-center lg:px-0 border-l-2 border-transparent' : 'border-l-2 border-transparent'"
+          [class]="collapsed() ? 'lg:justify-center lg:px-0' : ''"
         >
           <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
           @if (!collapsed()) {
