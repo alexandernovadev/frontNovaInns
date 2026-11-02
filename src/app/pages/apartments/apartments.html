@@ -72,7 +72,7 @@
             </td>
             <td class="px-5 py-4 text-text-secondary">{{ apartment.rooms.length }}</td>
             <td class="px-5 py-4 text-text-secondary">{{ apartment.bathrooms.length }}</td>
-            <td class="px-5 py-4 text-text-secondary">{{ apartment.parking.totalSpots }} spots</td>
+            <td class="px-5 py-4 text-text-secondary">{{ apartment.parking?.totalSpots ?? 0 }} puestos</td>
             <td class="px-5 py-4">
               <div class="flex items-center gap-2 justify-end">
                 <button (click)="openDelete(apartment, $event)"
