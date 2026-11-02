@@ -3,6 +3,7 @@ import { fmtNumber } from '../../shared/utils/number.util';
 // Nombre legible de cada campo que NovaAI puede cambiar (tarjetas e historial)
 const FIELD_LABELS: Record<string, string> = {
   'group.host.fullName': 'Huésped',
+  'group.host.location.countryName': 'País',
   'group.members': 'Acompañantes',
   apartmentId: 'Apartamento',
   'stay.checkIn': 'Entrada',
@@ -46,6 +47,7 @@ export function formatValue(field: string, value: unknown, apartmentNames: Recor
   // fmtNumber(0) devuelve '' → se muestra $0
   if (MONEY_FIELDS.has(field) && typeof value === 'number') return `$${fmtNumber(Math.round(value)) || '0'}`;
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(value)) return value.slice(0, 10);
+  if (field === 'observations' && typeof value === 'string') return value.split('\n').join(' · ');
   if (Array.isArray(value)) return value.length ? `${value.length} elemento(s)` : 'ninguno';
   if (typeof value === 'object') return JSON.stringify(value);
   return String(value);

@@ -12,10 +12,12 @@ export interface ActionChange {
 // Propuesta de NovaAI: el usuario la confirma o la cancela en una tarjeta
 export interface ActionCard {
   id: string;
-  type: 'update' | 'delete' | 'undo';
+  type: 'create' | 'update' | 'delete' | 'undo';
   collection: 'bookings' | 'apartments' | 'expenses';
   status: string;
   summary: string;
+  // Avisos (ej: posible reserva duplicada)
+  warnings: string[];
   expiresAt: string;
   targets: {
     id: string;
@@ -44,6 +46,15 @@ export interface ChatMessage {
   // Consultas a la base que hizo NovaAI para esta respuesta (solo para mostrar)
   queries?: string[];
   actions?: ActionCard[];
+  // Vista previa local del screenshot que mandó el usuario (no viaja al back)
+  image?: string;
+}
+
+export interface ChatReply {
+  reply: string;
+  model: string;
+  queries: string[];
+  actions: ActionCard[];
 }
 
 export interface ExtractedBooking {
@@ -70,12 +81,21 @@ export class AssistantService {
   sendChat(messages: ChatMessage[]) {
     let history = messages.slice(-40).map(({ role, text }) => ({ role, text }));
     if (history[0]?.role === 'model') history = history.slice(1);
-    return this.http.post<{ reply: string; model: string; queries: string[]; actions: ActionCard[] }>(`${API}/assistant/chat`, { messages: history });
+    return this.http.post<ChatReply>(`${API}/assistant/chat`, { messages: history });
+  }
+
+  // Screenshot de Booking / AirBnB en el chat → propuesta "Crear reserva"
+  chatImage(file: File, hint?: string) {
+    const form = new FormData();
+    form.append('file', file);
+    if (hint?.trim()) form.append('hint', hint.trim());
+    return this.http.post<ChatReply>(`${API}/assistant/chat-image`, form);
   }
 
   // Ejecuta la propuesta. 409 si venció, ya no estaba pendiente o el documento cambió
-  confirmAction(id: string) {
-    return this.http.post<{ id: string; status: string }>(`${API}/assistant/actions/${id}/confirm`, {});
+  // apartmentId: obligatorio para crear una reserva
+  confirmAction(id: string, apartmentId?: string) {
+    return this.http.post<{ id: string; status: string }>(`${API}/assistant/actions/${id}/confirm`, { apartmentId });
   }
 
   listActions(filter: HistoryFilter, page = 1) {

@@ -1,5 +1,5 @@
 import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { LucideAngularModule, History, Pencil, Trash2, Undo2, Sparkles, ArrowRight, TriangleAlert } from 'lucide-angular';
+import { LucideAngularModule, History, Pencil, Trash2, Undo2, Sparkles, ArrowRight, TriangleAlert, CalendarPlus } from 'lucide-angular';
 import { AssistantService, HistoryFilter, HistoryItem } from '../../core/services/assistant.service';
 import { ApartmentsService } from '../../core/services/apartments.service';
 import { AlertService } from '../../shared/components/services/alert.service';
@@ -62,12 +62,14 @@ const STATUS_PILL: Record<string, string> = {
           @for (it of items(); track it.id) {
             @let isUndo = it.type === 'undo';
             @let isDelete = it.type === 'delete';
+            @let isCreate = it.type === 'create';
             <li class="relative flex gap-4 nova-in">
               <span class="relative z-10 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border"
                 [class]="isUndo ? 'bg-purple-500/15 border-purple-500/30 text-purple-300'
                   : isDelete ? 'bg-error/15 border-error/30 text-error'
+                  : isCreate ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
                   : 'bg-brand/15 border-brand/30 text-brand'">
-                <lucide-icon [img]="isUndo ? Undo2 : isDelete ? Trash2 : Pencil" class="w-4.5 h-4.5" [strokeWidth]="2" />
+                <lucide-icon [img]="isUndo ? Undo2 : isDelete ? Trash2 : isCreate ? CalendarPlus : Pencil" class="w-4.5 h-4.5" [strokeWidth]="2" />
               </span>
 
               <div class="min-w-0 flex-1 rounded-2xl border border-border bg-gradient-to-b from-elevated to-surface overflow-hidden"
@@ -105,12 +107,14 @@ const STATUS_PILL: Record<string, string> = {
                     } @else if (t.details.length) {
                       <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
                         @for (d of t.details; track d.field) {
-                          <dt class="text-text-disabled">{{ label(d.field) }}</dt>
-                          <dd class="text-text-secondary break-words">{{ format(d.field, d.value) }}</dd>
+                          @if (d.value !== '' && d.value !== null && d.value !== undefined) {
+                            <dt class="text-text-disabled">{{ label(d.field) }}</dt>
+                            <dd class="text-text-secondary break-words">{{ format(d.field, d.value) }}</dd>
+                          }
                         }
                       </dl>
                     } @else if (isUndo) {
-                      <p class="text-xs text-purple-300">Documento restaurado completo</p>
+                      <p class="text-xs text-purple-300">{{ it.summary.startsWith('Deshacer: Crear reserva') ? 'Reserva eliminada' : 'Documento restaurado completo' }}</p>
                     }
                   </div>
                 }
@@ -168,6 +172,8 @@ const STATUS_PILL: Record<string, string> = {
             <p class="text-text-secondary">
               @if (it.type === 'delete') {
                 Se va a <strong class="text-text-primary">restaurar completo</strong> lo que NovaAI eliminó:
+              } @else if (it.type === 'create') {
+                Se va a <strong class="text-text-primary">eliminar la reserva</strong> que creó NovaAI:
               } @else {
                 Estos campos vuelven a como estaban:
               }
@@ -207,6 +213,7 @@ export class NovaHistoryComponent implements OnInit {
   readonly Sparkles = Sparkles;
   readonly ArrowRight = ArrowRight;
   readonly TriangleAlert = TriangleAlert;
+  readonly CalendarPlus = CalendarPlus;
 
   private assistant = inject(AssistantService);
   private apartmentsService = inject(ApartmentsService);

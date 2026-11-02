@@ -1,7 +1,8 @@
-import { Component, inject, signal, effect, viewChild, ElementRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, effect, viewChild, ElementRef, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Sparkles, SendHorizontal, RotateCcw, Database } from 'lucide-angular';
-import { AssistantService, ChatMessage } from '../../core/services/assistant.service';
+import { LucideAngularModule, Sparkles, SendHorizontal, RotateCcw, Database, Paperclip, ImageUp } from 'lucide-angular';
+import { AssistantService, ChatMessage, ChatReply } from '../../core/services/assistant.service';
+import { Observable } from 'rxjs';
 import { ApartmentsService } from '../../core/services/apartments.service';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { NovaActionCard } from './action-card';
@@ -12,7 +13,20 @@ import { renderRich } from './rich-text';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule, NovaActionCard],
   template: `
-    <div class="p-6 h-full flex flex-col gap-4 relative">
+    <div class="p-6 h-full flex flex-col gap-4 relative"
+      (dragenter)="onDragEnter($event)" (dragover)="$event.preventDefault()"
+      (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+      <!-- Soltar screenshot -->
+      @if (dragging()) {
+        <div class="pointer-events-none absolute inset-3 z-30 rounded-3xl border-2 border-dashed border-brand bg-bg/95 backdrop-blur-md
+                    flex flex-col items-center justify-center gap-3 nova-in">
+          <span class="w-16 h-16 rounded-full bg-gradient-to-br from-brand-accent to-brand-pressed flex items-center justify-center nova-glow">
+            <lucide-icon [img]="ImageUp" class="w-8 h-8 text-bg" [strokeWidth]="2" />
+          </span>
+          <p class="text-lg font-semibold text-brand">Suelta el screenshot aquí</p>
+          <p class="text-sm text-text-secondary">NovaAI lee la reserva de Booking o AirBnB y te la arma</p>
+        </div>
+      }
       <!-- Resplandor decorativo -->
       <div class="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(60%_100%_at_50%_0%,rgba(242,194,0,0.10),transparent)]"></div>
 
@@ -65,7 +79,11 @@ import { renderRich } from './rich-text';
 
         @for (m of messages(); track $index) {
           @if (m.role === 'user') {
-            <div class="flex justify-end nova-in">
+            <div class="flex flex-col items-end gap-1.5 nova-in">
+              @if (m.image) {
+                <img [src]="m.image" alt="Screenshot enviado"
+                  class="max-w-[60%] sm:max-w-[280px] max-h-64 object-cover rounded-2xl rounded-br-md border-2 border-brand/60 shadow-[0_4px_20px_-6px_rgba(242,194,0,0.45)]" />
+              }
               <div data-msg="user"
                 class="max-w-[85%] sm:max-w-[70%] rounded-2xl rounded-br-md px-4 py-2.5 text-sm font-medium whitespace-pre-wrap break-words
                        bg-gradient-to-br from-brand-accent to-brand text-bg shadow-[0_4px_20px_-6px_rgba(242,194,0,0.45)]">{{ m.text }}</div>
@@ -88,7 +106,7 @@ import { renderRich } from './rich-text';
                 }
                 @for (a of m.actions ?? []; track a.id) {
                   <nova-action-card class="w-full" [card]="a" [busy]="busyAction() === a.id" [apartmentNames]="apartmentNames()"
-                    (cancel)="cancelAction($event)" (confirm)="confirmAction($event)" />
+                    (cancel)="cancelAction($event)" (confirm)="confirmAction($event.id, $event.apartmentId)" />
                 }
               </div>
             </div>
@@ -106,7 +124,7 @@ import { renderRich } from './rich-text';
                 <span class="w-1.5 h-1.5 rounded-full bg-brand animate-bounce [animation-delay:-0.15s]"></span>
                 <span class="w-1.5 h-1.5 rounded-full bg-brand animate-bounce"></span>
               </span>
-              <span class="text-xs text-text-secondary">Consultando tu negocio…</span>
+              <span class="text-xs text-text-secondary">{{ readingImage() ? 'Leyendo el screenshot…' : 'Consultando tu negocio…' }}</span>
             </div>
           </div>
         }
@@ -122,9 +140,14 @@ import { renderRich } from './rich-text';
       <form (submit)="$event.preventDefault(); send(draft())"
         class="relative flex items-end gap-2 p-1.5 rounded-2xl bg-surface border border-border transition-all
                focus-within:border-brand/60 focus-within:shadow-[0_0_0_4px_rgba(242,194,0,0.08),0_0_24px_-4px_rgba(242,194,0,0.25)]">
+        <input #fileInput type="file" accept="image/*" class="hidden" (change)="onFilePicked($event)" />
+        <button type="button" (click)="fileInput.click()" [disabled]="sending()" title="Adjuntar screenshot de una reserva"
+          class="w-10 h-10 flex items-center justify-center rounded-xl text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer shrink-0 disabled:opacity-40">
+          <lucide-icon [img]="Paperclip" class="w-5 h-5" [strokeWidth]="2" />
+        </button>
         <textarea [ngModel]="draft()" (ngModelChange)="draft.set($event)" name="draft"
           (keydown.enter)="onEnter($any($event))"
-          rows="1" placeholder="Pregúntale a NovaAI…"
+          rows="1" placeholder="Pregúntale a NovaAI… o arrastra un screenshot"
           class="flex-1 bg-transparent px-3 py-2.5 text-text-primary text-sm resize-none max-h-40
                  placeholder:text-text-disabled focus:outline-none"></textarea>
         <button type="submit" [disabled]="!draft().trim() || sending()" title="Enviar"
@@ -141,6 +164,8 @@ export class NovaAiComponent {
   readonly SendHorizontal = SendHorizontal;
   readonly RotateCcw = RotateCcw;
   readonly Database = Database;
+  readonly Paperclip = Paperclip;
+  readonly ImageUp = ImageUp;
 
   private assistant = inject(AssistantService);
   private apartmentsService = inject(ApartmentsService);
@@ -152,6 +177,11 @@ export class NovaAiComponent {
   sending = signal(false);
   error = signal<string | null>(null);
   busyAction = signal<string | null>(null);
+  dragging = signal(false);
+  readingImage = signal(false);
+  // Último screenshot que falló, para "Reintentar"
+  private failedImage: { file: File; hint: string } | null = null;
+  private dragDepth = 0;
   apartmentNames = signal<Record<string, string>>({});
 
   readonly suggestions = [
@@ -201,7 +231,69 @@ export class NovaAiComponent {
   }
 
   retry() {
-    if (this.messages().at(-1)?.role === 'user') this.request();
+    if (this.messages().at(-1)?.role !== 'user') return;
+    if (this.failedImage) this.readImage(this.failedImage.file, this.failedImage.hint);
+    else this.request();
+  }
+
+  // ── Screenshots: arrastrar, pegar o adjuntar ──
+  onDragEnter(e: DragEvent) {
+    if (!e.dataTransfer?.types.includes('Files')) return;
+    e.preventDefault();
+    this.dragDepth++;
+    this.dragging.set(true);
+  }
+
+  onDragLeave(e: DragEvent) {
+    e.preventDefault();
+    if (--this.dragDepth <= 0) {
+      this.dragDepth = 0;
+      this.dragging.set(false);
+    }
+  }
+
+  onDrop(e: DragEvent) {
+    e.preventDefault();
+    this.dragDepth = 0;
+    this.dragging.set(false);
+    const file = Array.from(e.dataTransfer?.files ?? []).find((f) => f.type.startsWith('image/'));
+    if (file) this.sendImage(file);
+  }
+
+  @HostListener('document:paste', ['$event'])
+  onPaste(e: ClipboardEvent) {
+    const file = Array.from(e.clipboardData?.files ?? []).find((f) => f.type.startsWith('image/'));
+    if (file) {
+      e.preventDefault();
+      this.sendImage(file);
+    }
+  }
+
+  onFilePicked(e: Event) {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (file) this.sendImage(file);
+  }
+
+  private sendImage(file: File) {
+    if (this.sending()) return;
+    // Lo escrito en la caja va como nota para la IA (ej: "son 3 huéspedes")
+    const hint = this.draft().trim();
+    this.draft.set('');
+    this.messages.update((m) => [
+      ...m,
+      { role: 'user', text: hint ? `📷 ${hint}` : '📷 Screenshot de reserva', image: URL.createObjectURL(file) },
+    ]);
+    this.readImage(file, hint);
+  }
+
+  private readImage(file: File, hint: string) {
+    this.failedImage = null;
+    this.readingImage.set(true);
+    this.handleReply(this.assistant.chatImage(file, hint), () => {
+      this.failedImage = { file, hint };
+    });
   }
 
   reset() {
@@ -209,9 +301,9 @@ export class NovaAiComponent {
     this.error.set(null);
   }
 
-  confirmAction(id: string) {
+  confirmAction(id: string, apartmentId?: string) {
     this.busyAction.set(id);
-    this.assistant.confirmAction(id).subscribe({
+    this.assistant.confirmAction(id, apartmentId).subscribe({
       next: (r) => {
         this.setActionStatus(id, r.status);
         this.busyAction.set(null);
@@ -259,16 +351,24 @@ export class NovaAiComponent {
   }
 
   private request() {
+    this.failedImage = null;
+    this.handleReply(this.assistant.sendChat(this.messages()));
+  }
+
+  private handleReply(req: Observable<ChatReply>, onError?: () => void) {
     this.sending.set(true);
     this.error.set(null);
-    this.assistant.sendChat(this.messages()).subscribe({
+    req.subscribe({
       next: (r) => {
         this.messages.update((m) => [...m, { role: 'model', text: r.reply, queries: r.queries, actions: r.actions } as ChatMessage]);
         this.sending.set(false);
+        this.readingImage.set(false);
       },
       error: (err) => {
+        onError?.();
         this.error.set(err?.error?.message ?? 'NovaAI no pudo responder.');
         this.sending.set(false);
+        this.readingImage.set(false);
       },
     });
   }
