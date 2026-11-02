@@ -8,6 +8,7 @@ import { StatusBadge } from '../../shared/components/status-badge';
 import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, Building2 } from 'lucide-angular';
+import { EmptyState } from '../../shared/components/empty-state';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { loadList } from '../../shared/utils/list.util';
 import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delete.util';
@@ -26,7 +27,7 @@ const STATUS_CLASS: Record<string, string> = {
 @Component({
   selector: 'app-apartments',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, Pagination, AutocompleteSelect],
+  imports: [EmptyState, FormsModule, LucideAngularModule, ModalNova, StatusBadge, Pagination, AutocompleteSelect],
   templateUrl: './apartments.html',
 })
 export class ApartmentsComponent implements OnInit {

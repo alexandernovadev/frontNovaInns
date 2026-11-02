@@ -42,7 +42,7 @@
   <!-- Tabla -->
   <div class="bg-surface border border-border rounded-2xl overflow-hidden">
     <div class="overflow-x-auto">
-      <table class="w-full text-sm">
+      <table class="nova-table w-full text-sm">
         <thead>
           <tr class="border-b border-border">
             <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Nombre</th>
@@ -60,22 +60,22 @@
           </tr>
           } @else if (apartments().length === 0) {
           <tr>
-            <td colspan="6" class="text-center py-12 text-text-disabled">Sin resultados</td>
+            <td colspan="6"><nova-empty [icon]="Building2" title="No hay apartamentos" hint="Crea el primero con “Nuevo apartamento”." /></td>
           </tr>
           } @else {
           @for (apartment of apartments(); track apartment._id) {
           <tr (click)="openDetail(apartment)"
             class="border-b border-border last:border-0 hover:bg-hover transition-colors cursor-pointer">
-            <td class="px-5 py-4 text-text-primary font-medium">{{ apartment.internalName }}</td>
-            <td class="px-5 py-4">
+            <td data-primary class="px-5 py-4 text-text-primary font-medium">{{ apartment.internalName }}</td>
+            <td data-label="Estado" class="px-5 py-4">
               <status-badge [value]="apartment.status" type="apartment" />
             </td>
-            <td class="px-5 py-4 text-text-secondary">{{ apartment.rooms.length }}</td>
-            <td class="px-5 py-4 text-text-secondary">{{ apartment.bathrooms.length }}</td>
-            <td class="px-5 py-4 text-text-secondary">{{ apartment.parking?.totalSpots ?? 0 }} puestos</td>
+            <td data-label="Habitaciones" class="px-5 py-4 text-text-secondary">{{ apartment.rooms.length }}</td>
+            <td data-label="Baños" class="px-5 py-4 text-text-secondary">{{ apartment.bathrooms.length }}</td>
+            <td data-label="Parqueadero" class="px-5 py-4 text-text-secondary">{{ apartment.parking?.totalSpots ?? 0 }} {{ (apartment.parking?.totalSpots ?? 0) === 1 ? 'puesto' : 'puestos' }}</td>
             <td class="px-5 py-4">
               <div class="flex items-center gap-2 justify-end">
-                <button (click)="openDelete(apartment, $event)"
+                <button (click)="openDelete(apartment, $event)" aria-label="Eliminar apartamento" title="Eliminar apartamento"
                   class="p-2 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"

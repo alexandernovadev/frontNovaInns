@@ -6,6 +6,7 @@ import { ModalNova } from '../../shared/components/modal-nova';
 import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { LucideAngularModule, Users } from 'lucide-angular';
+import { EmptyState } from '../../shared/components/empty-state';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { ROLES, ROLE_LABELS } from '../../shared/constants/user.constants';
 import { loadList } from '../../shared/utils/list.util';
@@ -14,7 +15,7 @@ import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delet
 @Component({
   selector: 'app-users',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, ModalNova, Pagination, AutocompleteSelect],
+  imports: [EmptyState, FormsModule, LucideAngularModule, ModalNova, Pagination, AutocompleteSelect],
   templateUrl: './users.html',
 })
 export class UsersComponent implements OnInit {

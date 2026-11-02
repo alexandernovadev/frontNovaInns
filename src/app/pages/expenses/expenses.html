@@ -43,7 +43,7 @@
   <!-- Tabla -->
   <div class="bg-surface border border-border rounded-2xl overflow-hidden">
     <div class="overflow-x-auto">
-      <table class="w-full text-sm">
+      <table class="nova-table w-full text-sm">
         <thead>
           <tr class="border-b border-border">
             <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Descripción</th>
@@ -58,19 +58,19 @@
           @if (loading()) {
             <tr><td colspan="6" class="text-center py-12 text-text-disabled">Cargando...</td></tr>
           } @else if (expenses().length === 0) {
-            <tr><td colspan="6" class="text-center py-12 text-text-disabled">Sin resultados</td></tr>
+            <tr><td colspan="6"><nova-empty [icon]="ReceiptIcon" title="No hay gastos registrados" hint="Cuando registres uno con “Nuevo gasto”, aparecerá aquí." /></td></tr>
           } @else {
             @for (expense of expenses(); track expense._id) {
               <tr class="border-b border-border last:border-0 hover:bg-hover transition-colors">
-                <td class="px-5 py-4 text-text-primary font-medium">{{ expense.description }}</td>
-                <td class="px-5 py-4">
+                <td data-primary class="px-5 py-4 text-text-primary font-medium">{{ expense.description }}</td>
+                <td data-label="Categoría" class="px-5 py-4">
                   <span class="px-2.5 py-1 rounded-lg text-xs font-medium" [class]="categoryClass[expense.category]">
                     {{ categoryLabels[expense.category] }}
                   </span>
                 </td>
-                <td class="px-5 py-4 text-text-primary font-medium">{{ expense.amount | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}</td>
-                <td class="px-5 py-4 text-text-secondary">{{ expense.date | date:'dd/MM/yyyy' }}</td>
-                <td class="px-5 py-4 text-text-secondary">{{ expense.paymentMethod }}</td>
+                <td data-label="Monto" class="px-5 py-4 text-text-primary font-medium">{{ expense.amount | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}</td>
+                <td data-label="Fecha" class="px-5 py-4 text-text-secondary">{{ expense.date | date:'dd/MM/yyyy' }}</td>
+                <td data-label="Método" class="px-5 py-4 text-text-secondary">{{ expense.paymentMethod }}</td>
                 <td class="px-5 py-4">
                   <div class="flex items-center gap-2 justify-end">
                     <button (click)="openEdit(expense)"

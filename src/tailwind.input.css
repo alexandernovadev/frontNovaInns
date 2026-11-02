@@ -135,6 +135,45 @@ app-root {
   .nova-card:hover { transform: none; }
 }
 
+/* nova-table: tabla en escritorio, tarjetas apiladas en móvil.
+   Cada <td> lleva data-label (se muestra a la izquierda) o data-primary (título de la tarjeta);
+   sin ninguno de los dos se trata como columna de acciones. */
+@media (width < 40rem) {
+  .nova-table thead { display: none; }
+  .nova-table, .nova-table tbody { display: block; width: 100%; }
+  .nova-table tr {
+    display: block;
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .nova-table tr:last-child { border-bottom: 0; }
+  .nova-table td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.25rem 0;
+    text-align: right;
+    white-space: normal;
+  }
+  .nova-table td[data-label]::before {
+    content: attr(data-label);
+    color: var(--color-text-disabled);
+    font-size: 0.75rem;
+    text-align: left;
+    flex-shrink: 0;
+  }
+  .nova-table td[data-primary] {
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+  }
+  .nova-table td:not([data-label]):not([data-primary]) { justify-content: flex-end; }
+  .nova-table td[colspan] { justify-content: center; text-align: center; }
+}
+
 /* NovaAI: entrada suave de mensajes y resplandor que "respira" */
 @keyframes novaIn {
   from { opacity: 0; transform: translateY(8px); }

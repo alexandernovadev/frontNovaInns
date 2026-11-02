@@ -6,6 +6,7 @@ import { IExpense, ExpenseQuery } from '../../core/interfaces';
 import { ModalNova } from '../../shared/components/modal-nova';
 import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';
+import { EmptyState } from '../../shared/components/empty-state';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { LucideAngularModule, Receipt } from 'lucide-angular';
 import { METHODS } from '../../shared/constants/booking.constants';
@@ -16,7 +17,7 @@ import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delet
 @Component({
   selector: 'app-expenses',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, CurrencyPipe, DatePipe, LucideAngularModule, ModalNova, Pagination, AutocompleteSelect],
+  imports: [EmptyState, FormsModule, CurrencyPipe, DatePipe, LucideAngularModule, ModalNova, Pagination, AutocompleteSelect],
   templateUrl: './expenses.html',
 })
 export class ExpensesComponent implements OnInit {
