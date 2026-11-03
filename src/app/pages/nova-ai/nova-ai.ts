@@ -194,9 +194,10 @@ export class NovaAiComponent {
   // El texto de cada respuesta se formatea una sola vez
   private richCache = new Map<string, string>();
   rich(text: string) {
+    const apartments = this.apartmentNames();
     let html = this.richCache.get(text);
     if (html === undefined) {
-      html = renderRich(text);
+      html = renderRich(text, apartments);
       this.richCache.set(text, html);
     }
     return html;
@@ -204,7 +205,10 @@ export class NovaAiComponent {
 
   constructor() {
     this.apartmentsService.findAll().subscribe({
-      next: (res) => this.apartmentNames.set(Object.fromEntries(res.data.map((a) => [a._id, a.internalName]))),
+      next: (res) => {
+        this.richCache.clear(); // las tarjetas toman el color del apartamento
+        this.apartmentNames.set(Object.fromEntries(res.data.map((a) => [a._id, a.internalName])));
+      },
     });
 
     // Baja al último mensaje cuando llega uno nuevo
