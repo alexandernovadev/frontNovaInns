@@ -1,108 +1,60 @@
-<div class="flex h-screen bg-bg">
+<div class="shell">
 
   <!-- Overlay móvil -->
   @if (sidebarOpen()) {
-    <div class="fixed inset-0 bg-black/60 z-20 lg:hidden" (click)="closeSidebar()"></div>
+    <div class="overlay" (click)="closeSidebar()"></div>
   }
 
   <!-- Sidebar -->
-  <aside
-    class="fixed lg:static inset-y-0 left-0 z-30 flex flex-col transition-all duration-300 ease-in-out lg:translate-x-0"
-    [class]="collapsed()
-      ? 'lg:w-16 w-64 bg-surface border-r border-border'
-      : 'w-64 bg-surface border-r border-border'"
-    [class.translate-x-0]="sidebarOpen()"
-    [class.-translate-x-full]="!sidebarOpen()"
-  >
-    <!-- Logo -->
+  <aside class="sidebar" [class.collapsed]="collapsed()" [class.open]="sidebarOpen()">
     @if (!collapsed()) {
-      <div class="flex items-center justify-center pt-4 pb-1">
-        <span class="text-xs text-gray-500">v{{ environmentService.version() }}</span>
-      </div>
+      <div class="version">v{{ environmentService.version() }}</div>
     }
-    <a routerLink="/bookings" aria-label="Nova Inns — ir a Reservas" class="flex items-center justify-center pb-6 border-b border-border cursor-pointer" [class.pt-4]="!collapsed()" [class.pt-6]="collapsed()">
+    <a routerLink="/bookings" aria-label="Nova Inns — ir a Reservas" class="brand">
       @if (collapsed()) {
-        <img [src]="logo()" alt="Nova Inns" class="hidden lg:block w-10 h-10 object-contain" />
+        <img [src]="logo()" alt="Nova Inns" class="logo-mini" />
       }
-      <img [src]="logo()" alt="Nova Inns" class="w-36 h-36 object-contain" [class.lg:hidden]="collapsed()" />
+      <img [src]="logo()" alt="Nova Inns" class="logo" />
     </a>
 
-    <!-- Collapse toggle (desktop only) -->
-    <button (click)="toggleCollapsed()" [attr.aria-label]="collapsed() ? 'Expandir menú' : 'Contraer menú'" [attr.title]="collapsed() ? 'Expandir menú' : 'Contraer menú'"
-      class="hidden lg:flex absolute -right-3 top-24 w-6 h-6 bg-surface border border-border rounded-full items-center justify-center cursor-pointer z-10 hover:bg-hover transition-colors"
-      [class.rotate-180]="collapsed()">
-      <lucide-icon [img]="ChevronLeft" class="w-3.5 h-3.5 text-text-secondary" [strokeWidth]="2"/>
+    <!-- Plegar (solo escritorio) -->
+    <button (click)="toggleCollapsed()" class="collapse-btn" [class.flip]="collapsed()"
+      [attr.aria-label]="collapsed() ? 'Expandir menú' : 'Contraer menú'" [attr.title]="collapsed() ? 'Expandir menú' : 'Contraer menú'">
+      <lucide-icon [img]="ChevronLeft" [size]="14" [strokeWidth]="2.4" />
     </button>
 
-    <!-- Nav -->
-    <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+    <nav class="nav">
       @for (item of navItems; track item.route) {
-        <a
-          [routerLink]="item.route"
-          routerLinkActive="nav-active"
-          [routerLinkActiveOptions]="{ exact: false }"
-          (click)="closeSidebar()"
-          (mouseenter)="setTooltip(item.label, $event)"
-          (mouseleave)="clearTooltip()"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary
-                 hover:bg-hover hover:text-text-primary transition-colors"
-          [class]="collapsed() ? 'lg:justify-center lg:px-0' : ''"
-        >
-          <lucide-icon [img]="item.icon" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
-          @if (!collapsed()) {
-            <span class="text-sm font-medium">{{ item.label }}</span>
-          } @else {
-            <span class="lg:hidden text-sm font-medium">{{ item.label }}</span>
-          }
+        <a [routerLink]="item.route" routerLinkActive="nav-active" [routerLinkActiveOptions]="{ exact: false }"
+          (click)="closeSidebar()" (mouseenter)="setTooltip(item.label, $event)" (mouseleave)="clearTooltip()"
+          class="nav-item">
+          <lucide-icon [img]="item.icon" [size]="20" [strokeWidth]="1.9" />
+          <span class="label">{{ item.label }}</span>
         </a>
       }
     </nav>
 
-    <!-- Tooltip for collapsed nav -->
     @if (collapsed() && tooltip(); as t) {
-      <div class="fixed z-[999] pointer-events-none hidden lg:block" [style.top.px]="t.top" style="left: 64px;">
-        <div class="bg-surface border border-border rounded-xl px-3 py-2 shadow-2xl whitespace-nowrap text-sm text-text-primary font-medium" style="transform: translateY(-50%);">
-          {{ t.label }}
-        </div>
-      </div>
+      <div class="tooltip" [style.top.px]="t.top">{{ t.label }}</div>
     }
 
-    <!-- Logout -->
-    <div class="p-3 border-t border-border">
-      <button
-        (click)="auth.logout()"
-        (mouseenter)="setTooltip('Cerrar sesión', $event)"
-        (mouseleave)="clearTooltip()"
-        class="flex items-center gap-3 w-full px-4 py-3 rounded-xl
-               text-text-secondary hover:bg-error/10 hover:text-error
-               transition-colors cursor-pointer"
-        [class]="collapsed() ? 'lg:justify-center lg:px-0' : ''"
-      >
-          <lucide-icon [img]="LogOut" class="w-5 h-5 shrink-0" [strokeWidth]="1.8"/>
-          @if (!collapsed()) {
-            <span class="text-sm font-medium">Cerrar sesión</span>
-          } @else {
-            <span class="lg:hidden text-sm font-medium">Cerrar sesión</span>
-          }
+    <div class="foot">
+      <button (click)="auth.logout()" (mouseenter)="setTooltip('Cerrar sesión', $event)" (mouseleave)="clearTooltip()" class="nav-item logout">
+        <lucide-icon [img]="LogOut" [size]="20" [strokeWidth]="1.9" />
+        <span class="label">Cerrar sesión</span>
       </button>
     </div>
   </aside>
 
   <!-- Main -->
-  <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-
+  <div class="main">
     <!-- Hamburguesa móvil: flota sobre el .page-header de cada página -->
-    <button (click)="toggleSidebar()" title="Menú"
-      class="lg:hidden fixed top-3 left-3 z-[15] w-10 h-10 flex items-center justify-center rounded-xl
-             text-text-secondary hover:text-text-primary hover:bg-hover transition-colors cursor-pointer">
-      <lucide-icon [img]="Menu" class="w-6 h-6" [strokeWidth]="2"/>
+    <button (click)="toggleSidebar()" title="Menú" aria-label="Menú" class="burger">
+      <lucide-icon [img]="Menu" [size]="24" [strokeWidth]="2" />
     </button>
-
-    <!-- Content -->
-    <main class="flex-1 overflow-y-auto">
+    <main class="content">
       <router-outlet />
     </main>
-
   </div>
 </div>
 

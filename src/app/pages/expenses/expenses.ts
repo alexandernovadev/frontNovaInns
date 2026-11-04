@@ -8,7 +8,7 @@ import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { EmptyState } from '../../shared/components/empty-state';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
-import { LucideAngularModule, Receipt } from 'lucide-angular';
+import { LucideAngularModule, Receipt, Plus, Pencil, Trash2 } from 'lucide-angular';
 import { METHODS } from '../../shared/constants/booking.constants';
 import { EXPENSE_CATEGORIES, EXPENSE_CATEGORY_LABELS, EXPENSE_CATEGORY_CLASS } from '../../shared/constants/expense.constants';
 import { loadList } from '../../shared/utils/list.util';
@@ -22,6 +22,9 @@ import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delet
 })
 export class ExpensesComponent implements OnInit {
   readonly ReceiptIcon = Receipt;
+  readonly Plus = Plus;
+  readonly Pencil = Pencil;
+  readonly Trash2 = Trash2;
 
   private expensesService = inject(ExpensesService);
   private alert = inject(AlertService);

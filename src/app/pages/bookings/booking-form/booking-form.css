@@ -1,0 +1,131 @@
+.form { gap: var(--sp-5); }
+
+.live {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-6);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-small);
+  color: var(--text-2);
+}
+.live b { color: var(--text-1); }
+.live b.t-brand { color: var(--brand); }
+.live b.t-warning { color: var(--warning); }
+.live b.t-success { color: var(--success); }
+
+.general-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-5);
+}
+@media (width >= 48rem) { .general-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (width >= 80rem) {
+  .general-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .wide2 { grid-column: span 2; }
+}
+.form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+/* Opciones grandes (plataforma, método de pago) */
+.choices { display: flex; gap: var(--sp-3); }
+.choice {
+  flex: 1;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-height: 56px;
+  padding: var(--sp-3) var(--sp-2);
+  font-size: var(--fs-small);
+  color: var(--text-2);
+  background: var(--bg-0);
+  border: 2px solid var(--line);
+  border-radius: var(--r-sm);
+  box-shadow: none;
+  filter: none;
+}
+.choice:hover { color: var(--text-1); border-color: color-mix(in srgb, var(--c) 50%, var(--line)); }
+.choice[aria-pressed="true"] {
+  color: var(--c);
+  background: var(--c-soft);
+  border-color: var(--c);
+  box-shadow: 0 var(--depth) 0 var(--c-deep);
+}
+
+textarea.obs { min-height: 7rem; max-height: 60vh; field-sizing: content; resize: none; }
+
+/* Huéspedes */
+.with-icon { position: relative; }
+.with-icon lucide-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--text-3);
+  pointer-events: none;
+}
+.with-icon input { width: 100%; padding-left: 38px; }
+.place-grid { display: grid; grid-template-columns: 1fr; gap: var(--sp-3); }
+@media (width >= 40rem) { .place-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.ids { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-3); }
+.id-drop { aspect-ratio: 16 / 9; padding: var(--sp-2); gap: 4px; border-width: 1.5px; }
+.id-photo {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-0);
+  border-radius: var(--r-sm);
+}
+.id-photo img { width: 100%; height: 100%; object-fit: cover; }
+.id-over {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 0.5);
+  opacity: 0;
+  transition: opacity var(--t-fast) ease;
+}
+.id-photo:hover .id-over,
+.id-photo:focus-within .id-over { opacity: 1; }
+@media (hover: none) { .id-over { opacity: 1; background: transparent; place-items: start end; padding: 4px; } }
+.id-tag {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  padding: 1px 6px;
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-heavy);
+  color: #fff;
+  background: rgb(0 0 0 / 0.6);
+  border-radius: 6px;
+}
+
+.add-dashed {
+  width: 100%;
+  min-height: 52px;
+  color: var(--text-2);
+  background: transparent;
+  border: 2px dashed var(--line);
+  border-radius: var(--r-md);
+  box-shadow: none;
+  filter: none;
+}
+.add-dashed:hover { color: var(--brand); border-color: var(--brand); background: var(--brand-soft); }
+
+/* Pagos */
+.prices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-4); }
+input.big-num {
+  width: 100%;
+  min-height: 56px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: var(--fw-heavy);
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+input.right-num { text-align: right; font-weight: var(--fw-semibold); }
+.svc + .svc { border-top: 1px solid color-mix(in srgb, var(--line) 50%, transparent); }
+.svc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-3); }
+@media (width >= 40rem) { .svc-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.sum-big { font-size: 1.2rem; }
+.pend { padding-top: var(--sp-2); border-top: 1px solid var(--line); }

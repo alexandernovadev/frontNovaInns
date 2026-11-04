@@ -1,50 +1,48 @@
-<div class="space-y-6">
-  <h2 class="text-text-primary text-lg font-semibold flex items-center gap-2">
-    <lucide-icon [img]="Info" class="w-5 h-5 text-brand" [strokeWidth]="2" />
-    Información del Sistema
+<div class="stack" style="--gap: var(--sp-5)">
+  <h2 class="title">
+    <lucide-icon [img]="Info" [size]="20" [strokeWidth]="2" />
+    Información del sistema
   </h2>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Frontend -->
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <div class="flex items-center gap-2 px-4 py-3 border-b border-border bg-bg/50">
-        <lucide-icon [img]="Globe" class="w-5 h-5 text-brand" [strokeWidth]="2" />
-        <span class="font-semibold text-text-primary text-sm">Frontend</span>
-      </div>
+  <div class="grid">
+    <section class="surface box">
+      <header class="box-head">
+        <lucide-icon [img]="Globe" [size]="20" [strokeWidth]="2" />
+        <span>Frontend</span>
+      </header>
       @if (frontInfo(); as f) {
-      <div class="p-4 space-y-3 text-sm">
-        <div class="flex justify-between gap-4"><span class="text-text-secondary">App</span><span class="text-text-primary font-medium text-right">{{ f.name }}</span></div>
-        <div class="flex justify-between gap-4"><span class="text-text-secondary">Versión</span><span class="text-text-primary font-medium text-right">{{ f.version }}</span></div>
-        <div class="flex justify-between gap-4"><span class="text-text-secondary">Entorno</span><span class="text-text-primary font-medium text-right">{{ f.environment }}</span></div>
-        <div class="flex justify-between gap-4"><span class="text-text-secondary">Release</span><span class="text-text-primary font-medium text-right">{{ f.releaseDate }}</span></div>
-        <div class="flex justify-between gap-4"><span class="text-text-secondary">Node</span><span class="text-text-primary font-medium text-right">{{ f.nodeVersion }}</span></div>
+      <div class="box-body">
+        <div class="kv"><span>App</span><b>{{ f.name }}</b></div>
+        <div class="kv"><span>Versión</span><b>{{ f.version }}</b></div>
+        <div class="kv"><span>Entorno</span><b>{{ f.environment }}</b></div>
+        <div class="kv"><span>Release</span><b>{{ f.releaseDate }}</b></div>
+        <div class="kv"><span>Node</span><b>{{ f.nodeVersion }}</b></div>
       </div>
       } @else if (frontError(); as e) {
-      <div class="p-4 text-sm text-error">{{ e }}</div>
+      <div class="box-body t-danger small">{{ e }}</div>
       } @else {
-      <div class="p-4 text-sm text-text-disabled">Cargando...</div>
+      <div class="box-body muted small">Cargando...</div>
       }
-    </div>
+    </section>
 
-    <!-- Backend -->
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <div class="flex items-center gap-2 px-4 py-3 border-b border-border bg-bg/50">
-        <lucide-icon [img]="Server" class="w-5 h-5 text-brand" [strokeWidth]="2" />
-        <span class="font-semibold text-text-primary text-sm">Backend</span>
-      </div>
+    <section class="surface box">
+      <header class="box-head">
+        <lucide-icon [img]="Server" [size]="20" [strokeWidth]="2" />
+        <span>Backend</span>
+      </header>
       @if (backInfo(); as b) {
-      <div class="p-4 space-y-3 text-sm">
-        <div class="flex justify-between gap-4"><span class="text-text-secondary">App</span><span class="text-text-primary font-medium text-right">{{ b.name }}</span></div>
-        <div class="flex justify-between gap-4"><span class="text-text-secondary">Versión</span><span class="text-text-primary font-medium text-right">{{ b.version }}</span></div>
-        <div class="flex justify-between gap-4"><span class="text-text-secondary">Entorno</span><span class="text-text-primary font-medium text-right">{{ b.environment }}</span></div>
-        <div class="flex justify-between gap-4"><span class="text-text-secondary">Release</span><span class="text-text-primary font-medium text-right">{{ b.releaseDate }}</span></div>
-        <div class="flex justify-between gap-4"><span class="text-text-secondary">Node</span><span class="text-text-primary font-medium text-right">{{ b.nodeVersion }}</span></div>
+      <div class="box-body">
+        <div class="kv"><span>App</span><b>{{ b.name }}</b></div>
+        <div class="kv"><span>Versión</span><b>{{ b.version }}</b></div>
+        <div class="kv"><span>Entorno</span><b>{{ b.environment }}</b></div>
+        <div class="kv"><span>Release</span><b>{{ b.releaseDate }}</b></div>
+        <div class="kv"><span>Node</span><b>{{ b.nodeVersion }}</b></div>
       </div>
       } @else if (backError(); as e) {
-      <div class="p-4 text-sm text-error">{{ e }}</div>
+      <div class="box-body t-danger small">{{ e }}</div>
       } @else {
-      <div class="p-4 text-sm text-text-disabled">Cargando...</div>
+      <div class="box-body muted small">Cargando...</div>
       }
-    </div>
+    </section>
   </div>
 </div>

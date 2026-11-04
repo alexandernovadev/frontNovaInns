@@ -1,7 +1,7 @@
 import { Component, inject, signal, viewChild, ElementRef, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { BookingsService } from '../../../core/services/bookings.service';
 import { IBooking } from '../../../core/interfaces';
 import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
@@ -14,7 +14,7 @@ import { CurrencyCopPipe } from '../../../shared/pipes/currency-cop.pipe';
 import { CalendarDays, Building2, LogIn, LogOut,
   User, Users, CreditCard, Banknote, Wallet,
   ArrowLeft, Pencil, Trash2, MapPin, IdCard,
-  MessageSquare, Moon, X, Hash,
+  MessageSquare, Moon, X, Hash, ZoomIn,
 } from 'lucide-angular';
 import { LucideAngularModule } from 'lucide-angular';
 import { AlertService } from '../../../shared/components/services/alert.service';
@@ -25,8 +25,9 @@ import { apartmentColor, apartmentShortName } from '../../../shared/utils/apartm
 @Component({
   selector: 'app-booking-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, DatePipe, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer, CurrencyCopPipe],
+  imports: [FormsModule, LucideAngularModule, DatePipe, NgTemplateOutlet, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer, CurrencyCopPipe],
   templateUrl: './booking-detail.html',
+  styleUrl: './booking-detail.css',
 })
 export class BookingDetailComponent implements OnInit {
   readonly CalendarDays  = CalendarDays;
@@ -47,6 +48,7 @@ export class BookingDetailComponent implements OnInit {
   readonly Moon          = Moon;
   readonly X             = X;
   readonly Hash          = Hash;
+  readonly ZoomIn        = ZoomIn;
 
   tab = signal<'info' | 'guests'>('info');
 

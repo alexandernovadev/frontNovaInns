@@ -1,0 +1,141 @@
+/* ════════════════════════════════════════════════════════════════
+   NovaInns · TOKENS — archivo padre del sistema de diseño
+   Cambia un valor aquí y cambia en toda la app.
+   Estudio completo: docs/ESTUDIO-SISTEMA-DE-DISENO.md
+   ════════════════════════════════════════════════════════════════ */
+
+:root {
+  color-scheme: dark;
+
+  /* ── 1. Superficies · grafito (nunca negro puro) ─────────────── */
+  --bg-0: #202024; /* fondo de la app */
+  --bg-1: #29292e; /* tarjetas */
+  --bg-2: #333338; /* elevado: inputs, chips, hover */
+  --bg-3: #3e3e44; /* borde 3D de botones neutros, pressed */
+  --line: #4a4a51; /* bordes, divisores */
+
+  /* ── 2. Texto ────────────────────────────────────────────────── */
+  --text-1: #f7f7f9; /* principal */
+  --text-2: #d4d4da; /* secundario, cuerpo largo */
+  --text-3: #b0b0b9; /* suave (cumple AA sobre bg-0/bg-1) */
+  --ink: #1a1a1e;    /* texto SOBRE un pastel */
+
+  /* ── 3. Pasteles · armonizados en OKLCH ──────────────────────────
+     Misma luminosidad (L≈0.84) y croma (C≈0.085); solo cambia el tono.
+     base · deep (borde 3D, L−0.20) · soft (superficie tintada 14%) */
+  --lilac: #cbbdf9;  --lilac-deep: #8e7cc2;  --lilac-soft: rgb(203 189 249 / 0.14);
+  --sky: #9bd2fa;    --sky-deep: #4e94c3;    --sky-soft: rgb(155 210 250 / 0.14);
+  --mint: #91debc;   --mint-deep: #3ca17b;   --mint-soft: rgb(145 222 188 / 0.14);
+  --butter: #ecdc92; --butter-deep: #af9b3e; --butter-soft: rgb(236 220 146 / 0.14);
+  --peach: #f9bb92;  --peach-deep: #bf7946;  --peach-soft: rgb(249 187 146 / 0.14);
+  --rose: #f6b2b9;   --rose-deep: #bd6f79;   --rose-soft: rgb(246 178 185 / 0.14);
+
+  /* ── 4. Roles semánticos (usa ESTOS en componentes) ──────────── */
+  --brand: var(--butter);   --brand-deep: var(--butter-deep);   --brand-soft: var(--butter-soft);
+  --success: var(--mint);   --success-deep: var(--mint-deep);   --success-soft: var(--mint-soft);   /* pagado, confirmado */
+  --danger: var(--rose);    --danger-deep: var(--rose-deep);    --danger-soft: var(--rose-soft);    /* cancelado, deuda, borrar */
+  --warning: var(--peach);  --warning-deep: var(--peach-deep);  --warning-soft: var(--peach-soft);  /* pendiente, atención */
+  --info: var(--sky);       --info-deep: var(--sky-deep);       --info-soft: var(--sky-soft);
+  --ai: var(--lilac);       --ai-deep: var(--lilac-deep);       --ai-soft: var(--lilac-soft);       /* NovaAI */
+
+  /* ── 5. Tipografía · opción B "Gordita" ──────────────────────── */
+  --font-display: "Baloo 2 Variable", "Baloo 2", ui-rounded, system-ui, sans-serif;
+  --font-body: "Lexend Variable", "Lexend", system-ui, sans-serif;
+  --font-ipa: "Noto Sans", "Lexend Variable", system-ui, sans-serif; /* símbolos fonéticos */
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Escala 1.25 · base 16 */
+  --fs-display: 3rem;     /* 48 · títulos héroe */
+  --fs-h1: 2.25rem;       /* 36 · palabra grande */
+  --fs-h2: 1.75rem;       /* 28 · títulos de pantalla */
+  --fs-h3: 1.375rem;      /* 22 · tarjetas, preguntas */
+  --fs-read: 1.1875rem;   /* 19 · lector de historias */
+  --fs-body: 1rem;        /* 16 */
+  --fs-small: 0.875rem;   /* 14 */
+  --fs-caption: 0.75rem;  /* 12 · etiquetas */
+
+  --lh-tight: 1.05;  /* display */
+  --lh-heading: 1.2;
+  --lh-body: 1.55;
+  --lh-read: 1.75;   /* lector */
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-display: 700; /* Baloo 2 en títulos y botones */
+  --fw-heavy: 800;
+
+  --ls-caption: 0.12em; /* mayúsculas pequeñas */
+  --measure-read: 62ch;
+  --measure-body: 65ch;
+
+  /* ── 6. Formas · "Burbuja" + relieve "Sutil" ─────────────────── */
+  --r-sm: 14px;
+  --r-md: 22px;
+  --r-lg: 30px;
+  --r-full: 999px;
+
+  --border: 2px;  /* en todo */
+  --depth: 2px;   /* borde inferior 3D (box-shadow 0 var(--depth) 0 <deep>) — sin sombras difusas */
+
+  /* Espaciado · rejilla de 4 px */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* Áreas táctiles (mínimo 48 en móvil) */
+  --h-sm: 40px;
+  --h-md: 48px;
+  --h-lg: 56px;
+
+  /* Layout */
+  --page-max: 720px;
+  --gutter: var(--sp-4);
+
+  /* ── 7. Movimiento · "Juguetona" ─────────────────────────────── */
+  --t-instant: 80ms;  /* pulsar */
+  --t-fast: 150ms;    /* hover, color */
+  --t-base: 250ms;    /* casi todo */
+  --t-slow: 400ms;    /* pantallas, girar tarjeta */
+  --t-party: 700ms;   /* celebraciones */
+
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);  /* SOLO lo que se toca y celebraciones */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);   /* navegación, texto */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);  /* hojas inferiores: arranca rápido, frena suave */
+
+  --press-scale: 0.95;
+  --pop-scale: 1.08;
+  --shake: 7px;
+
+  /* ── 8. Capas (z-index) ──────────────────────────────────────── */
+  --z-base: 0;
+  --z-sticky: 10;
+  --z-overlay: 100;
+  --z-modal: 200;
+  --z-toast: 300;
+  --z-fx: 400; /* confeti, +XP */
+}
+
+/* Accesibilidad: sin movimiento → duraciones casi cero, sin rebote */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-instant: 1ms;
+    --t-fast: 1ms;
+    --t-base: 1ms;
+    --t-slow: 1ms;
+    --t-party: 1ms;
+    --spring: linear;
+    --press-scale: 1;
+    --pop-scale: 1;
+    --shake: 0px;
+  }
+}

@@ -1,384 +1,219 @@
 @if (loading()) {
-  <div class="flex items-center justify-center h-64 text-text-disabled">Cargando...</div>
+  <div class="loading">Cargando...</div>
 } @else if (booking(); as b) {
-<div class="p-4 sm:p-6 space-y-5 [--page-pad:1rem] sm:[--page-pad:1.5rem]">
+<div class="page detail">
 
   <!-- ── Header ── -->
-  <div class="page-header flex items-center gap-2 sm:gap-3">
-    <button (click)="goBack()" aria-label="Volver" title="Volver"
-      class="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-hover transition-colors cursor-pointer shrink-0">
-      <lucide-icon [img]="ArrowLeft" class="w-5 h-5" [strokeWidth]="2"/>
-    </button>
-
-    <div class="flex-1 min-w-0 flex items-center gap-2">
-      <span class="hidden sm:flex p-1.5 rounded-xl items-center shrink-0" [class]="PLATFORM_CLASS[b.billing.platform]">
+  <header class="page-header">
+    <div class="row" style="min-width: 0; flex: 1; --gap: var(--sp-2)">
+      <button class="icon-btn" (click)="goBack()" aria-label="Volver" title="Volver">
+        <lucide-icon [img]="ArrowLeft" [size]="20" [strokeWidth]="2.2" />
+      </button>
+      <span class="platform-box hide-sm" [class]="PLATFORM_CLASS[b.billing.platform]">
         <platform-icon [platform]="b.billing.platform" size="sm" />
       </span>
-      <h1 class="text-text-primary text-xl sm:text-2xl font-bold truncate">{{ b.group.host.fullName }}</h1>
+      <h1 class="page-title"><span>{{ b.group.host.fullName }}</span></h1>
     </div>
 
-    <!-- Actions — icon-only on mobile, with label on sm+ -->
-    <div class="flex items-center gap-1.5 shrink-0">
+    <!-- Acciones: solo icono en móvil, con texto en sm+ -->
+    <div class="header-actions">
       @if (b.billing.status !== 'PAGADO' && b.billing.status !== 'NO SHOW') {
-        <button (click)="openPayment()" aria-label="Registrar pago"
-          class="flex items-center gap-2 px-3 py-2 rounded-xl bg-success/10 text-success hover:bg-success/20
-                 font-bold transition-colors cursor-pointer">
-          <lucide-icon [img]="CreditCard" class="w-4 h-4 shrink-0" [strokeWidth]="2"/>
-          <span class="text-sm hidden sm:inline">Registrar pago</span>
+        <button data-size="sm" data-variant="soft" data-tone="success" (click)="openPayment()" aria-label="Registrar pago">
+          <lucide-icon [img]="CreditCard" [size]="16" [strokeWidth]="2.2" />
+          <span class="hide-sm">Registrar pago</span>
         </button>
       }
-      <button (click)="goEdit()" aria-label="Editar reserva"
-        class="flex items-center gap-2 px-3 py-2 rounded-xl bg-brand/10 text-brand hover:bg-brand/20
-               font-bold transition-colors cursor-pointer">
-        <lucide-icon [img]="Pencil" class="w-4 h-4 shrink-0" [strokeWidth]="2"/>
-        <span class="text-sm hidden sm:inline">Editar</span>
+      <button data-size="sm" data-variant="soft" data-tone="brand" (click)="goEdit()" aria-label="Editar reserva">
+        <lucide-icon [img]="Pencil" [size]="16" [strokeWidth]="2.2" />
+        <span class="hide-sm">Editar</span>
       </button>
-      <button (click)="onDeleteClick($event)" aria-label="Borrar reserva" title="Borrar reserva"
-        class="p-2 rounded-xl text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
-        <lucide-icon [img]="Trash2" class="w-4 h-4" [strokeWidth]="2"/>
+      <button class="icon-btn danger" (click)="onDeleteClick($event)" aria-label="Borrar reserva" title="Borrar reserva">
+        <lucide-icon [img]="Trash2" [size]="16" [strokeWidth]="2" />
       </button>
     </div>
-  </div>
+  </header>
 
-  <!-- ── Estado + ID (fuera del header fijo) ── -->
-  <div class="flex items-center gap-2 flex-wrap">
+  <!-- ── Estado + ID ── -->
+  <div class="row wrap meta" style="--gap: var(--sp-2)">
     <!-- Móvil: la plataforma va aquí para dejarle espacio al nombre en el header -->
-    <span class="sm:hidden p-1 rounded-lg flex items-center shrink-0" [class]="PLATFORM_CLASS[b.billing.platform]">
+    <span class="platform-box only-sm" [class]="PLATFORM_CLASS[b.billing.platform]">
       <platform-icon [platform]="b.billing.platform" size="sm" />
     </span>
-    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border"
-      [style.color]="aptColor()" [style.border-color]="aptColor() + '55'" [style.background]="aptColor() + '14'">
-      <span class="w-1.5 h-1.5 rounded-full" [style.background]="aptColor()"></span>
-      {{ aptShort() }}
-    </span>
+    <span class="apt" [style.--c]="aptColor()"><i></i>{{ aptShort() }}</span>
     <status-badge [value]="b.stay.status || 'PENDIENTE'" type="lifecycle" />
     <status-badge [value]="b.billing.status" type="billing" />
-    <span class="text-text-disabled text-xs flex items-center gap-1 ml-1">
-      <lucide-icon [img]="Hash" class="w-3 h-3" [strokeWidth]="2"/>
+    <span class="tiny muted row" style="--gap: 4px">
+      <lucide-icon [img]="Hash" [size]="12" [strokeWidth]="2" />
       {{ b._id.slice(-8).toUpperCase() }}
     </span>
-    <span class="text-text-disabled text-xs hidden sm:inline">·</span>
-    <span class="text-text-disabled text-xs hidden sm:inline">Creado {{ b.createdAt | date:'longDate':'':'es' }}</span>
+    <span class="tiny muted hide-sm">· Creado {{ b.createdAt | date:'longDate':'':'es' }}</span>
     @if (b.updatedAt) {
-      <span class="text-text-disabled text-xs hidden sm:inline">·</span>
-      <span class="text-text-disabled text-xs hidden sm:inline">Editado {{ b.updatedAt | date:'longDate':'':'es' }}</span>
+      <span class="tiny muted hide-sm">· Editado {{ b.updatedAt | date:'longDate':'':'es' }}</span>
     }
   </div>
 
   <!-- ── Tabs ── -->
-  <div class="flex gap-1 bg-surface border border-border rounded-2xl p-1">
-    <button (click)="tab.set('info')"
-      class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-      [class]="tab() === 'info' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
-      <lucide-icon [img]="CalendarDays" class="w-4 h-4" [strokeWidth]="2"/>
+  <div class="tabs full" role="tablist">
+    <button role="tab" [attr.aria-selected]="tab() === 'info'" (click)="tab.set('info')">
+      <lucide-icon [img]="CalendarDays" [size]="16" [strokeWidth]="2" />
       Información
     </button>
-    <button (click)="tab.set('guests')"
-      class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-      [class]="tab() === 'guests' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
-      <lucide-icon [img]="Users" class="w-4 h-4" [strokeWidth]="2"/>
+    <button role="tab" [attr.aria-selected]="tab() === 'guests'" (click)="tab.set('guests')">
+      <lucide-icon [img]="Users" [size]="16" [strokeWidth]="2" />
       Huéspedes
     </button>
   </div>
 
   <!-- ══════ TAB: INFO ══════ -->
   @if (tab() === 'info') {
-    <div class="space-y-5">
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    <div class="info-grid">
 
       <!-- Estancia -->
-      <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-        <div class="flex items-center gap-2 px-5 py-4 border-b border-indigo-500/20 bg-indigo-500/5">
-          <lucide-icon [img]="CalendarDays" class="w-4 h-4 text-indigo-400" [strokeWidth]="2"/>
-          <span class="text-indigo-400 font-semibold text-sm">Estancia</span>
+      <section class="surface panel tint-lilac">
+        <header class="panel-head">
+          <lucide-icon [img]="CalendarDays" [size]="16" [strokeWidth]="2.2" />
+          Estancia
+        </header>
+        <div class="stay">
+          <div class="inset day">
+            <p class="kicker"><lucide-icon class="t-success" [img]="LogIn" [size]="14" [strokeWidth]="2.2" /> Check-in</p>
+            <p class="strong">{{ b.stay.checkIn | dateEs:'short' }}</p>
+            <p class="tiny strong t-success">{{ b.stay.checkIn | dateEs:'check' }}</p>
+          </div>
+          <div class="nights">
+            <i></i>
+            <span class="pill"><lucide-icon [img]="Moon" [size]="12" [strokeWidth]="2.2" /> {{ nights() }}n</span>
+            <i></i>
+          </div>
+          <div class="inset day">
+            <p class="kicker"><lucide-icon class="t-danger" [img]="LogOut" [size]="14" [strokeWidth]="2.2" /> Check-out</p>
+            <p class="strong">{{ b.stay.checkOut | dateEs:'short' }}</p>
+            <p class="tiny strong t-danger">{{ b.stay.checkOut | dateEs:'check' }}</p>
+          </div>
         </div>
-
-        <div class="p-4 flex flex-col sm:flex-row gap-3 sm:gap-0 sm:items-stretch">
-
-          <!-- Check-in -->
-          <div class="bg-bg rounded-xl p-4 flex-1">
-            <div class="flex items-center gap-1.5 mb-2">
-              <lucide-icon [img]="LogIn" class="w-3.5 h-3.5 text-success" [strokeWidth]="2"/>
-              <span class="text-text-disabled text-xs uppercase tracking-wide">Check-in</span>
-            </div>
-            <p class="text-text-primary font-bold">{{ b.stay.checkIn | dateEs:'short' }}</p>
-            <p class="text-success text-xs font-medium mt-0.5">{{ b.stay.checkIn | dateEs:'check' }}</p>
-          </div>
-
-          <!-- Nights separator -->
-          <div class="flex sm:flex-col items-center justify-center gap-2 sm:gap-1 px-2 sm:px-3">
-            <div class="flex-1 sm:flex-none h-px sm:h-full sm:w-px bg-border"></div>
-            <span class="bg-indigo-500/15 text-indigo-400 text-xs font-bold px-2.5 py-1.5 rounded-lg
-                         flex items-center gap-1 shrink-0">
-              <lucide-icon [img]="Moon" class="w-3 h-3" [strokeWidth]="2"/>
-              {{ nights() }}n
-            </span>
-            <div class="flex-1 sm:flex-none h-px sm:h-full sm:w-px bg-border"></div>
-          </div>
-
-          <!-- Check-out -->
-          <div class="bg-bg rounded-xl p-4 flex-1">
-            <div class="flex items-center gap-1.5 mb-2">
-              <lucide-icon [img]="LogOut" class="w-3.5 h-3.5 text-error" [strokeWidth]="2"/>
-              <span class="text-text-disabled text-xs uppercase tracking-wide">Check-out</span>
-            </div>
-            <p class="text-text-primary font-bold">{{ b.stay.checkOut | dateEs:'short' }}</p>
-            <p class="text-error text-xs font-medium mt-0.5">{{ b.stay.checkOut | dateEs:'check' }}</p>
-          </div>
-
-        </div>
-      </div>
+      </section>
 
       <!-- Facturación -->
-      <div class="bg-surface border border-border rounded-2xl overflow-hidden lg:row-span-2">
-        <div class="flex items-center gap-2 px-5 py-4 border-b border-brand/20 bg-brand/5">
-          <lucide-icon [img]="CreditCard" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
-          <span class="text-brand font-semibold text-sm">Facturación</span>
-        </div>
-        <div class="p-4 space-y-4">
+      <section class="surface panel tint-butter billing">
+        <header class="panel-head">
+          <lucide-icon [img]="CreditCard" [size]="16" [strokeWidth]="2.2" />
+          Facturación
+        </header>
+        <div class="stack panel-body">
 
-          <!-- Price breakdown -->
-          <div class="bg-bg rounded-xl divide-y divide-border/60">
-
-            <!-- Base price -->
-            <div class="flex items-center justify-between px-4 py-3">
-              <div class="flex items-center gap-2">
-                <lucide-icon [img]="Banknote" class="w-4 h-4 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
-                <span class="text-text-secondary text-sm">Precio base</span>
-              </div>
-              <span class="text-text-primary font-semibold text-sm">{{ b.billing.basePrice | currencyCop }}</span>
+          <!-- Desglose -->
+          <div class="breakdown">
+            <div class="line">
+              <span class="row soft small" style="--gap: var(--sp-2)">
+                <lucide-icon class="muted" [img]="Banknote" [size]="16" [strokeWidth]="1.9" />
+                Precio base
+              </span>
+              <span class="strong small num">{{ b.billing.basePrice | currencyCop }}</span>
             </div>
 
-            <!-- Extra services -->
             @for (svc of b.billing.extraServices; track $index) {
-              <div class="px-4 py-3 space-y-1">
-                <div class="flex items-center justify-between gap-2">
-                  <div class="flex items-center gap-2 min-w-0">
-                    <span class="text-xs px-2 py-0.5 rounded-lg font-bold shrink-0"
-                      [class]="svc.type === 'PARKING' ? 'bg-blue-500/15 text-blue-400' :
-                               svc.type === 'LAUNDRY' ? 'bg-emerald-500/15 text-emerald-400' :
-                               'bg-purple-500/15 text-purple-400'">
+              <div class="line svc">
+                <div class="row between" style="--gap: var(--sp-2)">
+                  <div class="row" style="--gap: var(--sp-2); min-width: 0">
+                    <span class="pill" [class]="svc.type === 'PARKING' ? 'tint-sky' : svc.type === 'LAUNDRY' ? 'tint-mint' : 'tint-lilac'">
                       {{ svc.type === 'PARKING' ? 'Parqueadero' : svc.type === 'LAUNDRY' ? 'Lavandería' : 'Extra' }}
                     </span>
                     @if (svc.type === 'PARKING' && svc.vehicleType) {
-                      <span class="text-xs bg-bg rounded-lg px-1.5 py-0.5 text-text-secondary font-medium shrink-0">
-                        {{ svc.vehicleType === 'CAR' ? 'Auto' : svc.vehicleType === 'MOTORCYCLE' ? 'Moto' : svc.vehicleType === 'BICYCLE' ? 'Bici' : 'Otro' }}
-                      </span>
+                      <span class="chip">{{ svc.vehicleType === 'CAR' ? 'Auto' : svc.vehicleType === 'MOTORCYCLE' ? 'Moto' : svc.vehicleType === 'BICYCLE' ? 'Bici' : 'Otro' }}</span>
                     }
                     @if (svc.type === 'LAUNDRY' && svc.weightKg) {
-                      <span class="text-xs bg-bg rounded-lg px-1.5 py-0.5 text-text-secondary font-medium shrink-0">
-                        {{ svc.weightKg }} kg
-                      </span>
+                      <span class="chip">{{ svc.weightKg }} kg</span>
                     }
-                    <span class="text-text-primary text-sm font-medium truncate">{{ svc.description }}</span>
+                    <span class="small truncate">{{ svc.description }}</span>
                   </div>
-                  <span class="text-text-primary font-bold text-sm shrink-0">{{ svc.price * svc.quantity | currencyCop }}</span>
+                  <span class="strong small num nowrap">{{ svc.price * svc.quantity | currencyCop }}</span>
                 </div>
-                <div class="flex items-center gap-3 text-xs text-text-disabled pl-1">
-                  <span>{{ svc.price | currencyCop }} × {{ svc.quantity }} unidad{{ svc.quantity !== 1 ? 'es' : '' }}</span>
-                </div>
+                <p class="tiny muted">{{ svc.price | currencyCop }} × {{ svc.quantity }} unidad{{ svc.quantity !== 1 ? 'es' : '' }}</p>
               </div>
             }
 
-            <!-- Total -->
-            <div class="flex items-center justify-between px-4 py-3">
-              <span class="text-text-primary font-bold text-sm">Total</span>
-              <span class="text-text-primary font-bold text-lg">{{ b.billing.totalAmount | currencyCop }}</span>
-            </div>
-
-          </div>
-
-          <!-- Received / Pending -->
-          <div class="grid grid-cols-2 gap-3">
-            <div class="bg-success/5 border border-success/20 rounded-xl p-3 text-center">
-              <p class="text-text-disabled text-xs uppercase tracking-wide mb-1">Recibido</p>
-              <p class="text-success font-bold text-base">{{ b.billing.amountReceived | currencyCop }}</p>
-            </div>
-            <div class="rounded-xl p-3 text-center border"
-              [class]="pending() > 0 ? 'bg-warning/5 border-warning/20' : 'bg-success/5 border-success/20'">
-              <p class="text-text-disabled text-xs uppercase tracking-wide mb-1">Pendiente</p>
-              <p class="font-bold text-base" [class]="pending() > 0 ? 'text-warning' : 'text-success'">
-                {{ pending() | currencyCop }}
-              </p>
+            <div class="line">
+              <span class="strong small">Total</span>
+              <span class="display total">{{ b.billing.totalAmount | currencyCop }}</span>
             </div>
           </div>
 
-          <!-- Progress -->
-          <div>
-            <div class="flex justify-between text-xs mb-2">
-              <span class="text-text-disabled">Progreso de pago</span>
-              <span class="font-bold" [class]="paidPct() === 100 ? 'text-success' : 'text-warning'">{{ paidPct() }}%</span>
+          <!-- Recibido / Pendiente -->
+          <div class="money">
+            <div class="box" data-tone="success">
+              <p class="kicker">Recibido</p>
+              <p class="display">{{ b.billing.amountReceived | currencyCop }}</p>
             </div>
-            <div class="h-2.5 bg-bg rounded-full overflow-hidden">
-              <div class="h-full rounded-full transition-all duration-500"
-                [style.width.%]="paidPct()"
-                [class]="paidPct() === 100 ? 'bg-success' : 'bg-warning'">
-              </div>
+            <div class="box" [attr.data-tone]="pending() > 0 ? 'warning' : 'success'">
+              <p class="kicker">Pendiente</p>
+              <p class="display">{{ pending() | currencyCop }}</p>
             </div>
           </div>
 
-          <!-- Payment method -->
-          <div class="flex items-center gap-3 bg-bg rounded-xl p-4">
-            <lucide-icon [img]="Wallet" class="w-4 h-4 text-text-disabled shrink-0" [strokeWidth]="2"/>
-            <span class="text-text-secondary text-sm">Método de pago</span>
-            <div class="ml-auto flex items-center gap-2">
-              <payment-method-icon [method]="b.billing.paymentMethod" size="sm" />
-              <span class="text-text-primary font-semibold text-sm">{{ b.billing.paymentMethod }}</span>
+          <!-- Progreso -->
+          <div class="stack" style="--gap: var(--sp-2)">
+            <div class="row between tiny">
+              <span class="muted">Progreso de pago</span>
+              <span class="strong" [class]="paidPct() === 100 ? 't-success' : 't-warning'">{{ paidPct() }}%</span>
             </div>
+            <div class="bar thick" [attr.data-tone]="paidPct() === 100 ? 'success' : 'warning'"><span [style.width.%]="paidPct()"></span></div>
+          </div>
+
+          <!-- Método de pago -->
+          <div class="inset row">
+            <lucide-icon class="muted" [img]="Wallet" [size]="16" [strokeWidth]="2" />
+            <span class="small soft">Método de pago</span>
+            <span class="spacer"></span>
+            <payment-method-icon [method]="b.billing.paymentMethod" size="sm" />
+            <span class="strong small">{{ b.billing.paymentMethod }}</span>
           </div>
 
         </div>
-      </div>
+      </section>
 
-      <!-- Observaciones (left column, below Estancia) -->
-      <div class="lg:col-start-1">
+      <!-- Observaciones (columna izquierda, bajo Estancia) -->
+      <div class="obs-col">
       @if (b.observations) {
-        <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-          <div class="flex items-center gap-2 px-5 py-4 border-b border-border">
-            <lucide-icon [img]="MessageSquare" class="w-4 h-4 text-text-secondary" [strokeWidth]="2"/>
-            <span class="text-text-secondary font-semibold text-sm">Observaciones</span>
-          </div>
-          <div class="p-5">
-            <p class="text-text-primary text-sm leading-relaxed whitespace-pre-line">{{ b.observations }}</p>
-          </div>
-        </div>
+        <section class="surface panel tint-neutral">
+          <header class="panel-head">
+            <lucide-icon [img]="MessageSquare" [size]="16" [strokeWidth]="2.2" />
+            Observaciones
+          </header>
+          <p class="panel-body small obs">{{ b.observations }}</p>
+        </section>
       }
-      </div>
-
       </div>
 
     </div>
   }
 
-  <!-- ══════ TAB: GUESTS ══════ -->
+  <!-- ══════ TAB: HUÉSPEDES ══════ -->
   @if (tab() === 'guests') {
-    <div class="space-y-5">
+    <div class="stack" style="--gap: var(--sp-5)">
 
-      <div class="flex items-center gap-2 px-1">
-        <lucide-icon [img]="Users" class="w-4 h-4 text-text-secondary" [strokeWidth]="2"/>
-        <span class="text-text-secondary text-sm font-medium">
-          {{ totalGuests() }} {{ totalGuests() === 1 ? 'huésped' : 'huéspedes' }}
-        </span>
-      </div>
+      <p class="row small soft strong" style="--gap: var(--sp-2)">
+        <lucide-icon [img]="Users" [size]="16" [strokeWidth]="2" />
+        {{ totalGuests() }} {{ totalGuests() === 1 ? 'huésped' : 'huéspedes' }}
+      </p>
 
-      <!-- Host card -->
-      <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-        <div class="flex items-center gap-2 px-5 py-4 border-b border-brand/20 bg-brand/5">
-          <lucide-icon [img]="User" class="w-4 h-4 text-brand" [strokeWidth]="2"/>
-          <span class="text-brand font-semibold text-sm">Huésped principal</span>
-        </div>
-        <div class="p-5 space-y-4">
+      <!-- Huésped principal -->
+      <section class="surface panel tint-butter">
+        <header class="panel-head">
+          <lucide-icon [img]="User" [size]="16" [strokeWidth]="2.2" />
+          Huésped principal
+        </header>
+        <ng-container *ngTemplateOutlet="person; context: { $implicit: b.group.host }" />
+      </section>
 
-          <p class="text-text-primary text-xl font-bold">{{ b.group.host.fullName }}</p>
-
-          <div class="flex flex-wrap gap-2">
-            @if (b.group.host.idNumber) {
-            <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
-              <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
-              <span class="text-text-primary font-medium">{{ b.group.host.idNumber }}</span>
-            </span>
-            }
-            @if (b.group.host.birthDate) {
-            <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
-              <lucide-icon [img]="CalendarDays" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
-              <span class="text-text-primary font-medium">{{ b.group.host.birthDate | dateEs }}</span>
-            </span>
-            }
-            @if (b.group.host.location?.countryName) {
-            <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
-              <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
-              <span class="text-text-primary font-medium">{{ b.group.host.location?.countryName }}{{ b.group.host.location?.department ? ' · ' + b.group.host.location?.department : '' }}{{ b.group.host.location?.city ? ' · ' + b.group.host.location?.city : '' }}</span>
-            </span>
-            }
-          </div>
-
-          @if (b.group.host.identifications?.length) {
-            <div>
-              <p class="text-text-disabled text-xs uppercase tracking-wide mb-2">Identificaciones</p>
-              <div class="grid grid-cols-2 gap-3">
-                @for (photo of b.group.host.identifications; track photo.type) {
-                  <div (click)="photoUrl.set(photo.url)"
-                    class="relative rounded-xl overflow-hidden aspect-[4/3] bg-bg group cursor-pointer">
-                    <img [src]="photo.url" class="w-full h-full object-contain"/>
-                    <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
-                      </svg>
-                    </div>
-                    <span class="absolute bottom-1.5 left-1.5 text-xs font-bold bg-black/60 text-white px-2 py-0.5 rounded-lg">
-                      {{ ID_LABELS[photo.type] || photo.type }}
-                    </span>
-                  </div>
-                }
-              </div>
-            </div>
-          }
-
-        </div>
-      </div>
-
-      <!-- Member cards -->
+      <!-- Acompañantes -->
       @for (member of b.group.members; track $index) {
-        <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-          <div class="flex items-center gap-2 px-5 py-4 border-b border-border">
-            <div class="w-6 h-6 rounded-lg bg-border flex items-center justify-center text-text-secondary text-xs font-bold shrink-0">
-              {{ $index + 2 }}
-            </div>
-            <span class="text-text-primary font-semibold text-sm">Acompañante {{ $index + 1 }}</span>
-          </div>
-          <div class="p-5 space-y-4">
-
-            <p class="text-text-primary text-xl font-bold">{{ member.fullName }}</p>
-
-            <div class="flex flex-wrap gap-2">
-              @if (member.idNumber) {
-              <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
-                <lucide-icon [img]="IdCard" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
-                <span class="text-text-primary font-medium">{{ member.idNumber }}</span>
-              </span>
-              }
-              @if (member.birthDate) {
-              <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
-                <lucide-icon [img]="CalendarDays" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
-                <span class="text-text-primary font-medium">{{ member.birthDate | dateEs }}</span>
-              </span>
-              }
-              @if (member.location?.countryName) {
-              <span class="inline-flex items-center gap-1.5 bg-bg rounded-xl px-3 py-1.5 text-sm">
-                <lucide-icon [img]="MapPin" class="w-3.5 h-3.5 text-text-disabled shrink-0" [strokeWidth]="1.8"/>
-                <span class="text-text-primary font-medium">{{ member.location?.countryName }}{{ member.location?.department ? ' · ' + member.location?.department : '' }}{{ member.location?.city ? ' · ' + member.location?.city : '' }}</span>
-              </span>
-              }
-            </div>
-
-            @if (member.identifications?.length) {
-              <div>
-                <p class="text-text-disabled text-xs uppercase tracking-wide mb-2">Identificaciones</p>
-                <div class="grid grid-cols-2 gap-3">
-                  @for (photo of member.identifications; track photo.type) {
-                    <div (click)="photoUrl.set(photo.url)"
-                      class="relative rounded-xl overflow-hidden aspect-[4/3] bg-bg group cursor-pointer">
-                      <img [src]="photo.url" class="w-full h-full object-contain"/>
-                      <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
-                        </svg>
-                      </div>
-                      <div class="absolute bottom-1.5 left-1.5 right-1.5 flex items-end justify-between gap-1">
-                        <span class="text-xs font-bold bg-black/60 text-white px-2 py-0.5 rounded-lg">{{ ID_LABELS[photo.type] || photo.type }}</span>
-                        @if (photo.uploadedAt) {
-                          <span class="text-xs bg-black/50 text-white/70 px-1.5 py-0.5 rounded-lg">{{ photo.uploadedAt | dateEs:'short' }}</span>
-                        }
-                      </div>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
-
-          </div>
-        </div>
+        <section class="surface panel tint-neutral">
+          <header class="panel-head">
+            <span class="num-badge">{{ $index + 2 }}</span>
+            Acompañante {{ $index + 1 }}
+          </header>
+          <ng-container *ngTemplateOutlet="person; context: { $implicit: member }" />
+        </section>
       }
 
     </div>
@@ -386,24 +221,57 @@
 </div>
 }
 
+<!-- Persona (huésped o acompañante) -->
+<ng-template #person let-p>
+  <div class="stack panel-body">
+    <p class="display person-name">{{ p.fullName }}</p>
+
+    <div class="row wrap" style="--gap: var(--sp-2)">
+      @if (p.idNumber) {
+        <span class="chip lg"><lucide-icon [img]="IdCard" [size]="14" [strokeWidth]="1.9" /> {{ p.idNumber }}</span>
+      }
+      @if (p.birthDate) {
+        <span class="chip lg"><lucide-icon [img]="CalendarDays" [size]="14" [strokeWidth]="1.9" /> {{ p.birthDate | dateEs }}</span>
+      }
+      @if (p.location?.countryName) {
+        <span class="chip lg"><lucide-icon [img]="MapPin" [size]="14" [strokeWidth]="1.9" /> {{ p.location?.countryName }}{{ p.location?.department ? ' · ' + p.location?.department : '' }}{{ p.location?.city ? ' · ' + p.location?.city : '' }}</span>
+      }
+    </div>
+
+    @if (p.identifications?.length) {
+      <div class="stack" style="--gap: var(--sp-2)">
+        <p class="kicker">Identificaciones</p>
+        <div class="ids">
+          @for (photo of p.identifications; track photo.type) {
+            <button type="button" class="id-photo" (click)="photoUrl.set(photo.url)" [attr.aria-label]="'Ver ' + (ID_LABELS[photo.type] || photo.type)">
+              <img [src]="photo.url" alt="" />
+              <span class="zoom"><lucide-icon [img]="ZoomIn" [size]="28" [strokeWidth]="1.9" /></span>
+              <span class="id-tags">
+                <span>{{ ID_LABELS[photo.type] || photo.type }}</span>
+                @if (photo.uploadedAt) { <span class="soft">{{ photo.uploadedAt | dateEs:'short' }}</span> }
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</ng-template>
+
 <!-- ── Modal: Registrar pago ── -->
 <modal-nova [visible]="showPayment()" title="Registrar pago" size="sm" (closed)="onPaymentClosed()" [footerTemplate]="paymentFooter">
-  <p class="text-text-secondary text-sm mb-3">
-    Pendiente: <span class="text-warning font-bold">{{ pending() | currencyCop }}</span>
-  </p>
-  <label class="block text-text-secondary text-sm mb-1.5">Monto a registrar</label>
-  <input type="number" min="0" [(ngModel)]="payAmount" placeholder="0" autocomplete="off"
-    class="w-full glass-sm rounded-xl px-4 py-2.5 text-text-primary text-sm
-           focus:outline-none focus:border-brand transition-colors"/>
+  <div class="stack">
+    <p class="small soft">Pendiente: <b class="t-warning">{{ pending() | currencyCop }}</b></p>
+    <label class="field">
+      <span class="field-label">Monto a registrar</span>
+      <input type="number" min="0" [(ngModel)]="payAmount" placeholder="0" autocomplete="off" />
+    </label>
+  </div>
 </modal-nova>
 <ng-template #paymentFooter>
-  <div class="flex gap-3">
-    <button (click)="showPayment.set(false)"
-      class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">
-      Cancelar
-    </button>
-    <button (click)="confirmPayment()" [disabled]="saving() || !payAmount"
-      class="flex-1 bg-success hover:bg-success/80 text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+  <div class="modal-actions">
+    <button data-variant="ghost" (click)="showPayment.set(false)">Cancelar</button>
+    <button data-tone="success" (click)="confirmPayment()" [disabled]="saving() || !payAmount" [attr.aria-busy]="saving() || null">
       {{ saving() ? 'Guardando...' : 'Confirmar' }}
     </button>
   </div>
@@ -414,20 +282,19 @@
 
 <!-- ── Modal: Borrar ── -->
 <modal-nova [visible]="deleteState.show()" title="Borrar reserva" size="sm" (closed)="onDeleteClosed()" [footerTemplate]="deleteFooter">
-  <p class="text-text-secondary text-sm">
-    ¿Seguro que quieres borrar la reserva de
-    <span class="text-text-primary font-semibold">{{ deleteState.selected()?.group?.host?.fullName }}</span>?
-    Esta acción no se puede deshacer.
-  </p>
+  <div class="stack confirm">
+    <span class="icon-tile lg tint-rose"><lucide-icon [img]="Trash2" [size]="24" [strokeWidth]="2" /></span>
+    <p class="soft small">
+      ¿Seguro que quieres borrar la reserva de
+      <strong class="strong">{{ deleteState.selected()?.group?.host?.fullName }}</strong>?
+      Esta acción no se puede deshacer.
+    </p>
+  </div>
 </modal-nova>
 <ng-template #deleteFooter>
-  <div class="flex gap-3">
-    <button (click)="deleteState.show.set(false)"
-      class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">
-      Cancelar
-    </button>
-    <button (click)="confirmDelete()" [disabled]="deleteState.saving()"
-      class="flex-1 bg-error hover:bg-error/80 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+  <div class="modal-actions">
+    <button data-variant="ghost" (click)="deleteState.show.set(false)">Cancelar</button>
+    <button data-tone="danger" (click)="confirmDelete()" [disabled]="deleteState.saving()" [attr.aria-busy]="deleteState.saving() || null">
       {{ deleteState.saving() ? 'Borrando...' : 'Borrar' }}
     </button>
   </div>

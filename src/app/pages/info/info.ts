@@ -18,6 +18,7 @@ interface AppInfo {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LucideAngularModule],
   templateUrl: './info.html',
+  styleUrl: './info.css',
 })
 export class InfoComponent {
   readonly Info = Info;

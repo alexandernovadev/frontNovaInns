@@ -7,23 +7,18 @@ import { LucideAngularModule, X } from 'lucide-angular';
   imports: [LucideAngularModule],
   template: `
     @if (url()) {
-      <div
-        class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
-        (click)="close()"
-      >
-        <button
-          (click)="close()"
-          class="absolute top-4 right-4 p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer z-10"
-        >
-          <lucide-icon [img]="X" class="w-6 h-6" [strokeWidth]="2" />
+      <div class="viewer" (click)="close()">
+        <button (click)="close()" data-icon aria-label="Cerrar" class="close">
+          <lucide-icon [img]="X" [size]="22" [strokeWidth]="2" />
         </button>
-        <img
-          [src]="url()!"
-          class="max-w-full max-h-[90vh] rounded-2xl object-contain shadow-2xl"
-          (click)="$event.stopPropagation()"
-        />
+        <img [src]="url()!" alt="Foto" (click)="$event.stopPropagation()" />
       </div>
     }
+  `,
+  styles: `
+    .viewer { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: var(--sp-4); background: rgb(10 10 12 / 0.92); animation: lai-reveal var(--t-base) ease both; }
+    .close { position: absolute; top: var(--sp-4); right: var(--sp-4); z-index: 1; }
+    img { max-width: 100%; max-height: 90dvh; object-fit: contain; border-radius: var(--r-lg); animation: lai-pop var(--t-slow) var(--spring); }
   `,
 })
 export class PhotoViewer {

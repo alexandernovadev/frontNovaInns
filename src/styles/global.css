@@ -1,0 +1,98 @@
+/* ════════════════════════════════════════════════════════════════
+   NovaInns · entrada global del sistema de diseño (mismo que Glota)
+   Orden de capas: reset → base → native. Lo que no esté en capa
+   (estilos de cada componente) gana siempre.
+   ════════════════════════════════════════════════════════════════ */
+@layer reset, base, native;
+
+/* Fuentes autoalojadas */
+@import "@fontsource-variable/baloo-2";
+@import "@fontsource-variable/lexend";
+@import "@fontsource/noto-sans/400.css";
+@import "@fontsource/noto-sans/600.css";
+
+@import "./tokens.css";
+@import "./native.css" layer(native);
+@import "./motion.css";
+@import "./patterns.css";
+@import "./rich-text.css";
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  * {
+    margin: 0;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+  button {
+    cursor: pointer;
+  }
+}
+
+@layer base {
+  html,
+  body {
+    min-height: 100dvh;
+    background: var(--bg-0);
+    color: var(--text-1);
+  }
+  body {
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: var(--fw-display);
+    line-height: var(--lh-heading);
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+    overflow-wrap: break-word;
+  }
+  a {
+    color: var(--brand);
+    text-underline-offset: 3px;
+  }
+  ::selection {
+    background: var(--brand-soft);
+    color: var(--text-1);
+  }
+  :focus-visible {
+    outline: var(--border) solid var(--brand);
+    outline-offset: 3px;
+  }
+  app-root {
+    display: block;
+    min-height: 100dvh;
+  }
+}

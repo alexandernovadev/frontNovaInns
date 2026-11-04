@@ -5,26 +5,25 @@ const IMAGES: Record<string, string> = {
   Nequi: '/assets/images/NequiFInal.png',
   Bancolombia: '/assets/images/bbcolombia1.png',
 };
+const SIZES: Record<string, number> = { sm: 28, md: 40, lg: 56 };
 
 @Component({
   selector: 'payment-method-icon',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (img()) {
-      <img [src]="img()" [class]="imgClass()" [alt]="method()" />
+      <img [src]="img()" [alt]="method()" [style.width.px]="px()" [style.height.px]="px()" />
     } @else {
-      <div class="w-10 h-10 rounded-xl bg-border/50 flex items-center justify-center">
-        <svg
-          class="w-5 h-5 text-text-disabled"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-        >
+      <span class="none" [style.width.px]="px()" [style.height.px]="px()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
-      </div>
+      </span>
     }
+  `,
+  styles: `
+    img { object-fit: contain; }
+    .none { display: grid; place-items: center; border-radius: 12px; color: var(--text-3); background: var(--bg-2); }
   `,
 })
 export class PaymentMethodIcon {
@@ -34,10 +33,7 @@ export class PaymentMethodIcon {
   protected img() {
     return IMAGES[this.method()] || null;
   }
-
-  protected imgClass() {
-    const sizes: Record<string, string> = { sm: 'w-7 h-7', md: 'w-10 h-10', lg: 'w-14 h-14' };
-    const cls = sizes[this.size()] || sizes['md'];
-    return `${cls} object-contain`;
+  protected px() {
+    return SIZES[this.size()] ?? SIZES['md'];
   }
 }

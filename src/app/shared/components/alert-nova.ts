@@ -2,62 +2,56 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-angular';
 import { AlertService } from './services/alert.service';
 
-const ICON_MAP: Record<string, any> = {
-  success: CheckCircle,
-  error: AlertCircle,
-  warning: AlertTriangle,
-  info: Info,
-};
+const ICON_MAP: Record<string, any> = { success: CheckCircle, error: AlertCircle, warning: AlertTriangle, info: Info };
+const TONE: Record<string, string> = { success: 'success', error: 'danger', warning: 'warning', info: 'brand' };
 
-const BORDER_MAP: Record<string, string> = {
-  success: 'border-success/30',
-  error: 'border-error/30',
-  warning: 'border-warning/30',
-  info: 'border-brand/30',
-};
-
-const TEXT_MAP: Record<string, string> = {
-  success: 'text-success',
-  error: 'text-error',
-  warning: 'text-warning',
-  info: 'text-brand',
-};
-
+// Avisos: suben con resorte arriba a la derecha (abajo en móvil)
 @Component({
   selector: 'alert-nova',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LucideAngularModule],
   template: `
-    <div class="fixed top-4 right-4 z-[100] flex flex-col gap-2 max-w-[420px]">
+    <div class="region" aria-live="polite">
       @for (alert of alertService.alertsSignal(); track alert.id) {
-        <div class="bg-surface border rounded-xl px-4 py-3 shadow-xl flex items-start gap-3"
-             [class]="BORDER_MAP[alert.type]">
-          <lucide-icon [img]="ICON_MAP[alert.type]" class="w-5 h-5 shrink-0 mt-0.5"
-            [class]="TEXT_MAP[alert.type]" [strokeWidth]="2" />
-          <div class="flex-1 min-w-0">
-            <p class="text-text-primary text-sm font-semibold">{{ alert.title }}</p>
+        <div class="toast" [attr.data-tone]="TONE[alert.type]" role="status">
+          <span class="ic"><lucide-icon [img]="ICON_MAP[alert.type]" [size]="18" [strokeWidth]="2.4" /></span>
+          <div class="txt">
+            <p class="title">{{ alert.title }}</p>
             @if (alert.message) {
-              <p class="text-text-secondary text-xs mt-0.5">{{ alert.message }}</p>
+              <p class="msg">{{ alert.message }}</p>
             }
           </div>
-          <button (click)="alertService.dismiss(alert.id)"
-            class="p-0.5 text-text-disabled hover:text-text-primary rounded transition-colors cursor-pointer shrink-0">
-            <lucide-icon [img]="X" class="w-4 h-4" [strokeWidth]="2" />
+          <button (click)="alertService.dismiss(alert.id)" class="icon-btn" aria-label="Cerrar">
+            <lucide-icon [img]="X" [size]="16" [strokeWidth]="2" />
           </button>
         </div>
       }
     </div>
   `,
+  styles: `
+    .region {
+      position: fixed; top: var(--sp-4); right: var(--sp-4); z-index: 100;
+      display: flex; flex-direction: column; gap: var(--sp-2); width: min(420px, calc(100vw - 2 * var(--sp-4)));
+    }
+    .toast {
+      display: flex; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-3) var(--sp-3) var(--sp-3) var(--sp-4);
+      background: var(--bg-2); border: var(--border) solid var(--c-deep); border-radius: var(--r-md);
+      box-shadow: 0 var(--depth) 0 var(--c-deep), 0 12px 32px rgb(0 0 0 / 0.35);
+      animation: in var(--t-slow) var(--spring) both;
+    }
+    @keyframes in { from { opacity: 0; translate: 24px 0; scale: 0.95; } to { opacity: 1; translate: 0 0; scale: 1; } }
+    .ic { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: var(--ink); background: var(--c); }
+    .txt { flex: 1; min-width: 0; padding-top: 3px; }
+    .title { font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--text-1); }
+    .msg { margin-top: 2px; font-size: var(--fs-caption); color: var(--text-2); }
+    @media (width < 40rem) {
+      .region { top: auto; bottom: calc(var(--sp-4) + env(safe-area-inset-bottom, 0px)); right: 50%; translate: 50% 0; }
+    }
+  `,
 })
 export class AlertNova {
   readonly X = X;
-  readonly CheckCircle = CheckCircle;
-  readonly AlertCircle = AlertCircle;
-  readonly AlertTriangle = AlertTriangle;
-  readonly Info = Info;
   protected readonly ICON_MAP = ICON_MAP;
-  protected readonly BORDER_MAP = BORDER_MAP;
-  protected readonly TEXT_MAP = TEXT_MAP;
-
+  protected readonly TONE = TONE;
   protected alertService = inject(AlertService);
 }

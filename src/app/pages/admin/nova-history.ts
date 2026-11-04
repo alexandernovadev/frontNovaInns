@@ -7,12 +7,12 @@ import { ModalNova } from '../../shared/components/modal-nova';
 import { ACTION_STATUS_TEXT, fieldLabel, formatValue, prettyDatesIn } from '../nova-ai/nova-format';
 
 const STATUS_PILL: Record<string, string> = {
-  confirmed: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-  undone: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
-  failed: 'bg-red-500/15 text-red-400 border-red-500/30',
-  pending: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
-  cancelled: 'bg-white/5 text-text-disabled border-border',
-  expired: 'bg-white/5 text-text-disabled border-border',
+  confirmed: 'tint-mint',
+  undone: 'tint-lilac',
+  failed: 'tint-rose',
+  pending: 'tint-sky',
+  cancelled: 'tint-neutral',
+  expired: 'tint-neutral',
 };
 
 // Admin → Historial NovaAI: cada cambio que propuso/hizo NovaAI, con deshacer
@@ -21,117 +21,103 @@ const STATUS_PILL: Record<string, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LucideAngularModule, ModalNova],
   template: `
-    <div class="space-y-6">
-      <div class="flex items-center justify-between gap-3">
-        <div>
-          <h2 class="text-text-primary text-lg font-semibold flex items-center gap-2">
-            <lucide-icon [img]="History" class="w-5 h-5 text-brand" [strokeWidth]="2" />
-            Historial NovaAI
-          </h2>
-          <p class="text-text-secondary text-sm mt-0.5">Cada cambio de NovaAI con su antes y después. Puedes deshacerlo.</p>
-        </div>
-      </div>
+    <div class="stack" style="--gap: var(--sp-5)">
+      <header class="stack" style="--gap: 2px">
+        <h2 class="sec-title">
+          <lucide-icon [img]="History" [size]="20" [strokeWidth]="2" />
+          Historial NovaAI
+        </h2>
+        <p class="page-sub">Cada cambio de NovaAI con su antes y después. Puedes deshacerlo.</p>
+      </header>
 
       <!-- Filtros -->
-      <div class="flex flex-wrap gap-2">
+      <div class="row wrap" style="--gap: var(--sp-2)">
         @for (f of filters; track f.value) {
-          <button (click)="setFilter(f.value)"
-            class="px-3.5 py-1.5 min-h-9 rounded-full border text-xs font-medium transition-colors cursor-pointer"
-            [class]="filter() === f.value
-              ? 'bg-brand text-bg border-brand'
-              : 'border-border text-text-secondary hover:text-text-primary hover:border-brand/50'">
+          <button data-size="sm" (click)="setFilter(f.value)"
+            [attr.data-tone]="filter() === f.value ? 'brand' : null"
+            [attr.data-variant]="filter() === f.value ? null : 'ghost'">
             {{ f.label }}
           </button>
         }
         @if (total() !== null) {
-          <span class="ml-auto self-center text-xs text-text-disabled">{{ total() }} registro(s)</span>
+          <span class="spacer"></span>
+          <span class="tiny muted">{{ total() }} registro(s)</span>
         }
       </div>
 
       @if (loading() && !items().length) {
-        <div class="text-center py-16 text-text-disabled text-sm">Cargando historial…</div>
+        <div class="loading">Cargando historial…</div>
       } @else if (!items().length) {
-        <div class="flex flex-col items-center gap-3 py-16 text-center">
-          <span class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center">
-            <lucide-icon [img]="Sparkles" class="w-7 h-7 text-brand" [strokeWidth]="1.8" />
-          </span>
-          <p class="text-text-secondary text-sm">Todavía no hay cambios aquí.</p>
+        <div class="empty">
+          <span class="icon-tile lg"><lucide-icon [img]="Sparkles" [size]="26" [strokeWidth]="1.9" /></span>
+          <p class="soft small">Todavía no hay cambios aquí.</p>
         </div>
       } @else {
-        <ol class="relative space-y-4 before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-px before:bg-border">
+        <ol class="timeline">
           @for (it of items(); track it.id) {
             @let isUndo = it.type === 'undo';
             @let isDelete = it.type === 'delete';
             @let isCreate = it.type === 'create';
-            <li class="relative flex gap-4 nova-in">
-              <span class="relative z-10 w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border"
-                [class]="isUndo ? 'bg-purple-500/15 border-purple-500/30 text-purple-300'
-                  : isDelete ? 'bg-error/15 border-error/30 text-error'
-                  : isCreate ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
-                  : 'bg-brand/15 border-brand/30 text-brand'">
-                <lucide-icon [img]="isUndo ? Undo2 : isDelete ? Trash2 : isCreate ? CalendarPlus : Pencil" class="w-4.5 h-4.5" [strokeWidth]="2" />
+            <li class="nova-in">
+              <span class="icon-tile node" [class]="isUndo ? 'tint-lilac' : isDelete ? 'tint-rose' : isCreate ? 'tint-mint' : 'tint-butter'">
+                <lucide-icon [img]="isUndo ? Undo2 : isDelete ? Trash2 : isCreate ? CalendarPlus : Pencil" [size]="18" [strokeWidth]="2" />
               </span>
 
-              <div class="min-w-0 flex-1 rounded-2xl border border-border bg-gradient-to-b from-elevated to-surface overflow-hidden"
-                [class.opacity-60]="it.status === 'cancelled' || it.status === 'expired'">
-                <div class="px-4 py-3 flex flex-wrap items-start gap-x-3 gap-y-1.5">
-                  <div class="min-w-0 flex-1">
-                    <p class="text-text-primary text-sm font-semibold">{{ it.summary || (isDelete ? 'Eliminar' : 'Editar') }}</p>
-                    <p class="text-text-disabled text-xs mt-0.5">{{ when(it) }}</p>
+              <div class="surface entry" [class.faded]="it.status === 'cancelled' || it.status === 'expired'">
+                <div class="entry-head">
+                  <div class="stack" style="--gap: 2px; min-width: 0; flex: 1">
+                    <p class="strong small">{{ it.summary || (isDelete ? 'Eliminar' : 'Editar') }}</p>
+                    <p class="tiny muted">{{ when(it) }}</p>
                   </div>
-                  <span class="px-2 py-0.5 rounded-md border text-[11px] font-semibold whitespace-nowrap" [class]="pill(it.status)">
-                    {{ statusText(it.status) }}
-                  </span>
+                  <span class="pill" [class]="pill(it.status)">{{ statusText(it.status) }}</span>
                 </div>
 
                 @if (it.request) {
-                  <p class="px-4 pb-2 text-xs text-text-secondary italic">Le pediste: “{{ it.request }}”</p>
+                  <p class="request">Le pediste: “{{ it.request }}”</p>
                 }
 
                 @for (t of it.targets; track t.id) {
-                  <div class="px-4 py-3 border-t border-border">
-                    <p class="text-text-primary text-xs font-medium mb-2">{{ pretty(t.label) }}</p>
+                  <div class="block">
+                    <p class="tiny strong target">{{ pretty(t.label) }}</p>
                     @if (t.changes.length) {
-                      <div class="space-y-1.5">
+                      <div class="stack" style="--gap: 6px">
                         @for (ch of t.changes; track ch.field) {
-                          <div class="grid grid-cols-[minmax(0,7rem)_1fr] gap-x-3 text-xs items-baseline">
-                            <span class="text-text-disabled truncate">{{ label(ch.field) }}</span>
-                            <span class="flex flex-wrap items-center gap-1.5 min-w-0">
-                              <span class="text-text-disabled line-through break-words">{{ format(ch.field, ch.before) }}</span>
-                              <lucide-icon [img]="ArrowRight" class="w-3 h-3 text-text-disabled shrink-0" [strokeWidth]="2" />
-                              <span class="px-1.5 py-px rounded-md bg-brand/10 text-brand-accent font-semibold break-words">{{ format(ch.field, ch.after) }}</span>
+                          <div class="change">
+                            <span class="muted truncate">{{ label(ch.field) }}</span>
+                            <span class="diff">
+                              <s>{{ format(ch.field, ch.before) }}</s>
+                              <lucide-icon [img]="ArrowRight" [size]="12" [strokeWidth]="2" />
+                              <b>{{ format(ch.field, ch.after) }}</b>
                             </span>
                           </div>
                         }
                       </div>
                     } @else if (t.details.length) {
-                      <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+                      <dl class="details">
                         @for (d of t.details; track d.field) {
                           @if (d.value !== '' && d.value !== null && d.value !== undefined) {
-                            <dt class="text-text-disabled">{{ label(d.field) }}</dt>
-                            <dd class="text-text-secondary break-words">{{ format(d.field, d.value) }}</dd>
+                            <dt>{{ label(d.field) }}</dt>
+                            <dd>{{ format(d.field, d.value) }}</dd>
                           }
                         }
                       </dl>
                     } @else if (isUndo) {
-                      <p class="text-xs text-purple-300">{{ it.summary.startsWith('Deshacer: Crear reserva') ? 'Reserva eliminada' : 'Documento restaurado completo' }}</p>
+                      <p class="tiny t-ai">{{ it.summary.startsWith('Deshacer: Crear reserva') ? 'Reserva eliminada' : 'Documento restaurado completo' }}</p>
                     }
                   </div>
                 }
 
                 @if (it.error) {
-                  <p class="px-4 py-2 border-t border-border text-xs text-error flex items-start gap-1.5">
-                    <lucide-icon [img]="TriangleAlert" class="w-3.5 h-3.5 shrink-0 mt-px" [strokeWidth]="2" />
+                  <p class="block tiny t-danger err">
+                    <lucide-icon [img]="TriangleAlert" [size]="14" [strokeWidth]="2" />
                     {{ it.error }}
                   </p>
                 }
 
                 @if (it.status === 'confirmed' && !isUndo) {
-                  <div class="px-4 py-2.5 border-t border-border bg-bg/40 flex justify-end">
-                    <button (click)="openUndo(it)"
-                      class="flex items-center gap-1.5 px-3.5 py-1.5 min-h-9 rounded-xl border border-purple-500/40 text-purple-300 text-xs font-semibold
-                             hover:bg-purple-500/10 transition-colors cursor-pointer">
-                      <lucide-icon [img]="Undo2" class="w-3.5 h-3.5" [strokeWidth]="2.2" />
+                  <div class="block foot">
+                    <button data-size="sm" data-variant="soft" data-tone="ai" (click)="openUndo(it)">
+                      <lucide-icon [img]="Undo2" [size]="14" [strokeWidth]="2.4" />
                       Deshacer
                     </button>
                   </div>
@@ -142,9 +128,8 @@ const STATUS_PILL: Record<string, string> = {
         </ol>
 
         @if (page() < totalPages()) {
-          <div class="flex justify-center">
-            <button (click)="loadMore()" [disabled]="loading()"
-              class="px-4 py-2 rounded-xl border border-border text-sm text-text-secondary hover:text-text-primary hover:border-brand/50 transition-colors cursor-pointer disabled:opacity-50">
+          <div class="row" style="justify-content: center">
+            <button data-variant="ghost" (click)="loadMore()" [disabled]="loading()" [attr.aria-busy]="loading() || null">
               {{ loading() ? 'Cargando…' : 'Cargar más' }}
             </button>
           </div>
@@ -156,36 +141,36 @@ const STATUS_PILL: Record<string, string> = {
     <modal-nova [visible]="undoTarget() !== null" [title]="drift() ? 'Cambió después' : '¿Deshacer este cambio?'" size="sm"
       (closed)="closeUndo()" [footerTemplate]="undoFooter">
       @if (undoTarget(); as it) {
-        <div class="space-y-3 text-sm">
+        <div class="stack small" style="--gap: var(--sp-3)">
           @if (drift(); as d) {
-            <div class="flex gap-2.5 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
-              <lucide-icon [img]="TriangleAlert" class="w-4 h-4 shrink-0" [strokeWidth]="2" />
-              <div class="space-y-1">
+            <div class="warn">
+              <lucide-icon [img]="TriangleAlert" [size]="16" [strokeWidth]="2" />
+              <div class="stack" style="--gap: 4px">
                 <p>Esto se modificó después del cambio de NovaAI:</p>
                 @for (x of d; track x.label) {
-                  <p class="font-semibold">{{ x.label }}: {{ labels(x.fields) }}</p>
+                  <p class="strong">{{ x.label }}: {{ labels(x.fields) }}</p>
                 }
                 <p>Si deshaces igual, solo se restauran los campos de NovaAI; lo demás se queda como está.</p>
               </div>
             </div>
           } @else {
-            <p class="text-text-secondary">
+            <p class="soft">
               @if (it.type === 'delete') {
-                Se va a <strong class="text-text-primary">restaurar completo</strong> lo que NovaAI eliminó:
+                Se va a <strong class="strong">restaurar completo</strong> lo que NovaAI eliminó:
               } @else if (it.type === 'create') {
-                Se va a <strong class="text-text-primary">eliminar la reserva</strong> que creó NovaAI:
+                Se va a <strong class="strong">eliminar la reserva</strong> que creó NovaAI:
               } @else {
                 Estos campos vuelven a como estaban:
               }
             </p>
           }
           @for (t of it.targets; track t.id) {
-            <div class="rounded-xl border border-border p-3">
-              <p class="text-text-primary text-xs font-medium mb-1.5">{{ pretty(t.label) }}</p>
+            <div class="inset stack" style="--gap: 4px">
+              <p class="tiny strong">{{ pretty(t.label) }}</p>
               @for (ch of t.changes; track ch.field) {
-                <p class="text-xs text-text-secondary">
-                  {{ label(ch.field) }}: <span class="line-through text-text-disabled">{{ format(ch.field, ch.after) }}</span>
-                  → <span class="text-purple-300 font-semibold">{{ format(ch.field, ch.before) }}</span>
+                <p class="tiny soft">
+                  {{ label(ch.field) }}: <s class="muted">{{ format(ch.field, ch.after) }}</s>
+                  → <b class="t-ai">{{ format(ch.field, ch.before) }}</b>
                 </p>
               }
             </div>
@@ -194,15 +179,65 @@ const STATUS_PILL: Record<string, string> = {
       }
     </modal-nova>
     <ng-template #undoFooter>
-      <div class="flex gap-3">
-        <button (click)="closeUndo()"
-          class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancelar</button>
-        <button (click)="confirmUndo()" [disabled]="undoing()"
-          class="flex-1 bg-purple-500 hover:bg-purple-400 text-white font-bold py-2.5 rounded-xl text-sm transition-colors disabled:opacity-50 cursor-pointer">
+      <div class="modal-actions">
+        <button data-variant="ghost" (click)="closeUndo()">Cancelar</button>
+        <button data-tone="ai" (click)="confirmUndo()" [disabled]="undoing()" [attr.aria-busy]="undoing() || null">
           {{ undoing() ? 'Deshaciendo…' : drift() ? 'Deshacer igual' : 'Deshacer' }}
         </button>
       </div>
     </ng-template>
+  `,
+  styles: `
+    .timeline {
+      position: relative;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 17px;
+      top: var(--sp-2);
+      bottom: var(--sp-2);
+      width: 2px;
+      border-radius: 2px;
+      background: var(--line);
+    }
+    .timeline > li { position: relative; display: flex; gap: var(--sp-4); }
+    .node { position: relative; z-index: 1; }
+    .entry { flex: 1; min-width: 0; overflow: hidden; }
+    .entry.faded { opacity: 0.6; }
+    .entry-head { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--sp-2) var(--sp-3); padding: var(--sp-3) var(--sp-4); }
+    .request { padding: 0 var(--sp-4) var(--sp-2); font-size: var(--fs-caption); font-style: italic; color: var(--text-2); }
+    .block { padding: var(--sp-3) var(--sp-4); border-top: 1px solid var(--line); }
+    .target { margin-bottom: var(--sp-2); }
+    .change { display: grid; grid-template-columns: minmax(0, 7rem) 1fr; gap: var(--sp-3); align-items: baseline; font-size: var(--fs-caption); }
+    .diff { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+    .diff s { color: var(--text-3); overflow-wrap: anywhere; }
+    .diff lucide-icon { color: var(--text-3); flex: none; }
+    .diff b { padding: 1px 6px; border-radius: 6px; background: var(--brand-soft); color: var(--brand); overflow-wrap: anywhere; }
+    .details { display: grid; grid-template-columns: auto 1fr; gap: 4px var(--sp-3); margin: 0; font-size: var(--fs-caption); }
+    .details dt { color: var(--text-3); }
+    .details dd { margin: 0; color: var(--text-2); overflow-wrap: anywhere; }
+    .t-ai { color: var(--ai); }
+    .err { display: flex; align-items: flex-start; gap: 6px; }
+    .err lucide-icon { flex: none; margin-top: 1px; }
+    .foot { display: flex; justify-content: flex-end; background: rgb(0 0 0 / 0.15); }
+    .warn {
+      display: flex;
+      gap: var(--sp-3);
+      padding: var(--sp-3);
+      font-size: var(--fs-caption);
+      color: var(--warning);
+      background: var(--warning-soft);
+      border: var(--border) solid color-mix(in srgb, var(--warning) 35%, transparent);
+      border-radius: var(--r-md);
+    }
+    .warn lucide-icon { flex: none; }
   `,
 })
 export class NovaHistoryComponent implements OnInit {

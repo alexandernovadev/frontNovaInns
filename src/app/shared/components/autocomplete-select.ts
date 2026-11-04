@@ -12,8 +12,7 @@ export interface AutocompleteOption {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="relative" #container>
-      <!-- Input -->
+    <div class="wrap" #container>
       <input
         type="text"
         [value]="displayText()"
@@ -24,76 +23,52 @@ export interface AutocompleteOption {
         (click)="$event.stopPropagation()"
         [placeholder]="placeholder()"
         [readonly]="readonly() || sheetMode()"
+        [class.pick]="readonly() || sheetMode()"
         autocomplete="off"
-        class="w-full bg-input border border-border rounded-xl pl-3 pr-8 py-2.5 text-text-primary text-sm truncate
-               placeholder:text-text-disabled focus:outline-none focus:border-brand transition-colors"
-        [class.cursor-pointer]="readonly() || sheetMode()"
       />
-
-      <!-- Icon - dropdown arrow -->
-      <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-disabled pointer-events-none transition-transform"
-           [class.rotate-180]="isOpen()"
-           fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <svg class="chev" [class.open]="isOpen()" width="16" height="16" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
       </svg>
 
-      <!-- Dropdown -->
+      <!-- Menú desplegable (escritorio) -->
       @if (isOpen() && !sheetMode() && filteredOptions().length > 0) {
-        <div class="absolute z-50 top-full left-0 right-0 mt-1 bg-surface border border-border rounded-xl overflow-hidden shadow-2xl">
+        <div class="menu" role="listbox">
           @for (opt of filteredOptions(); track opt.value; let i = $index) {
             @let selected = opt.value === value() && opt.value !== '';
-            <button
-              type="button"
-              (click)="selectOption(opt)"
-              (mousedown)="$event.preventDefault()"
-              class="w-full text-left px-3 py-2.5 text-sm transition-colors"
-              [class]="selected
-                ? 'bg-brand/20 text-brand font-semibold cursor-default'
-                : i === highlightedIndex()
-                  ? 'bg-white/10 text-text-primary cursor-pointer'
-                  : 'text-text-secondary hover:bg-white/5 hover:text-text-primary cursor-pointer'">
-              {{ opt.label }}
+            <button type="button" role="option" class="opt" [attr.aria-selected]="selected"
+              [class.selected]="selected" [class.hl]="!selected && i === highlightedIndex()"
+              (click)="selectOption(opt)" (mousedown)="$event.preventDefault()">
+              <span class="truncate">{{ opt.label }}</span>
+              @if (selected) { <span class="check">✓</span> }
             </button>
           }
         </div>
       }
 
-      <!-- Bottom sheet (móvil/tablet). Se mueve a <body> para que ningún
+      <!-- Hoja inferior (móvil/tablet). Se mueve a <body> para que ningún
            ancestro con transform/backdrop-filter rompa el position: fixed -->
       @if (isOpen() && sheetMode()) {
-        <div #sheet class="fixed inset-0 z-[60] flex flex-col justify-end" (keydown)="onKeydown($event)">
-          <div class="absolute inset-0 bg-black/60 touch-none sheet-fade" (click)="close()"></div>
-          <div class="relative bg-surface border-t border-border rounded-t-2xl max-h-[75vh] flex flex-col sheet-up
-                      pb-[env(safe-area-inset-bottom)]">
-            <div class="flex justify-center pt-2.5 pb-1 shrink-0">
-              <span class="w-10 h-1 rounded-full bg-border"></span>
-            </div>
+        <div #sheet class="sheet" (keydown)="onKeydown($event)">
+          <div class="scrim" (click)="close()"></div>
+          <div class="panel">
+            <span class="handle"></span>
             @if (placeholder()) {
-              <p class="px-5 pt-1 pb-3 text-text-primary font-bold text-base shrink-0">{{ placeholder() }}</p>
+              <p class="sheet-title">{{ placeholder() }}</p>
             }
             @if (!readonly()) {
-              <div class="px-4 pb-3 shrink-0">
-                <input #sheetSearch type="text" [value]="searchTerm()" (input)="onSheetSearch($event)"
-                  placeholder="Buscar..." autocomplete="off"
-                  class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
-                         placeholder:text-text-disabled focus:outline-none focus:border-brand transition-colors" />
+              <div class="search">
+                <input #sheetSearch type="search" [value]="searchTerm()" (input)="onSheetSearch($event)" placeholder="Buscar..." autocomplete="off" />
               </div>
             }
-            <div class="overflow-y-auto overscroll-contain px-2 pb-3">
+            <div class="list">
               @for (opt of filteredOptions(); track opt.value) {
                 @let selected = opt.value === value();
-                <button type="button" (click)="selectOption(opt)" [attr.data-selected]="selected || null"
-                  class="w-full flex items-center justify-between gap-3 text-left px-3 py-3.5 rounded-xl text-sm transition-colors cursor-pointer"
-                  [class]="selected ? 'bg-brand/15 text-brand font-semibold' : 'text-text-primary active:bg-white/10 hover:bg-white/5'">
+                <button type="button" class="opt big" [class.selected]="selected" [attr.data-selected]="selected || null" (click)="selectOption(opt)">
                   <span class="truncate">{{ opt.label }}</span>
-                  @if (selected) {
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                    </svg>
-                  }
+                  @if (selected) { <span class="check">✓</span> }
                 </button>
               } @empty {
-                <p class="px-3 py-6 text-center text-text-disabled text-sm">Sin resultados</p>
+                <p class="none">Sin resultados</p>
               }
             </div>
           </div>
@@ -102,10 +77,44 @@ export interface AutocompleteOption {
     </div>
   `,
   styles: `
-    .sheet-up { animation: sheet-up 0.22s ease-out; }
-    .sheet-fade { animation: sheet-fade 0.2s ease-out; }
-    @keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    @keyframes sheet-fade { from { opacity: 0; } to { opacity: 1; } }
+    .wrap { position: relative; }
+    input { padding-right: calc(var(--sp-4) + 22px); text-overflow: ellipsis; }
+    input.pick { cursor: pointer; }
+    .chev { position: absolute; right: var(--sp-4); top: 50%; translate: 0 -50%; color: var(--brand); pointer-events: none; transition: rotate var(--t-base) var(--spring); }
+    .chev.open { rotate: 180deg; }
+
+    .menu {
+      position: absolute; z-index: 50; top: calc(100% + var(--sp-2)); left: 0; right: 0; max-height: 300px; overflow-y: auto;
+      padding: var(--sp-2); background: var(--bg-1); border: var(--border) solid var(--line); border-radius: var(--r-md);
+      box-shadow: 0 var(--depth) 0 var(--bg-3), 0 16px 40px rgb(0 0 0 / 0.35);
+      animation: drop var(--t-base) var(--spring) both; transform-origin: top center;
+    }
+    @keyframes drop { from { opacity: 0; translate: 0 -6px; scale: 0.97; } }
+    .opt {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); width: 100%; min-height: 40px;
+      padding: 0 var(--sp-3); font-family: var(--font-body); font-size: var(--fs-small); font-weight: var(--fw-regular); letter-spacing: 0;
+      text-align: left; color: var(--text-2); background: transparent; border: 0; border-radius: var(--r-sm); box-shadow: none; filter: none;
+    }
+    .opt:hover, .opt.hl { color: var(--text-1); background: var(--bg-2); }
+    .opt.selected { color: var(--brand); background: var(--brand-soft); font-weight: var(--fw-semibold); }
+    .opt:active { transform: none; }
+    .check { color: var(--brand); font-weight: var(--fw-heavy); }
+
+    .sheet { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; justify-content: flex-end; }
+    .scrim { position: absolute; inset: 0; background: rgb(20 20 24 / 0.66); touch-action: none; animation: fade var(--t-base) ease both; }
+    .panel {
+      position: relative; display: flex; flex-direction: column; max-height: 75dvh; width: min(640px, 100%); margin: 0 auto;
+      padding-bottom: env(safe-area-inset-bottom, 0px); background: var(--bg-1); border: var(--border) solid var(--line); border-bottom: 0;
+      border-radius: var(--r-lg) var(--r-lg) 0 0; animation: up var(--t-slow) var(--ease-sheet) both;
+    }
+    .handle { align-self: center; width: 44px; height: 5px; margin: 10px 0 var(--sp-2); border-radius: var(--r-full); background: var(--line); }
+    .sheet-title { padding: 0 var(--sp-5) var(--sp-3); font-family: var(--font-display); font-weight: var(--fw-display); font-size: var(--fs-h3); color: var(--text-1); }
+    .search { padding: 0 var(--sp-4) var(--sp-3); }
+    .list { overflow-y: auto; overscroll-behavior: contain; padding: 0 var(--sp-3) var(--sp-4); }
+    .opt.big { min-height: 52px; font-size: 1.05rem; }
+    .none { padding: var(--sp-6) var(--sp-3); text-align: center; color: var(--text-3); font-size: var(--fs-small); }
+    @keyframes up { from { translate: 0 100%; } }
+    @keyframes fade { from { opacity: 0; } }
   `,
 })
 export class AutocompleteSelect implements OnDestroy {

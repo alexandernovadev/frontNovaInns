@@ -1,6 +1,6 @@
 import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DataService } from '../../core/services/data.service';
-import { LucideAngularModule, ArrowUpDown } from 'lucide-angular';
+import { LucideAngularModule, ArrowUpDown, Download, Upload, CalendarDays, Building2, LoaderCircle, CircleCheck, CircleAlert } from 'lucide-angular';
 
 type Model = 'bookings' | 'apartments';
 
@@ -12,9 +12,23 @@ interface ImportState  { loading: boolean; result: ImportResult | null; error: s
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LucideAngularModule],
   templateUrl: './data.html',
+  styles: `
+    .sec { display: flex; align-items: center; gap: var(--sp-2); font-size: 1.1rem; }
+    .sec lucide-icon { color: var(--brand); }
+  `,
 })
 export class DataComponent {
   readonly ArrowUpDown = ArrowUpDown;
+  readonly Download = Download;
+  readonly Upload = Upload;
+  readonly LoaderCircle = LoaderCircle;
+  readonly CircleCheck = CircleCheck;
+  readonly CircleAlert = CircleAlert;
+
+  readonly models: { key: Model; label: string; exportHint: string; importHint: string; icon: typeof CalendarDays; tone: string }[] = [
+    { key: 'bookings', label: 'Reservas', exportHint: 'Todas las reservas', importHint: 'Sube un JSON de reservas', icon: CalendarDays, tone: 'tint-butter' },
+    { key: 'apartments', label: 'Apartamentos', exportHint: 'Todos los apartamentos', importHint: 'Sube un JSON de apartamentos', icon: Building2, tone: 'tint-sky' },
+  ];
 
   private dataService = inject(DataService);
 

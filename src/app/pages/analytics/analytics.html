@@ -1,142 +1,127 @@
-<div class="p-6 space-y-6">
+<div class="page">
 
   <!-- Header -->
-  <div class="page-header flex items-center justify-between gap-3">
-    <div class="min-w-0">
-      <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2.5">
-        <span class="nova-icon-tile w-8 h-8 shrink-0">
-          <lucide-icon [img]="BarChart3" class="w-4.5 h-4.5" [strokeWidth]="2.2" />
-        </span>
-        Analítica
+  <header class="page-header">
+    <div class="stack" style="--gap: 2px; min-width: 0">
+      <h1 class="page-title">
+        <span class="icon-tile"><lucide-icon [img]="BarChart3" [size]="18" [strokeWidth]="2.2" /></span>
+        <span>Analítica</span>
       </h1>
-      <p class="text-text-secondary text-sm mt-0.5">Panel de métricas y rendimiento</p>
+      <p class="page-sub">Panel de métricas y rendimiento</p>
     </div>
-    <button (click)="loadData()"
-      class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm whitespace-nowrap shrink-0">
-      Actualizar
-    </button>
-  </div>
+    <button data-tone="brand" data-size="sm" (click)="loadData()" [attr.aria-busy]="loading() || null">Actualizar</button>
+  </header>
 
   <!-- Filtros (se desplazan con la página) -->
-  <div class="grid grid-cols-3 gap-2 sm:flex sm:justify-end">
-      <autocomplete-select
-        [options]="apartmentOptions()"
-        [(value)]="apartmentFilter"
-        (valueChange)="onFilterChange()"
-        [readonly]="true"
-        placeholder="Apto" />
-      <autocomplete-select
-        [options]="yearOptions()"
-        [(value)]="yearFilter"
-        (valueChange)="onFilterChange()"
-        [readonly]="true"
-        placeholder="Año" />
-      <autocomplete-select
-        [options]="monthOptions()"
-        [(value)]="monthFilter"
-        (valueChange)="onFilterChange()"
-        [readonly]="true"
-        placeholder="Mes" />
+  <div class="filters">
+    <autocomplete-select
+      [options]="apartmentOptions()"
+      [(value)]="apartmentFilter"
+      (valueChange)="onFilterChange()"
+      [readonly]="true"
+      placeholder="Apto" />
+    <autocomplete-select
+      [options]="yearOptions()"
+      [(value)]="yearFilter"
+      (valueChange)="onFilterChange()"
+      [readonly]="true"
+      placeholder="Año" />
+    <autocomplete-select
+      [options]="monthOptions()"
+      [(value)]="monthFilter"
+      (valueChange)="onFilterChange()"
+      [readonly]="true"
+      placeholder="Mes" />
   </div>
 
   <!-- Tabs -->
-  <div class="flex gap-1 glass rounded-2xl p-1">
-    <button (click)="onTabChange('dashboard')"
-      class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-      [class]="tab() === 'dashboard' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
-      <lucide-icon [img]="BarChart3" class="w-4 h-4" [strokeWidth]="2" />
+  <div class="tabs full" role="tablist">
+    <button role="tab" [attr.aria-selected]="tab() === 'dashboard'" (click)="onTabChange('dashboard')">
+      <lucide-icon [img]="BarChart3" [size]="16" [strokeWidth]="2" />
       Dashboard
     </button>
-    <button (click)="onTabChange('map')"
-      class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-      [class]="tab() === 'map' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
-      <lucide-icon [img]="Globe" class="w-4 h-4" [strokeWidth]="2" />
+    <button role="tab" [attr.aria-selected]="tab() === 'map'" (click)="onTabChange('map')">
+      <lucide-icon [img]="Globe" [size]="16" [strokeWidth]="2" />
       Mapa
     </button>
   </div>
 
   @if (loading()) {
-  <div class="text-center py-16 text-text-disabled">Cargando datos...</div>
+  <div class="loading">Cargando datos...</div>
   } @else if (error(); as err) {
-  <div class="text-center py-16 text-error">{{ err }}</div>
+  <div class="loading t-danger">{{ err }}</div>
   } @else if (data(); as d) {
 
   <!-- ════════ TAB: DASHBOARD ════════ -->
   @if (tab() === 'dashboard') {
 
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-    <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="DollarSign" class="w-5 h-5 text-amber-400 mx-auto mb-1" [strokeWidth]="2" />
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Esperado</p>
-      <p class="text-amber-400 text-lg font-bold">{{ d.summary.totalExpected | currencyCop }}</p>
+  <div class="kpis six">
+    <div class="surface kpi tint-butter">
+      <lucide-icon [img]="DollarSign" [size]="20" [strokeWidth]="2" />
+      <p class="kpi-label">Esperado</p>
+      <p class="kpi-value">{{ d.summary.totalExpected | currencyCop }}</p>
     </div>
-    <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="TrendingUp" class="w-5 h-5 text-emerald-400 mx-auto mb-1" [strokeWidth]="2" />
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Recibido</p>
-      <p class="text-emerald-400 text-lg font-bold">{{ d.summary.totalReceived | currencyCop }}</p>
+    <div class="surface kpi tint-mint">
+      <lucide-icon [img]="TrendingUp" [size]="20" [strokeWidth]="2" />
+      <p class="kpi-label">Recibido</p>
+      <p class="kpi-value">{{ d.summary.totalReceived | currencyCop }}</p>
     </div>
-    <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="Hash" class="w-5 h-5 text-rose-400 mx-auto mb-1" [strokeWidth]="2" />
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Pendiente</p>
-      <p class="text-rose-400 text-lg font-bold">{{ d.summary.totalPending | currencyCop }}</p>
+    <div class="surface kpi tint-rose">
+      <lucide-icon [img]="Hash" [size]="20" [strokeWidth]="2" />
+      <p class="kpi-label">Pendiente</p>
+      <p class="kpi-value">{{ d.summary.totalPending | currencyCop }}</p>
     </div>
-    <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="CalendarDays" class="w-5 h-5 text-sky-400 mx-auto mb-1" [strokeWidth]="2" />
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Reservas</p>
-      <p class="text-sky-400 text-lg font-bold">{{ d.summary.bookingCount }}</p>
+    <div class="surface kpi tint-sky">
+      <lucide-icon [img]="CalendarDays" [size]="20" [strokeWidth]="2" />
+      <p class="kpi-label">Reservas</p>
+      <p class="kpi-value">{{ d.summary.bookingCount }}</p>
     </div>
-    <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="Building2" class="w-5 h-5 text-violet-400 mx-auto mb-1" [strokeWidth]="2" />
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Prom. estadía</p>
-      <p class="text-violet-400 text-lg font-bold">{{ d.summary.avgNights }}n</p>
+    <div class="surface kpi tint-lilac">
+      <lucide-icon [img]="Building2" [size]="20" [strokeWidth]="2" />
+      <p class="kpi-label">Prom. estadía</p>
+      <p class="kpi-value">{{ d.summary.avgNights }}n</p>
     </div>
-    <div class="glass rounded-2xl p-4 text-center">
-      <lucide-icon [img]="PieChart" class="w-5 h-5 text-teal-400 mx-auto mb-1" [strokeWidth]="2" />
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Cobrado</p>
-      <p class="text-teal-400 text-lg font-bold">{{ pct(d.summary.totalReceived) }}%</p>
+    <div class="surface kpi tint-peach">
+      <lucide-icon [img]="PieChart" [size]="20" [strokeWidth]="2" />
+      <p class="kpi-label">Cobrado</p>
+      <p class="kpi-value">{{ pct(d.summary.totalReceived) }}%</p>
     </div>
   </div>
 
-  <div class="glass rounded-2xl p-5">
-    <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-      <lucide-icon [img]="TrendingUp" class="w-4 h-4 text-brand" [strokeWidth]="2" />
-      Ingresos mensuales
-    </h3>
-    <div echarts [options]="monthlyOptions" class="w-full" style="height:300px"></div>
+  <div class="surface pad">
+    <h3 class="card-title"><lucide-icon [img]="TrendingUp" [size]="16" [strokeWidth]="2.2" /> Ingresos mensuales</h3>
+    <div echarts [options]="monthlyOptions" class="chart" style="height:300px"></div>
   </div>
 
   <!-- Comparativo por apartamento (solo con "Todos" y más de un apto) -->
   @if (!apartmentFilter() && d.apartments.length > 1) {
-  <div class="glass rounded-2xl p-5">
-    <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-      <lucide-icon [img]="Building2" class="w-4 h-4 text-brand" [strokeWidth]="2" />
-      Por apartamento
-    </h3>
-    <div echarts [options]="apartmentsOptions" class="w-full" style="height:260px"></div>
-    <div class="overflow-x-auto mt-3">
-      <table class="nova-table w-full text-sm">
+  <div class="surface pad">
+    <h3 class="card-title"><lucide-icon [img]="Building2" [size]="16" [strokeWidth]="2.2" /> Por apartamento</h3>
+    <div echarts [options]="apartmentsOptions" class="chart" style="height:260px"></div>
+    <div class="table-wrap" style="margin-top: var(--sp-3)">
+      <table class="data-table cards compact">
         <thead>
-          <tr class="text-text-disabled text-xs uppercase tracking-wide border-b border-border">
-            <th class="text-left font-medium py-2 pr-3">Apto</th>
-            <th class="text-right font-medium py-2 px-3">Reservas</th>
-            <th class="text-right font-medium py-2 px-3">Noches</th>
-            <th class="text-right font-medium py-2 px-3">Esperado</th>
-            <th class="text-right font-medium py-2 px-3">Ticket prom.</th>
-            <th class="text-right font-medium py-2 pl-3 whitespace-nowrap">Ocupación{{ monthFilter() ? '' : ' (mes actual)' }}</th>
+          <tr>
+            <th>Apto</th>
+            <th class="right">Reservas</th>
+            <th class="right">Noches</th>
+            <th class="right">Esperado</th>
+            <th class="right">Ticket prom.</th>
+            <th class="right nowrap">Ocupación{{ monthFilter() ? '' : ' (mes actual)' }}</th>
           </tr>
         </thead>
         <tbody>
           @for (a of d.apartments; track a.apartmentId) {
-          <tr class="border-b border-border last:border-0">
-            <td data-primary class="text-text-primary py-2 pr-3 whitespace-nowrap">{{ a.name }}</td>
-            <td data-label="Reservas" class="text-text-secondary text-right py-2 px-3">{{ a.count }}</td>
-            <td data-label="Noches" class="text-text-secondary text-right py-2 px-3">{{ a.nights }}</td>
-            <td data-label="Esperado" class="text-amber-400 text-right py-2 px-3 whitespace-nowrap">{{ a.expected | currencyCop }}</td>
-            <td data-label="Ticket prom." class="text-text-secondary text-right py-2 px-3 whitespace-nowrap">{{ a.expected / a.count | currencyCop }}</td>
-            <td data-label="Ocupación" class="text-teal-400 text-right py-2 pl-3">
+          <tr>
+            <td data-primary class="strong nowrap">{{ a.name }}</td>
+            <td data-label="Reservas" class="right soft num">{{ a.count }}</td>
+            <td data-label="Noches" class="right soft num">{{ a.nights }}</td>
+            <td data-label="Esperado" class="right t-brand num nowrap">{{ a.expected | currencyCop }}</td>
+            <td data-label="Ticket prom." class="right soft num nowrap">{{ a.expected / a.count | currencyCop }}</td>
+            <td data-label="Ocupación" class="right t-success num">
               <span>
               @if (occupancyOf(a.apartmentId); as o) {
-              {{ o.occupancyPct }}% <span class="text-text-disabled text-xs">({{ o.occupiedDays }}/{{ o.availableDays }}d)</span>
+              {{ o.occupancyPct }}% <span class="tiny muted">({{ o.occupiedDays }}/{{ o.availableDays }}d)</span>
               } @else { — }
               </span>
             </td>
@@ -148,62 +133,53 @@
   </div>
   }
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-    <div class="glass rounded-2xl p-5">
-      <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-        <lucide-icon [img]="PieChart" class="w-4 h-4 text-brand" [strokeWidth]="2" />
-        Plataformas
-      </h3>
-      <div echarts [options]="platformOptions" class="w-full" style="height:260px"></div>
+  <div class="two-col">
+    <div class="surface pad">
+      <h3 class="card-title"><lucide-icon [img]="PieChart" [size]="16" [strokeWidth]="2.2" /> Plataformas</h3>
+      <div echarts [options]="platformOptions" class="chart" style="height:260px"></div>
     </div>
-    <div class="glass rounded-2xl p-5">
-      <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-        <lucide-icon [img]="PieChart" class="w-4 h-4 text-brand" [strokeWidth]="2" />
-        Métodos de pago
-      </h3>
-      <div echarts [options]="paymentOptions" class="w-full" style="height:260px"></div>
+    <div class="surface pad">
+      <h3 class="card-title"><lucide-icon [img]="PieChart" [size]="16" [strokeWidth]="2.2" /> Métodos de pago</h3>
+      <div echarts [options]="paymentOptions" class="chart" style="height:260px"></div>
     </div>
   </div>
 
-  <div class="glass rounded-2xl p-5">
-      <h3 class="text-text-primary font-semibold text-sm mb-3 flex items-center gap-2">
-        <lucide-icon [img]="Hash" class="w-4 h-4 text-brand" [strokeWidth]="2" />
-        Check-ins por día de semana
-      </h3>
-      <div echarts [options]="dayOfWeekOptions" class="w-full" style="height:280px"></div>
-    </div>
+  <div class="surface pad">
+    <h3 class="card-title"><lucide-icon [img]="Hash" [size]="16" [strokeWidth]="2.2" /> Check-ins por día de semana</h3>
+    <div echarts [options]="dayOfWeekOptions" class="chart" style="height:280px"></div>
+  </div>
 
   <!-- Vacancy KPIs -->
   @if (vacancy(); as v) {
-  <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-    <div class="glass rounded-2xl p-4 text-center">
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Prom. x apto</p>
-      <p class="text-orange-400 text-lg font-bold">{{ v.avgUnsoldPerApt }} vacíos / {{ v.avgOccupiedPerApt }} ocup</p>
-      <p class="text-text-disabled text-xs mt-0.5">en {{ v.totalDaysInRange }} días del período</p>
+  <div class="kpis five">
+    <div class="surface kpi tint-peach">
+      <p class="kpi-label">Prom. x apto</p>
+      <p class="kpi-value">{{ v.avgUnsoldPerApt }} vacíos / {{ v.avgOccupiedPerApt }} ocup</p>
+      <p class="tiny muted">en {{ v.totalDaysInRange }} días del período</p>
     </div>
-    <div class="glass rounded-2xl p-4 text-center">
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Días no vendidos</p>
-      <p class="text-red-400 text-lg font-bold">{{ v.totalUnsoldDays.toLocaleString('es-CO') }}</p>
-      <p class="text-text-disabled text-xs mt-0.5">total {{ v.totalApts }} aptos</p>
+    <div class="surface kpi tint-rose">
+      <p class="kpi-label">Días no vendidos</p>
+      <p class="kpi-value">{{ v.totalUnsoldDays.toLocaleString('es-CO') }}</p>
+      <p class="tiny muted">total {{ v.totalApts }} aptos</p>
     </div>
-    <div class="glass rounded-2xl p-4 text-center">
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Días totales</p>
-      <p class="text-blue-400 text-lg font-bold">{{ v.totalDaySlots.toLocaleString('es-CO') }}</p>
-      <p class="text-text-disabled text-xs mt-0.5">slot disponibles</p>
+    <div class="surface kpi tint-sky">
+      <p class="kpi-label">Días totales</p>
+      <p class="kpi-value">{{ v.totalDaySlots.toLocaleString('es-CO') }}</p>
+      <p class="tiny muted">slot disponibles</p>
     </div>
-    <div class="glass rounded-2xl p-4 text-center">
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Tasa vacancia</p>
-      <p class="text-purple-400 text-lg font-bold">{{ v.vacancyRate }}%</p>
-      <p class="text-text-disabled text-xs mt-0.5">general</p>
+    <div class="surface kpi tint-lilac">
+      <p class="kpi-label">Tasa vacancia</p>
+      <p class="kpi-value">{{ v.vacancyRate }}%</p>
+      <p class="tiny muted">general</p>
     </div>
-    <div class="glass rounded-2xl p-4 text-center">
-      <p class="text-text-disabled text-xs uppercase tracking-widest mb-1">Período</p>
-      <p class="text-cyan-400 text-lg font-bold">{{ v.monthly.length }} meses</p>
-      <p class="text-text-disabled text-xs mt-0.5">{{ v.totalDaysInRange }} días</p>
+    <div class="surface kpi tint-mint">
+      <p class="kpi-label">Período</p>
+      <p class="kpi-value">{{ v.monthly.length }} meses</p>
+      <p class="tiny muted">{{ v.totalDaysInRange }} días</p>
     </div>
   </div>
   } @else if (vacancyLoading()) {
-  <div class="glass rounded-2xl p-5 text-center text-text-disabled text-sm">Cargando vacancia...</div>
+  <div class="surface pad loading">Cargando vacancia...</div>
   }
 
   }
@@ -212,72 +188,61 @@
   @if (tab() === 'map') {
 
   <!-- Country selector -->
-  <div class="flex items-center gap-3">
-    <span class="text-text-secondary text-sm font-medium">País:</span>
-    <div class="flex gap-1">
+  <div class="row">
+    <span class="small soft strong">País:</span>
+    <div class="tabs" role="tablist">
       @for (c of availableCountries; track c.code) {
-      <button (click)="switchCountry(c.code)"
-        class="px-4 py-2 rounded-xl text-sm font-medium transition-all cursor-pointer"
-        [class]="selectedMapCountry() === c.code ? 'tab-active' : 'glass text-text-secondary hover:text-text-primary'">
-        {{ c.name }}
-      </button>
+      <button role="tab" [attr.aria-selected]="selectedMapCountry() === c.code" (click)="switchCountry(c.code)">{{ c.name }}</button>
       }
     </div>
   </div>
 
   <!-- Map (full height) -->
-  <div class="glass rounded-2xl p-1 overflow-hidden relative" style="height: calc(100vh - 220px); min-height: 400px;">
+  <div class="surface map-box">
     @if (!leafletReady()) {
-    <div class="absolute inset-0 flex items-center justify-center bg-bg/80 z-10 rounded-2xl">
-      <div class="text-center text-text-disabled">
-        <div class="animate-spin w-6 h-6 border-2 border-brand border-t-transparent rounded-full mx-auto mb-2"></div>
-        <p class="text-sm">Cargando mapa...</p>
-      </div>
+    <div class="map-loading">
+      <span class="ring-spin"></span>
+      <p class="small muted">Cargando mapa...</p>
     </div>
     }
-    <div id="leaflet-map" class="absolute inset-0 rounded-2xl"></div>
+    <div id="leaflet-map"></div>
 
     <!-- City detail overlay -->
     @if (selectedDept(); as deptName) {
-    <div id="city-overlay"
-      class="absolute bottom-3 left-3 right-3 rounded-2xl p-4 max-h-[50%] overflow-y-auto shadow-2xl"
-      style="z-index: 1000; background: rgba(11,11,12,0.92); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1);">
-      <div class="flex items-start justify-between mb-4">
+    <div id="city-overlay" class="city">
+      <div class="row between" style="align-items: flex-start; margin-bottom: var(--sp-4)">
         <div>
-          <h3 class="text-text-primary text-lg font-bold">{{ deptName }}</h3>
+          <h3 class="city-name">{{ deptName }}</h3>
           @if (selectedDeptInfo(); as info) {
-          <div class="flex items-center gap-4 mt-1">
-            <span class="text-brand font-semibold text-sm">{{ info.guests }} {{ info.guests === 1 ? 'huésped' :
-              'huéspedes' }}</span>
-            <span class="text-text-secondary text-sm">{{ info.revenue | currencyCop }}</span>
+          <div class="row" style="--gap: var(--sp-4); margin-top: 4px">
+            <span class="small strong t-brand">{{ info.guests }} {{ info.guests === 1 ? 'huésped' : 'huéspedes' }}</span>
+            <span class="small soft">{{ info.revenue | currencyCop }}</span>
           </div>
           }
         </div>
-        <button (click)="closeDeptDetail()"
-          class="text-text-disabled hover:text-text-primary cursor-pointer bg-white/5 hover:bg-white/10 px-2.5 py-1.5 rounded-lg transition-colors text-sm">✕
-          Cerrar</button>
+        <button data-size="sm" data-variant="ghost" (click)="closeDeptDetail()">✕ Cerrar</button>
       </div>
       @if (cityData(); as cities) {
-      <table class="w-full text-sm">
+      <table class="data-table compact">
         <thead>
-          <tr class="text-text-disabled text-xs uppercase border-b" style="border-color: rgba(255,255,255,0.06)">
-            <th class="text-left py-1.5 pr-4 font-medium">Ciudad</th>
-            <th class="text-right py-1.5 pr-4 font-medium">Huéspedes</th>
-            <th class="text-right py-1.5 font-medium">Ingresos</th>
+          <tr>
+            <th>Ciudad</th>
+            <th class="right">Huéspedes</th>
+            <th class="right">Ingresos</th>
           </tr>
         </thead>
         <tbody>
           @for (c of cities; track c.city) {
-          <tr class="border-b last:border-0" style="border-color: rgba(255,255,255,0.04)">
-            <td class="py-1.5 pr-4 text-text-primary">{{ c.city }}</td>
-            <td class="py-1.5 pr-4 text-right text-text-primary font-medium">{{ c.guests }}</td>
-            <td class="py-1.5 text-right text-text-primary">{{ c.revenue | currencyCop }}</td>
+          <tr>
+            <td>{{ c.city }}</td>
+            <td class="right strong num">{{ c.guests }}</td>
+            <td class="right num">{{ c.revenue | currencyCop }}</td>
           </tr>
           }
         </tbody>
       </table>
       } @else {
-      <div class="text-center py-4 text-text-disabled text-sm">Cargando ciudades...</div>
+      <div class="small muted" style="text-align: center; padding: var(--sp-4)">Cargando ciudades...</div>
       }
     </div>
     }

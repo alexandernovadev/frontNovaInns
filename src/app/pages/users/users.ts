@@ -5,7 +5,7 @@ import { IUser, UserQuery } from '../../core/interfaces';
 import { ModalNova } from '../../shared/components/modal-nova';
 import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';
-import { LucideAngularModule, Users } from 'lucide-angular';
+import { LucideAngularModule, Users, Plus, Pencil, Trash2 } from 'lucide-angular';
 import { EmptyState } from '../../shared/components/empty-state';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { ROLES, ROLE_LABELS } from '../../shared/constants/user.constants';
@@ -20,6 +20,9 @@ import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delet
 })
 export class UsersComponent implements OnInit {
   readonly UsersIcon = Users;
+  readonly Plus = Plus;
+  readonly Pencil = Pencil;
+  readonly Trash2 = Trash2;
 
   private usersService   = inject(UsersService);
   private alert = inject(AlertService);

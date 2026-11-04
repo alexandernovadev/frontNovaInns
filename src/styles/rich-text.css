@@ -1,0 +1,177 @@
+/* ════════════════════════════════════════════════════════════════
+   NovaInns · Rich text de NovaAI (HTML generado en rich-text.ts)
+   Va global porque se inserta con [innerHTML] (sin encapsulación).
+   Todo cuelga de .rt para no filtrarse a otras pantallas.
+   ════════════════════════════════════════════════════════════════ */
+.rt strong { color: var(--text-1); font-weight: var(--fw-semibold); }
+.rt em { color: var(--text-2); }
+.rt code {
+  padding: 1px 6px;
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  color: var(--brand);
+  background: var(--bg-0);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.rt-p { margin: 6px 0; }
+.rt-p:first-child { margin-top: 0; }
+.rt-p:last-child { margin-bottom: 0; }
+.rt-h {
+  margin: var(--sp-3) 0 4px;
+  font-size: 0.78em;
+  font-weight: var(--fw-heavy);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+  color: var(--brand);
+}
+.rt-h:first-child { margin-top: 0; }
+
+/* Fragmentos en línea */
+.rt-date {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 6px;
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  color: var(--sky);
+  background: var(--sky-soft);
+  border-radius: 6px;
+}
+.rt-money {
+  font-weight: var(--fw-semibold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--brand);
+}
+.rt-status {
+  display: inline-block;
+  padding: 0 6px;
+  font-size: 0.72em;
+  font-weight: var(--fw-heavy);
+  letter-spacing: 0.04em;
+  line-height: 1.7;
+  vertical-align: middle;
+  white-space: nowrap;
+  color: var(--c);
+  background: var(--c-soft);
+  border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+  border-radius: 6px;
+}
+.rt-platform { font-weight: var(--fw-semibold); color: var(--c); }
+
+/* Listas */
+.rt-list {
+  margin: 6px 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.rt-list li { display: flex; gap: 10px; }
+.rt-list li > span { min-width: 0; }
+.rt-n {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  font-size: 0.7em;
+  font-weight: var(--fw-heavy);
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-radius: 50%;
+}
+.rt-bullet {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  margin-top: 0.55em;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+/* Tablas */
+.rt-table {
+  margin: var(--sp-2) 0;
+  overflow-x: auto;
+  border: var(--border) solid var(--line);
+  border-radius: var(--r-sm);
+}
+.rt-table table { width: 100%; font-size: 0.86em; border-collapse: collapse; }
+.rt-table th {
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  color: var(--brand);
+  background: var(--brand-soft);
+}
+.rt-table td {
+  padding: 6px var(--sp-3);
+  color: var(--text-2);
+  border-top: 1px solid var(--line);
+}
+.rt-table tbody tr:nth-child(even) { background: rgb(255 255 255 / 0.02); }
+
+/* Tarjetas de reserva */
+.rt-cards {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0;
+}
+@media (width >= 40rem) {
+  .rt-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rt-cards.one { grid-template-columns: minmax(0, 24rem); }
+}
+.rt-card {
+  position: relative;
+  overflow: hidden;
+  padding: 14px 14px 14px 20px;
+  font-size: 0.9em;
+  background: var(--bg-2);
+  border: var(--border) solid var(--line);
+  border-radius: var(--r-sm);
+  box-shadow: 0 var(--depth) 0 var(--bg-3);
+}
+.rt-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--c);
+}
+.rt-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-2); }
+.rt-card-who { min-width: 0; }
+.rt-guest { font-weight: var(--fw-semibold); color: var(--text-1); line-height: 1.35; }
+.rt-apt { display: flex; align-items: center; gap: 6px; margin-top: 2px; font-size: var(--fs-caption); color: var(--c); }
+.rt-apt i { width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--c); }
+.rt-statuses { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex: none; }
+.rt-stay { display: flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-3); font-size: var(--fs-caption); }
+.rt-day {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.rt-day-label { font-size: 0.68rem; letter-spacing: var(--ls-caption); text-transform: uppercase; color: var(--text-3); }
+.rt-day-value { font-weight: var(--fw-semibold); color: var(--text-1); white-space: nowrap; }
+.rt-day-value span { color: var(--sky); }
+.rt-nights { display: flex; flex-direction: column; align-items: center; flex: none; color: var(--text-3); line-height: 1.1; }
+.rt-nights span:first-child { font-size: 0.68rem; white-space: nowrap; }
+.rt-card-foot { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-2); margin-top: var(--sp-3); }
+.rt-plat { display: flex; align-items: center; gap: 6px; font-size: var(--fs-caption); color: var(--text-2); }
+.rt-plat i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.rt-total {
+  font-family: var(--font-display);
+  font-weight: var(--fw-heavy);
+  font-size: 1.15rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--brand);
+}
+.rt-note { margin-top: var(--sp-2); font-size: var(--fs-caption); color: var(--text-3); }

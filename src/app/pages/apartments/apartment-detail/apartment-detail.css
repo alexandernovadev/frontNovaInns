@@ -1,0 +1,124 @@
+.tabs.scroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+.tabs.scroll > button { flex: 1 0 auto; white-space: nowrap; }
+
+/* Opción de estado (pulsable, con su tono) */
+.opt {
+  gap: var(--sp-2);
+  min-height: 42px;
+  padding: 0 var(--sp-4);
+  font-family: var(--font-body);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-small);
+  letter-spacing: normal;
+  color: var(--text-2);
+  background: var(--bg-2);
+  border: var(--border) solid var(--line);
+  border-radius: var(--r-sm);
+  box-shadow: none;
+  filter: none;
+}
+.opt:hover { color: var(--c); border-color: color-mix(in srgb, var(--c) 50%, var(--line)); }
+.opt[aria-pressed="true"] {
+  color: var(--c);
+  background: var(--c-soft);
+  border-color: var(--c);
+  box-shadow: 0 var(--depth) 0 var(--c-deep);
+}
+
+/* Estadísticas de habitación / baño */
+.stats { display: grid; gap: var(--sp-3); grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (width >= 40rem) { .stats.six { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-2);
+  text-align: center;
+  background: var(--bg-0);
+  border-radius: var(--r-sm);
+}
+.stat b {
+  font-family: var(--font-display);
+  font-weight: var(--fw-heavy);
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--text-1);
+}
+.stat > span:last-child { font-size: var(--fs-caption); font-weight: var(--fw-semibold); color: var(--text-2); }
+
+/* Contadores editables (equipamiento y modales) */
+.counters {
+  display: grid;
+  gap: var(--sp-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (width >= 40rem) { .counters { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (width >= 64rem) { .counters { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.counters.mini.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.counters.mini.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-3);
+  text-align: center;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  color: var(--text-2);
+  background: var(--bg-0);
+  border-radius: var(--r-sm);
+}
+.counter .icon-tile { width: 52px; height: 52px; border-radius: 16px; }
+.counter > lucide-icon { color: var(--c); }
+.counter input {
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: var(--fw-heavy);
+  font-size: 1.5rem;
+}
+.counter input:focus { border-color: var(--c); }
+.counters.mini .counter { gap: var(--sp-2); padding: var(--sp-3) var(--sp-2); }
+.counters.mini .counter input { min-height: 38px; font-size: 1.05rem; }
+.panel-head.mini {
+  min-height: 0;
+  padding-block: 10px;
+  font-family: var(--font-body);
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-heavy);
+  letter-spacing: var(--ls-caption);
+  text-transform: uppercase;
+}
+
+/* Fotos */
+.drop.big { padding-block: var(--sp-10, 2.5rem); border-radius: var(--r-md); }
+.photos {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (width >= 40rem) { .photos { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (width >= 64rem) { .photos { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.photo {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--bg-2);
+  border: var(--border) solid var(--line);
+  border-radius: var(--r-sm);
+}
+.photo img { width: 100%; height: 100%; object-fit: cover; }
+.photo-over {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 0.5);
+  opacity: 0;
+  transition: opacity var(--t-fast) ease;
+}
+.photo:hover .photo-over,
+.photo:focus-within .photo-over { opacity: 1; }
+@media (hover: none) { .photo-over { opacity: 1; background: transparent; place-items: start end; padding: 6px; } }

@@ -43,13 +43,14 @@ type Tab = 'model' | 'json' | 'image';
   template: `
     <modal-nova [visible]="visible()" title="Reserva desde JSON" size="lg" (closed)="closed.emit()"
       [footerTemplate]="footer">
+      <div class="stack" style="--gap: var(--sp-4)">
 
       <!-- ── Apartamento (obligatorio): su id se agrega al JSON al crear ── -->
-      <div class="mb-4">
-        <label class="text-text-secondary text-sm mb-1.5 flex items-center gap-1.5">
-          <lucide-icon [img]="Building2" class="w-4 h-4 text-brand" [strokeWidth]="2" />
-          Apartamento <span class="text-error">*</span>
-        </label>
+      <div class="field">
+        <span class="field-label lbl">
+          <lucide-icon [img]="Building2" [size]="16" [strokeWidth]="2" />
+          Apartamento <span class="t-danger">*</span>
+        </span>
         <autocomplete-select
           [options]="apartmentOptions()"
           [value]="selectedApt()"
@@ -57,130 +58,139 @@ type Tab = 'model' | 'json' | 'image';
           [readonly]="true"
           placeholder="Seleccionar apartamento" />
         @if (!selectedApt() && text().trim()) {
-          <p class="mt-1.5 text-xs text-error">Selecciona un apartamento para crear la reserva</p>
+          <p class="tiny t-danger">Selecciona un apartamento para crear la reserva</p>
         }
       </div>
 
       <!-- ── Tabs ── -->
-      <div class="flex gap-1 bg-bg border border-border rounded-2xl p-1 mb-4">
-        <button (click)="tab.set('model')"
-          class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-          [class]="tab() === 'model' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
-          <lucide-icon [img]="FileCode" class="w-4 h-4" [strokeWidth]="2" />
+      <div class="tabs full" role="tablist">
+        <button role="tab" [attr.aria-selected]="tab() === 'model'" (click)="tab.set('model')">
+          <lucide-icon [img]="FileCode" [size]="16" [strokeWidth]="2" />
           Modelo
         </button>
-        <button (click)="tab.set('json')"
-          class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-          [class]="tab() === 'json' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
-          <lucide-icon [img]="Braces" class="w-4 h-4" [strokeWidth]="2" />
+        <button role="tab" [attr.aria-selected]="tab() === 'json'" (click)="tab.set('json')">
+          <lucide-icon [img]="Braces" [size]="16" [strokeWidth]="2" />
           Insertar JSON
         </button>
-        <button (click)="tab.set('image')"
-          class="flex-1 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5"
-          [class]="tab() === 'image' ? 'tab-active' : 'text-text-secondary hover:text-text-primary'">
-          <lucide-icon [img]="ImageUp" class="w-4 h-4" [strokeWidth]="2" />
+        <button role="tab" [attr.aria-selected]="tab() === 'image'" (click)="tab.set('image')">
+          <lucide-icon [img]="ImageUp" [size]="16" [strokeWidth]="2" />
           Imagen
         </button>
       </div>
 
       <!-- ══════ TAB: MODELO ══════ -->
       @if (tab() === 'model') {
-        <p class="text-text-secondary text-sm mb-3">
-          Copia este modelo, reemplaza los datos y pégalo en <span class="text-text-primary font-medium">Insertar JSON</span>.
+        <p class="small soft">
+          Copia este modelo, reemplaza los datos y pégalo en <span class="strong">Insertar JSON</span>.
         </p>
-        <div class="relative">
-          <pre class="bg-bg border border-border rounded-xl p-4 text-xs text-text-primary font-mono overflow-auto max-h-[45vh]">{{ modelText }}</pre>
-          <button (click)="copyModel()" title="Copiar modelo"
-            class="absolute top-2 right-2 p-1.5 rounded-lg bg-elevated border border-border text-text-secondary hover:text-brand transition-colors cursor-pointer">
-            <lucide-icon [img]="copied() ? Check : Copy" class="w-4 h-4" [strokeWidth]="2" />
+        <div class="code-wrap">
+          <pre class="code">{{ modelText }}</pre>
+          <button class="icon-btn copy" (click)="copyModel()" title="Copiar modelo" aria-label="Copiar modelo">
+            <lucide-icon [img]="copied() ? Check : Copy" [size]="16" [strokeWidth]="2" />
           </button>
         </div>
-        <ul class="mt-3 space-y-1 text-xs text-text-secondary">
-          <li><span class="text-text-primary font-medium">platform:</span> {{ PLATFORMS.join(' · ') }}</li>
-          <li><span class="text-text-primary font-medium">paymentMethod:</span> {{ METHODS.join(' · ') }}</li>
-          <li><span class="text-text-primary font-medium">status:</span> {{ STATUSES.join(' · ') }}</li>
-          <li><span class="text-text-primary font-medium">extraServices.type:</span> PARKING · LAUNDRY · OTHER</li>
+        <ul class="enums">
+          <li><b>platform:</b> {{ PLATFORMS.join(' · ') }}</li>
+          <li><b>paymentMethod:</b> {{ METHODS.join(' · ') }}</li>
+          <li><b>status:</b> {{ STATUSES.join(' · ') }}</li>
+          <li><b>extraServices.type:</b> PARKING · LAUNDRY · OTHER</li>
         </ul>
       }
 
       <!-- ══════ TAB: INSERTAR JSON ══════ -->
       @if (tab() === 'json') {
-        <div class="flex items-center justify-between mb-2">
-          <label class="text-text-secondary text-sm">Pega aquí el JSON de la reserva</label>
-          <button (click)="useModel()"
-            class="text-xs text-text-secondary hover:text-brand flex items-center gap-1 cursor-pointer transition-colors">
-            <lucide-icon [img]="ClipboardPaste" class="w-3.5 h-3.5" [strokeWidth]="2" />
-            Usar modelo
-          </button>
-        </div>
-        <textarea [ngModel]="text()" (ngModelChange)="text.set($event)" rows="16" spellcheck="false" autocomplete="off"
-          placeholder='{ "group": { ... }, "stay": { ... }, "billing": { ... } }'
-          class="w-full bg-input border rounded-xl px-4 py-2.5 text-text-primary font-mono text-xs
-                 placeholder:text-text-disabled focus:outline-none resize-none transition-colors"
-          [class]="errors().length ? 'border-error focus:border-error' : 'border-border focus:border-brand'"></textarea>
+        <div class="field">
+          <div class="row between">
+            <span class="field-label">Pega aquí el JSON de la reserva</span>
+            <button data-size="sm" data-variant="ghost" (click)="useModel()">
+              <lucide-icon [img]="ClipboardPaste" [size]="14" [strokeWidth]="2" />
+              Usar modelo
+            </button>
+          </div>
+          <textarea class="mono" [ngModel]="text()" (ngModelChange)="text.set($event)" rows="16" spellcheck="false" autocomplete="off"
+            placeholder='{ "group": { ... }, "stay": { ... }, "billing": { ... } }'
+            [attr.aria-invalid]="errors().length ? true : null"></textarea>
 
-        @if (errors().length) {
-          <ul class="mt-2 space-y-0.5 text-xs text-error">
-            @for (e of errors(); track e) { <li>• {{ e }}</li> }
-          </ul>
-        } @else if (text().trim()) {
-          <p class="mt-2 text-xs text-success">JSON válido</p>
-        }
+          @if (errors().length) {
+            <ul class="errs">
+              @for (e of errors(); track e) { <li>• {{ e }}</li> }
+            </ul>
+          } @else if (text().trim()) {
+            <p class="tiny t-success">JSON válido</p>
+          }
+        </div>
       }
 
       <!-- ══════ TAB: IMAGEN (screenshot → JSON con IA) ══════ -->
       @if (tab() === 'image') {
-        <p class="text-text-secondary text-sm mb-3">
+        <p class="small soft">
           Sube o pega (Ctrl/Cmd+V) el screenshot de Booking o AirBnB. La IA arma el JSON y lo revisas antes de crear.
         </p>
-        <label
-          class="block border-2 border-dashed rounded-xl p-4 text-center transition-colors"
-          [class]="reading() ? 'border-border opacity-60' : dragging() ? 'border-brand bg-brand/5 cursor-pointer' : 'border-border hover:border-brand cursor-pointer'"
+        <label class="drop" [class.busy]="reading()" [class.over]="dragging()"
           (dragover)="$event.preventDefault(); dragging.set(true)"
           (dragleave)="dragging.set(false)"
           (drop)="onDrop($event)">
-          <input type="file" accept="image/*" class="hidden" (change)="onFileInput($event)" [disabled]="reading()" />
+          <input type="file" accept="image/*" (change)="onFileInput($event)" [disabled]="reading()" />
           @if (imagePreview(); as src) {
-            <img [src]="src" alt="Screenshot de la reserva" class="max-h-[35vh] mx-auto rounded-lg" />
-            <p class="mt-2 text-xs text-text-secondary truncate">{{ imageFile()?.name }} · clic para cambiar</p>
+            <img [src]="src" alt="Screenshot de la reserva" class="shot" />
+            <p class="tiny soft truncate">{{ imageFile()?.name }} · clic para cambiar</p>
           } @else {
-            <lucide-icon [img]="ImageUp" class="w-8 h-8 text-text-disabled mx-auto mb-2" [strokeWidth]="1.5" />
-            <p class="text-sm text-text-secondary">Arrastra, pega o haz clic para elegir la imagen</p>
+            <lucide-icon [img]="ImageUp" [size]="32" [strokeWidth]="1.6" />
+            <p>Arrastra, pega o haz clic para elegir la imagen</p>
           }
         </label>
         <input [ngModel]="hint()" (ngModelChange)="hint.set($event)" [disabled]="reading()"
-          placeholder="Nota opcional para la IA (ej: son 2 adultos y un niño)"
-          class="mt-3 w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
-                 placeholder:text-text-disabled focus:outline-none focus:border-brand transition-colors" />
+          placeholder="Nota opcional para la IA (ej: son 2 adultos y un niño)" />
         @if (reading()) {
-          <p class="mt-3 text-xs text-text-secondary flex items-center gap-1.5">
-            <lucide-icon [img]="LoaderCircle" class="w-4 h-4 animate-spin text-brand" [strokeWidth]="2" />
+          <p class="tiny soft row" style="--gap: 6px">
+            <lucide-icon class="spin t-brand" [img]="LoaderCircle" [size]="16" [strokeWidth]="2" />
             Leyendo imagen… puede tardar hasta un par de minutos.
           </p>
         } @else if (readError(); as err) {
-          <p class="mt-3 text-xs text-error">{{ err }}</p>
+          <p class="tiny t-danger">{{ err }}</p>
         }
       }
+      </div>
     </modal-nova>
 
     <ng-template #footer>
-      <div class="flex gap-3">
-        <button (click)="closed.emit()"
-          class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">Cancelar</button>
+      <div class="modal-actions">
+        <button data-variant="ghost" (click)="closed.emit()">Cancelar</button>
         @if (tab() === 'image') {
-          <button (click)="readImage()" [disabled]="!imageFile() || reading()"
-            class="flex-1 bg-brand hover:bg-brand-accent text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer flex items-center justify-center gap-1.5">
-            <lucide-icon [img]="reading() ? LoaderCircle : Sparkles" class="w-4 h-4" [class.animate-spin]="reading()" [strokeWidth]="2" />
+          <button data-tone="ai" (click)="readImage()" [disabled]="!imageFile() || reading()" [attr.aria-busy]="reading() || null">
+            @if (!reading()) { <lucide-icon [img]="Sparkles" [size]="16" [strokeWidth]="2.2" /> }
             {{ reading() ? 'Leyendo...' : 'Leer con IA' }}
           </button>
         } @else {
-          <button (click)="submit()" [disabled]="tab() !== 'json' || !parsed() || !selectedApt() || saving()"
-            class="flex-1 bg-brand hover:bg-brand-accent text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+          <button data-tone="brand" (click)="submit()" [disabled]="tab() !== 'json' || !parsed() || !selectedApt() || saving()" [attr.aria-busy]="saving() || null">
             {{ saving() ? 'Guardando...' : 'Crear reserva' }}
           </button>
         }
       </div>
     </ng-template>
+  `,
+  styles: `
+    .lbl { display: flex; align-items: center; gap: 6px; }
+    .lbl lucide-icon { color: var(--brand); }
+    .code-wrap { position: relative; }
+    .code {
+      margin: 0;
+      max-height: 45vh;
+      overflow: auto;
+      padding: var(--sp-4);
+      font-family: var(--font-mono);
+      font-size: var(--fs-caption);
+      color: var(--text-1);
+      background: var(--bg-0);
+      border: var(--border) solid var(--line);
+      border-radius: var(--r-md);
+    }
+    .copy { position: absolute; top: var(--sp-2); right: var(--sp-2); background: var(--bg-2); }
+    .enums { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-caption); color: var(--text-2); }
+    .enums b { color: var(--text-1); font-weight: var(--fw-semibold); }
+    textarea.mono { font-family: var(--font-mono); font-size: var(--fs-caption); resize: vertical; }
+    .errs { margin: 0; padding: 0; list-style: none; font-size: var(--fs-caption); color: var(--danger); }
+    .shot { max-height: 35vh; margin-inline: auto; border-radius: var(--r-sm, 10px); }
   `,
 })
 export class BookingJsonModal implements OnInit {

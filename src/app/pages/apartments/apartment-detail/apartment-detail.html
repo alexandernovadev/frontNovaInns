@@ -1,29 +1,24 @@
 @if (loading()) {
-<div class="flex items-center justify-center h-64 text-text-disabled">Cargando...</div>
+<div class="loading">Cargando...</div>
 } @else if (apartment()) {
-<div class="p-6 space-y-6">
+<div class="page">
 
   <!-- Header -->
-  <div class="page-header flex items-center gap-4">
-    <button (click)="goBack()" aria-label="Volver" title="Volver"
-      class="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-hover transition-colors cursor-pointer">
-      <lucide-icon [img]="ArrowLeft" class="w-5 h-5" [strokeWidth]="2" />
-    </button>
-    <div class="flex-1 min-w-0 flex items-center gap-2">
-      <h1 class="text-text-primary text-2xl font-bold truncate">{{ apartment()!.internalName }}</h1>
+  <header class="page-header">
+    <div class="row" style="min-width: 0; flex: 1; --gap: var(--sp-2)">
+      <button class="icon-btn" (click)="goBack()" aria-label="Volver" title="Volver">
+        <lucide-icon [img]="ArrowLeft" [size]="20" [strokeWidth]="2.2" />
+      </button>
+      <h1 class="page-title"><span>{{ apartment()!.internalName }}</span></h1>
       <status-badge [value]="apartment()!.status" type="apartment" />
     </div>
-  </div>
+  </header>
 
   <!-- Tabs -->
-  <div class="flex gap-1 bg-surface border border-border rounded-2xl p-1 overflow-x-auto">
+  <div class="tabs full scroll" role="tablist">
     @for (t of TABS; track t.key) {
-    <button (click)="tab.set(t.key)"
-      class="flex-1 shrink-0 px-3 py-2 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap"
-      [class]="tab() === t.key
-          ? 'tab-active'
-          : 'text-text-secondary hover:text-text-primary'">
-      <lucide-icon [img]="t.icon" class="w-4 h-4" [strokeWidth]="2" />
+    <button role="tab" [attr.aria-selected]="tab() === t.key" (click)="tab.set(t.key)">
+      <lucide-icon [img]="t.icon" [size]="16" [strokeWidth]="2" />
       {{ t.label }}
     </button>
     }
@@ -31,44 +26,27 @@
 
   <!-- ========== TAB: GENERAL ========== -->
   @if (tab() === 'general') {
-  <div class="bg-surface border border-border rounded-2xl p-6 space-y-5">
-    <div>
-      <label for="apt-name" class="block text-text-secondary text-sm mb-1.5">Nombre interno</label>
-      <input id="apt-name" type="text" [(ngModel)]="editName" autocomplete="off" class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
-                 focus:outline-none focus:border-brand transition-colors" />
-    </div>
-    <div>
-      <label class="block text-text-secondary text-sm mb-2">Estado</label>
-      <div class="flex flex-wrap gap-2">
-        <button (click)="editStatus = 'ACTIVE'"
-          class="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors cursor-pointer"
-          [class]="editStatus === 'ACTIVE'
-              ? 'bg-success/15 border-success/40 text-success'
-              : 'bg-input border-border text-text-secondary hover:border-success/40 hover:text-success'">
-          <lucide-icon [img]="CheckCircle2" class="w-4 h-4" [strokeWidth]="1.8" />
-          Activo
+  <div class="surface pad stack" style="--gap: var(--sp-5)">
+    <label class="field">
+      <span class="field-label">Nombre interno</span>
+      <input id="apt-name" type="text" [(ngModel)]="editName" autocomplete="off" />
+    </label>
+    <div class="field">
+      <span class="field-label">Estado</span>
+      <div class="row wrap" style="--gap: var(--sp-2)">
+        <button type="button" class="opt" data-tone="success" [attr.aria-pressed]="editStatus === 'ACTIVE'" (click)="editStatus = 'ACTIVE'">
+          <lucide-icon [img]="CheckCircle2" [size]="16" [strokeWidth]="2" /> Activo
         </button>
-        <button (click)="editStatus = 'MAINTENANCE'"
-          class="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors cursor-pointer"
-          [class]="editStatus === 'MAINTENANCE'
-              ? 'bg-warning/15 border-warning/40 text-warning'
-              : 'bg-input border-border text-text-secondary hover:border-warning/40 hover:text-warning'">
-          <lucide-icon [img]="AlertTriangle" class="w-4 h-4" [strokeWidth]="1.8" />
-          Mantenimiento
+        <button type="button" class="opt" data-tone="warning" [attr.aria-pressed]="editStatus === 'MAINTENANCE'" (click)="editStatus = 'MAINTENANCE'">
+          <lucide-icon [img]="AlertTriangle" [size]="16" [strokeWidth]="2" /> Mantenimiento
         </button>
-        <button (click)="editStatus = 'INACTIVE'"
-          class="flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-colors cursor-pointer"
-          [class]="editStatus === 'INACTIVE'
-              ? 'bg-error/15 border-error/40 text-error'
-              : 'bg-input border-border text-text-secondary hover:border-error/40 hover:text-error'">
-          <lucide-icon [img]="XCircle" class="w-4 h-4" [strokeWidth]="1.8" />
-          Inactivo
+        <button type="button" class="opt" data-tone="danger" [attr.aria-pressed]="editStatus === 'INACTIVE'" (click)="editStatus = 'INACTIVE'">
+          <lucide-icon [img]="XCircle" [size]="16" [strokeWidth]="2" /> Inactivo
         </button>
       </div>
     </div>
-    <div class="pt-2">
-      <button (click)="saveGeneral()" [disabled]="saving()" class="bg-brand hover:bg-brand-accent text-bg font-bold px-6 py-2.5 rounded-xl text-sm
-                 transition-colors disabled:opacity-50 cursor-pointer">
+    <div>
+      <button data-tone="brand" (click)="saveGeneral()" [disabled]="saving()" [attr.aria-busy]="saving() || null">
         {{ saving() ? 'Guardando...' : 'Guardar cambios' }}
       </button>
     </div>
@@ -77,87 +55,37 @@
 
   <!-- ========== TAB: HABITACIONES ========== -->
   @if (tab() === 'rooms') {
-  <div class="space-y-4">
-    <div class="flex justify-end">
-      <button (click)="openAddRoom()" class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
-                 px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-        </svg>
-        Añadir habitación
+  <div class="stack">
+    <div class="row end">
+      <button data-tone="brand" data-size="sm" (click)="openAddRoom()">
+        <lucide-icon [img]="Plus" [size]="16" [strokeWidth]="2.6" /> Añadir habitación
       </button>
     </div>
 
     @if (apartment()!.rooms.length === 0) {
-    <div class="bg-surface border border-border rounded-2xl py-12 text-center text-text-disabled">
-      Sin habitaciones registradas
-    </div>
+    <div class="surface empty"><p class="small muted">Sin habitaciones registradas</p></div>
     } @else {
     @for (room of apartment()!.rooms; track room._id) {
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <!-- Header -->
-      <div class="flex items-center justify-between px-5 py-3.5 bg-indigo-500/10 border-b border-indigo-500/20">
-        <div class="flex items-center gap-2">
-          <lucide-icon [img]="Bed" class="w-5 h-5 text-indigo-400" [strokeWidth]="2" />
-          <h3 class="text-indigo-400 font-semibold">{{ room.name }}</h3>
-        </div>
-        <div class="flex gap-1">
-          <button (click)="openEditRoom(room)"
-            class="p-2 rounded-lg text-indigo-400/60 hover:text-indigo-400 hover:bg-indigo-500/10 transition-colors cursor-pointer">
-            <lucide-icon [img]="Pencil" class="w-4 h-4" [strokeWidth]="2" />
-          </button>
-          <button (click)="deleteRoom(room)"
-            class="p-2 rounded-lg text-indigo-400/60 hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
-            <lucide-icon [img]="Trash2" class="w-4 h-4" [strokeWidth]="2" />
-          </button>
-        </div>
+    <section class="surface panel tint-lilac">
+      <header class="panel-head">
+        <lucide-icon [img]="Bed" [size]="18" [strokeWidth]="2.2" />
+        <span style="flex: 1">{{ room.name }}</span>
+        <button class="icon-btn" (click)="openEditRoom(room)" aria-label="Editar habitación" title="Editar">
+          <lucide-icon [img]="Pencil" [size]="16" [strokeWidth]="2" />
+        </button>
+        <button class="icon-btn danger" (click)="deleteRoom(room)" aria-label="Eliminar habitación" title="Eliminar">
+          <lucide-icon [img]="Trash2" [size]="16" [strokeWidth]="2" />
+        </button>
+      </header>
+      <div class="panel-body stats six">
+        <div class="stat"><span class="icon-tile"><lucide-icon [img]="Bed" [size]="20" [strokeWidth]="2" /></span><b>{{ room.furniture.beds }}</b><span>Camas</span></div>
+        <div class="stat"><span class="icon-tile"><lucide-icon [img]="Package" [size]="20" [strokeWidth]="2" /></span><b>{{ room.furniture.closets }}</b><span>Closets</span></div>
+        <div class="stat"><span class="icon-tile"><lucide-icon [img]="Lamp" [size]="20" [strokeWidth]="2" /></span><b>{{ room.furniture.nightstands }}</b><span>Mesitas</span></div>
+        <div class="stat"><span class="icon-tile"><lucide-icon [img]="Shirt" [size]="20" [strokeWidth]="2" /></span><b>{{ room.inventory.hangers }}</b><span>Ganchos</span></div>
+        <div class="stat"><span class="icon-tile"><lucide-icon [img]="CloudRain" [size]="20" [strokeWidth]="2" /></span><b>{{ room.inventory.pillows }}</b><span>Almohadas</span></div>
+        <div class="stat"><span class="icon-tile"><lucide-icon [img]="Layers" [size]="20" [strokeWidth]="2" /></span><b>{{ room.windows.curtains }}</b><span>Cortinas</span></div>
       </div>
-      <!-- Stats -->
-      <div class="p-5 grid grid-cols-3 gap-3 sm:grid-cols-6">
-        <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
-          <div class="w-12 h-12 rounded-xl bg-indigo-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Bed" class="w-6 h-6 text-indigo-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-primary text-2xl font-bold">{{ room.furniture.beds }}</span>
-          <span class="text-text-secondary text-xs font-medium text-center">Camas</span>
-        </div>
-        <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
-          <div class="w-12 h-12 rounded-xl bg-indigo-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Package" class="w-6 h-6 text-indigo-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-primary text-2xl font-bold">{{ room.furniture.closets }}</span>
-          <span class="text-text-secondary text-xs font-medium text-center">Closets</span>
-        </div>
-        <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
-          <div class="w-12 h-12 rounded-xl bg-indigo-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Lamp" class="w-6 h-6 text-indigo-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-primary text-2xl font-bold">{{ room.furniture.nightstands }}</span>
-          <span class="text-text-secondary text-xs font-medium text-center">Mesitas</span>
-        </div>
-        <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
-          <div class="w-12 h-12 rounded-xl bg-indigo-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Shirt" class="w-6 h-6 text-indigo-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-primary text-2xl font-bold">{{ room.inventory.hangers }}</span>
-          <span class="text-text-secondary text-xs font-medium text-center">Ganchos</span>
-        </div>
-        <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
-          <div class="w-12 h-12 rounded-xl bg-indigo-500/15 flex items-center justify-center">
-            <lucide-icon [img]="CloudRain" class="w-6 h-6 text-indigo-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-primary text-2xl font-bold">{{ room.inventory.pillows }}</span>
-          <span class="text-text-secondary text-xs font-medium text-center">Almohadas</span>
-        </div>
-        <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
-          <div class="w-12 h-12 rounded-xl bg-indigo-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Layers" class="w-6 h-6 text-indigo-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-primary text-2xl font-bold">{{ room.windows.curtains }}</span>
-          <span class="text-text-secondary text-xs font-medium text-center">Cortinas</span>
-        </div>
-      </div>
-    </div>
+    </section>
     }
     }
   </div>
@@ -165,66 +93,34 @@
 
   <!-- ========== TAB: BAÑOS ========== -->
   @if (tab() === 'bathrooms') {
-  <div class="space-y-4">
-    <div class="flex justify-end">
-      <button (click)="openAddBath()" class="flex items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
-                 px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-        </svg>
-        Añadir baño
+  <div class="stack">
+    <div class="row end">
+      <button data-tone="brand" data-size="sm" (click)="openAddBath()">
+        <lucide-icon [img]="Plus" [size]="16" [strokeWidth]="2.6" /> Añadir baño
       </button>
     </div>
 
     @if (apartment()!.bathrooms.length === 0) {
-    <div class="bg-surface border border-border rounded-2xl py-12 text-center text-text-disabled">
-      Sin baños registrados
-    </div>
+    <div class="surface empty"><p class="small muted">Sin baños registrados</p></div>
     } @else {
     @for (bath of apartment()!.bathrooms; track bath._id) {
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <!-- Header -->
-      <div class="flex items-center justify-between px-5 py-3.5 bg-cyan-500/10 border-b border-cyan-500/20">
-        <div class="flex items-center gap-2">
-          <lucide-icon [img]="ShowerHead" class="w-5 h-5 text-cyan-400" [strokeWidth]="2" />
-          <h3 class="text-cyan-400 font-semibold">{{ bath.name }}</h3>
-        </div>
-        <div class="flex gap-1">
-          <button (click)="openEditBath(bath)"
-            class="p-2 rounded-lg text-cyan-400/60 hover:text-cyan-400 hover:bg-cyan-500/10 transition-colors cursor-pointer">
-            <lucide-icon [img]="Pencil" class="w-4 h-4" [strokeWidth]="2" />
-          </button>
-          <button (click)="deleteBath(bath)"
-            class="p-2 rounded-lg text-cyan-400/60 hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
-            <lucide-icon [img]="Trash2" class="w-4 h-4" [strokeWidth]="2" />
-          </button>
-        </div>
+    <section class="surface panel tint-sky">
+      <header class="panel-head">
+        <lucide-icon [img]="ShowerHead" [size]="18" [strokeWidth]="2.2" />
+        <span style="flex: 1">{{ bath.name }}</span>
+        <button class="icon-btn" (click)="openEditBath(bath)" aria-label="Editar baño" title="Editar">
+          <lucide-icon [img]="Pencil" [size]="16" [strokeWidth]="2" />
+        </button>
+        <button class="icon-btn danger" (click)="deleteBath(bath)" aria-label="Eliminar baño" title="Eliminar">
+          <lucide-icon [img]="Trash2" [size]="16" [strokeWidth]="2" />
+        </button>
+      </header>
+      <div class="panel-body stats three">
+        <div class="stat"><span class="icon-tile"><lucide-icon [img]="Droplets" [size]="20" [strokeWidth]="2" /></span><b>{{ bath.fixtures.toilets }}</b><span>Sanitarios</span></div>
+        <div class="stat"><span class="icon-tile"><lucide-icon [img]="Droplets" [size]="20" [strokeWidth]="2" /></span><b>{{ bath.fixtures.sinks }}</b><span>Lavamanos</span></div>
+        <div class="stat"><span class="icon-tile"><lucide-icon [img]="ShowerHead" [size]="20" [strokeWidth]="2" /></span><b>{{ bath.fixtures.electricShowers }}</b><span>Duchas</span></div>
       </div>
-      <!-- Stats -->
-      <div class="p-5 grid grid-cols-3 gap-3">
-        <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
-          <div class="w-12 h-12 rounded-xl bg-cyan-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Droplets" class="w-6 h-6 text-cyan-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-primary text-2xl font-bold">{{ bath.fixtures.toilets }}</span>
-          <span class="text-text-secondary text-xs font-medium text-center">Sanitarios</span>
-        </div>
-        <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
-          <div class="w-12 h-12 rounded-xl bg-cyan-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Droplets" class="w-6 h-6 text-cyan-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-primary text-2xl font-bold">{{ bath.fixtures.sinks }}</span>
-          <span class="text-text-secondary text-xs font-medium text-center">Lavamanos</span>
-        </div>
-        <div class="bg-bg rounded-2xl p-4 flex flex-col items-center gap-3 border border-border">
-          <div class="w-12 h-12 rounded-xl bg-cyan-500/15 flex items-center justify-center">
-            <lucide-icon [img]="ShowerHead" class="w-6 h-6 text-cyan-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-primary text-2xl font-bold">{{ bath.fixtures.electricShowers }}</span>
-          <span class="text-text-secondary text-xs font-medium text-center">Duchas</span>
-        </div>
-      </div>
-    </div>
+    </section>
     }
     }
   </div>
@@ -232,190 +128,68 @@
 
   <!-- ========== TAB: EQUIPAMIENTO ========== -->
   @if (tab() === 'equipment') {
-  <div class="space-y-5">
+  <div class="stack" style="--gap: var(--sp-5)">
 
     <!-- COCINA -->
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <div class="flex items-center gap-3 px-5 py-3.5 bg-orange-500/10 border-b border-orange-500/20">
-        <lucide-icon [img]="ChefHat" class="w-8 h-8 text-orange-400" [strokeWidth]="2" />
-        <h3 class="text-orange-400 font-semibold text-sm">Cocina</h3>
+    <section class="surface panel tint-peach">
+      <header class="panel-head"><lucide-icon [img]="ChefHat" [size]="20" [strokeWidth]="2.2" /> Cocina</header>
+      <div class="panel-body counters">
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Refrigerator" [size]="22" [strokeWidth]="2" /></span><span>Neveras</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.fridges" /></label>
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Flame" [size]="22" [strokeWidth]="2" /></span><span>Estufas</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.stoves" /></label>
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Microwave" [size]="22" [strokeWidth]="2" /></span><span>Microondas</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.microwaves" /></label>
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Zap" [size]="22" [strokeWidth]="2" /></span><span>Licuadoras</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.blenders" /></label>
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="ChefHat" [size]="22" [strokeWidth]="2" /></span><span>Ollas</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.cookware.pots" /></label>
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Utensils" [size]="22" [strokeWidth]="2" /></span><span>Sartenes</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.cookware.pans" /></label>
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Armchair" [size]="22" [strokeWidth]="2" /></span><span>Sillas comedor</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.seating.diningSillas" /></label>
       </div>
-      <div class="p-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-orange-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Refrigerator" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Neveras</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.fridges"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors" />
-        </div>
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-orange-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Flame" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Estufas</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.stoves"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors" />
-        </div>
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-orange-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Microwave" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Microondas</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.microwaves"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors" />
-        </div>
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-orange-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Zap" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Licuadoras</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.appliances.blenders"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors" />
-        </div>
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-orange-500/15 flex items-center justify-center">
-            <lucide-icon [img]="ChefHat" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Ollas</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.cookware.pots"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors" />
-        </div>
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-orange-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Utensils" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Sartenes</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.cookware.pans"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors" />
-        </div>
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-orange-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Armchair" class="w-8 h-8 text-orange-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Sillas comedor</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.kitchen.seating.diningSillas"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-orange-400 transition-colors" />
-        </div>
-
-      </div>
-    </div>
+    </section>
 
     <!-- ELECTRÓNICA -->
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <div class="flex items-center gap-3 px-5 py-3.5 bg-blue-500/10 border-b border-blue-500/20">
-        <lucide-icon [img]="Tv" class="w-8 h-8 text-blue-400" [strokeWidth]="2" />
-        <h3 class="text-blue-400 font-semibold text-sm">Electrónica</h3>
+    <section class="surface panel tint-sky">
+      <header class="panel-head"><lucide-icon [img]="Tv" [size]="20" [strokeWidth]="2.2" /> Electrónica</header>
+      <div class="panel-body counters">
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Tv" [size]="22" [strokeWidth]="2" /></span><span>Televisores</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.electronics.tvs" /></label>
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Shirt" [size]="22" [strokeWidth]="2" /></span><span>Planchas</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.electronics.irons" /></label>
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Wind" [size]="22" [strokeWidth]="2" /></span><span>Secadores</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.electronics.hairDryers" /></label>
       </div>
-      <div class="p-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-blue-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Tv" class="w-8 h-8 text-blue-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Televisores</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.electronics.tvs"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-blue-400 transition-colors" />
-        </div>
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-blue-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Shirt" class="w-8 h-8 text-blue-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Planchas</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.electronics.irons"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-blue-400 transition-colors" />
-        </div>
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-blue-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Wind" class="w-8 h-8 text-blue-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Secadores</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.electronics.hairDryers"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-blue-400 transition-colors" />
-        </div>
-
-      </div>
-    </div>
+    </section>
 
     <!-- MUEBLES -->
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <div class="flex items-center gap-3 px-5 py-3.5 bg-purple-500/10 border-b border-purple-500/20">
-        <lucide-icon [img]="Sofa" class="w-8 h-8 text-purple-400" [strokeWidth]="2" />
-        <h3 class="text-purple-400 font-semibold text-sm">Muebles</h3>
+    <section class="surface panel tint-lilac">
+      <header class="panel-head"><lucide-icon [img]="Sofa" [size]="20" [strokeWidth]="2.2" /> Muebles</header>
+      <div class="panel-body counters">
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Sofa" [size]="22" [strokeWidth]="2" /></span><span>Sofás</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.sofas" /></label>
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Bed" [size]="22" [strokeWidth]="2" /></span><span>Sofás cama</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.sofaBeds" /></label>
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="LayoutGrid" [size]="22" [strokeWidth]="2" /></span><span>Tapetes</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.rugs" /></label>
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="UtensilsCrossed" [size]="22" [strokeWidth]="2" /></span><span>Mesas comedor</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.diningTables" /></label>
       </div>
-      <div class="p-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-purple-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Sofa" class="w-8 h-8 text-purple-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Sofás</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.sofas"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-purple-400 transition-colors" />
-        </div>
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-purple-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Bed" class="w-8 h-8 text-purple-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Sofás cama</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.sofaBeds"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-purple-400 transition-colors" />
-        </div>
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-purple-500/15 flex items-center justify-center">
-            <lucide-icon [img]="LayoutGrid" class="w-8 h-8 text-purple-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Tapetes</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.rugs"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-purple-400 transition-colors" />
-        </div>
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-purple-500/15 flex items-center justify-center">
-            <lucide-icon [img]="UtensilsCrossed" class="w-8 h-8 text-purple-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Mesas comedor</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.equipment.furniture.diningTables"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-purple-400 transition-colors" />
-        </div>
-
-      </div>
-    </div>
+    </section>
 
     <!-- PARQUEADERO -->
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <div class="flex items-center gap-3 px-5 py-3.5 bg-emerald-500/10 border-b border-emerald-500/20">
-        <lucide-icon [img]="Car" class="w-8 h-8 text-emerald-400" [strokeWidth]="2" />
-        <h3 class="text-emerald-400 font-semibold text-sm">Parqueadero</h3>
+    <section class="surface panel tint-mint">
+      <header class="panel-head"><lucide-icon [img]="Car" [size]="20" [strokeWidth]="2.2" /> Parqueadero</header>
+      <div class="panel-body counters">
+        <label class="counter"><span class="icon-tile"><lucide-icon [img]="Car" [size]="22" [strokeWidth]="2" /></span><span>Puestos</span>
+          <input type="number" min="0" [(ngModel)]="apartment()!.parking.totalSpots" /></label>
       </div>
-      <div class="p-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-
-        <div class="bg-bg rounded-2xl p-6 flex flex-col items-center gap-4 border border-border">
-          <div class="w-16 h-16 rounded-2xl bg-emerald-500/15 flex items-center justify-center">
-            <lucide-icon [img]="Car" class="w-8 h-8 text-emerald-400" [strokeWidth]="1.8" />
-          </div>
-          <span class="text-text-secondary text-sm font-medium text-center">Puestos</span>
-          <input type="number" min="0" [(ngModel)]="apartment()!.parking.totalSpots"
-            class="w-full bg-input border border-border rounded-xl px-3 py-2 text-text-primary text-2xl font-bold text-center focus:outline-none focus:border-emerald-400 transition-colors" />
-        </div>
-
-      </div>
-    </div>
+    </section>
 
     <div>
-      <button (click)="saveEquipment()" [disabled]="saving()" class="bg-brand hover:bg-brand-accent text-bg font-bold px-6 py-2.5 rounded-xl text-sm
-                 transition-colors disabled:opacity-50 cursor-pointer">
+      <button data-tone="brand" (click)="saveEquipment()" [disabled]="saving()" [attr.aria-busy]="saving() || null">
         {{ saving() ? 'Guardando...' : 'Guardar cambios' }}
       </button>
     </div>
@@ -425,39 +199,27 @@
 
   <!-- ========== TAB: FOTOS ========== -->
   @if (tab() === 'photos') {
-  <div class="space-y-4">
-    <!-- Upload area -->
-    <label class="flex flex-col items-center justify-center gap-3 border-2 border-dashed border-border
-               rounded-2xl py-10 cursor-pointer hover:border-brand transition-colors group">
-      <input type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)" />
+  <div class="stack">
+    <label class="drop big" [class.busy]="uploadingPhoto()">
+      <input type="file" accept="image/*" (change)="onFileSelected($event)" />
       @if (uploadingPhoto()) {
-      <span class="text-text-disabled text-sm">Subiendo...</span>
+      <span>Subiendo...</span>
       } @else {
-      <svg class="w-10 h-10 text-text-disabled group-hover:text-brand transition-colors" fill="none"
-        stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round"
-          d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-      </svg>
-      <span class="text-text-secondary text-sm">Click o arrastra una imagen para subir</span>
+      <lucide-icon [img]="Upload" [size]="36" [strokeWidth]="1.7" />
+      <span>Click o arrastra una imagen para subir</span>
       }
     </label>
 
-    <!-- Grid de fotos -->
     @if (apartment()!.photos.length === 0) {
-    <p class="text-center text-text-disabled text-sm py-4">Sin fotos</p>
+    <p class="small muted" style="text-align: center; padding: var(--sp-4)">Sin fotos</p>
     } @else {
-    <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+    <div class="photos">
       @for (photo of apartment()!.photos; track photo.publicId) {
-      <div class="relative group rounded-xl overflow-hidden border border-border aspect-square bg-input">
-        <img [src]="photo.url" [alt]="photo.caption" class="w-full h-full object-cover" />
-        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity
-                          flex items-center justify-center">
-          <button (click)="removePhoto(photo.publicId)"
-            class="p-2 bg-error rounded-lg text-white hover:bg-error/80 transition-colors cursor-pointer">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
+      <div class="photo">
+        <img [src]="photo.url" [alt]="photo.caption" />
+        <div class="photo-over">
+          <button data-tone="danger" data-icon data-size="sm" (click)="removePhoto(photo.publicId)" aria-label="Eliminar foto" title="Eliminar foto">
+            <lucide-icon [img]="Trash2" [size]="18" [strokeWidth]="2.2" />
           </button>
         </div>
       </div>
@@ -473,86 +235,46 @@
 <!-- ======= MODAL HABITACIÓN ======= -->
 <modal-nova [visible]="showRoomForm()" [title]="(editingRoom() ? 'Editar' : 'Añadir') + ' habitación'" size="md"
   (closed)="showRoomForm.set(false)" [footerTemplate]="roomFooter">
-  <div class="space-y-5">
-    <div>
-      <label class="block text-text-secondary text-sm mb-1.5">Nombre</label>
-      <input type="text" [(ngModel)]="roomForm.name" placeholder="Ej: Habitación principal" autocomplete="off"
-        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm focus:outline-none focus:border-brand" />
-    </div>
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <div class="flex items-center gap-2 px-4 py-2.5 bg-purple-500/10 border-b border-purple-500/20">
-        <lucide-icon [img]="Bed" class="w-4 h-4 text-purple-400" [strokeWidth]="2" />
-        <span class="text-purple-400 font-semibold text-xs uppercase tracking-wider">Mobiliario</span>
+  <div class="stack" style="--gap: var(--sp-5)">
+    <label class="field">
+      <span class="field-label">Nombre</span>
+      <input type="text" [(ngModel)]="roomForm.name" placeholder="Ej: Habitación principal" autocomplete="off" />
+    </label>
+    <section class="surface panel tint-lilac">
+      <header class="panel-head mini"><lucide-icon [img]="Bed" [size]="16" [strokeWidth]="2.2" /> Mobiliario</header>
+      <div class="panel-body counters mini three">
+        <label class="counter"><lucide-icon [img]="Bed" [size]="24" [strokeWidth]="2" /><span>Camas</span>
+          <input type="number" min="0" [(ngModel)]="roomForm.furniture.beds" /></label>
+        <label class="counter"><lucide-icon [img]="Package" [size]="24" [strokeWidth]="2" /><span>Closets</span>
+          <input type="number" min="0" [(ngModel)]="roomForm.furniture.closets" /></label>
+        <label class="counter"><lucide-icon [img]="Lamp" [size]="24" [strokeWidth]="2" /><span>Mesitas</span>
+          <input type="number" min="0" [(ngModel)]="roomForm.furniture.nightstands" /></label>
       </div>
-      <div class="p-4 grid grid-cols-3 gap-3">
-        <div class="bg-bg rounded-xl p-3 flex flex-col items-center gap-2 border border-border">
-          <lucide-icon [img]="Bed" class="w-8 h-8 text-purple-400" [strokeWidth]="1.8" />
-          <span class="text-text-secondary text-sm font-medium text-center">Camas</span>
-          <input type="number" min="0" [(ngModel)]="roomForm.furniture.beds"
-            class="w-full bg-input border border-border rounded-lg px-2 py-1.5 text-text-primary text-sm font-bold text-center focus:outline-none focus:border-purple-400 transition-colors" />
-        </div>
-        <div class="bg-bg rounded-xl p-3 flex flex-col items-center gap-2 border border-border">
-          <lucide-icon [img]="Package" class="w-8 h-8 text-purple-400" [strokeWidth]="1.8" />
-          <span class="text-text-secondary text-sm font-medium text-center">Closets</span>
-          <input type="number" min="0" [(ngModel)]="roomForm.furniture.closets"
-            class="w-full bg-input border border-border rounded-lg px-2 py-1.5 text-text-primary text-sm font-bold text-center focus:outline-none focus:border-purple-400 transition-colors" />
-        </div>
-        <div class="bg-bg rounded-xl p-3 flex flex-col items-center gap-2 border border-border">
-          <lucide-icon [img]="Lamp" class="w-8 h-8 text-purple-400" [strokeWidth]="1.8" />
-          <span class="text-text-secondary text-sm font-medium text-center">Mesitas</span>
-          <input type="number" min="0" [(ngModel)]="roomForm.furniture.nightstands"
-            class="w-full bg-input border border-border rounded-lg px-2 py-1.5 text-text-primary text-sm font-bold text-center focus:outline-none focus:border-purple-400 transition-colors" />
-        </div>
+    </section>
+    <section class="surface panel tint-sky">
+      <header class="panel-head mini"><lucide-icon [img]="Layers" [size]="16" [strokeWidth]="2.2" /> Ventanas</header>
+      <div class="panel-body counters mini two">
+        <label class="counter"><lucide-icon [img]="Layers" [size]="24" [strokeWidth]="2" /><span>Cortinas</span>
+          <input type="number" min="0" [(ngModel)]="roomForm.windows.curtains" /></label>
+        <label class="counter"><lucide-icon [img]="Layers" [size]="24" [strokeWidth]="2" /><span>Sheers</span>
+          <input type="number" min="0" [(ngModel)]="roomForm.windows.sheers" /></label>
       </div>
-    </div>
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <div class="flex items-center gap-2 px-4 py-2.5 bg-blue-500/10 border-b border-blue-500/20">
-        <lucide-icon [img]="Layers" class="w-4 h-4 text-blue-400" [strokeWidth]="2" />
-        <span class="text-blue-400 font-semibold text-xs uppercase tracking-wider">Ventanas</span>
+    </section>
+    <section class="surface panel tint-butter">
+      <header class="panel-head mini"><lucide-icon [img]="Shirt" [size]="16" [strokeWidth]="2.2" /> Inventario</header>
+      <div class="panel-body counters mini two">
+        <label class="counter"><lucide-icon [img]="Shirt" [size]="24" [strokeWidth]="2" /><span>Ganchos</span>
+          <input type="number" min="0" [(ngModel)]="roomForm.inventory.hangers" /></label>
+        <label class="counter"><lucide-icon [img]="CloudRain" [size]="24" [strokeWidth]="2" /><span>Almohadas</span>
+          <input type="number" min="0" [(ngModel)]="roomForm.inventory.pillows" /></label>
       </div>
-      <div class="p-4 grid grid-cols-2 gap-3">
-        <div class="bg-bg rounded-xl p-3 flex flex-col items-center gap-2 border border-border">
-          <lucide-icon [img]="Layers" class="w-8 h-8 text-blue-400" [strokeWidth]="1.8" />
-          <span class="text-text-secondary text-sm font-medium text-center">Cortinas</span>
-          <input type="number" min="0" [(ngModel)]="roomForm.windows.curtains"
-            class="w-full bg-input border border-border rounded-lg px-2 py-1.5 text-text-primary text-sm font-bold text-center focus:outline-none focus:border-blue-400 transition-colors" />
-        </div>
-        <div class="bg-bg rounded-xl p-3 flex flex-col items-center gap-2 border border-border">
-          <lucide-icon [img]="Layers" class="w-8 h-8 text-blue-400" [strokeWidth]="1.8" />
-          <span class="text-text-secondary text-sm font-medium text-center">Sheers</span>
-          <input type="number" min="0" [(ngModel)]="roomForm.windows.sheers"
-            class="w-full bg-input border border-border rounded-lg px-2 py-1.5 text-text-primary text-sm font-bold text-center focus:outline-none focus:border-blue-400 transition-colors" />
-        </div>
-      </div>
-    </div>
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <div class="flex items-center gap-2 px-4 py-2.5 bg-amber-500/10 border-b border-amber-500/20">
-        <lucide-icon [img]="Shirt" class="w-4 h-4 text-amber-400" [strokeWidth]="2" />
-        <span class="text-amber-400 font-semibold text-xs uppercase tracking-wider">Inventario</span>
-      </div>
-      <div class="p-4 grid grid-cols-2 gap-3">
-        <div class="bg-bg rounded-xl p-3 flex flex-col items-center gap-2 border border-border">
-          <lucide-icon [img]="Shirt" class="w-5 h-5 text-amber-400" [strokeWidth]="1.8" />
-          <span class="text-text-secondary text-sm font-medium text-center">Ganchos</span>
-          <input type="number" min="0" [(ngModel)]="roomForm.inventory.hangers"
-            class="w-full bg-input border border-border rounded-lg px-2 py-1.5 text-text-primary text-sm font-bold text-center focus:outline-none focus:border-amber-400 transition-colors" />
-        </div>
-        <div class="bg-bg rounded-xl p-3 flex flex-col items-center gap-2 border border-border">
-          <lucide-icon [img]="CloudRain" class="w-5 h-5 text-amber-400" [strokeWidth]="1.8" />
-          <span class="text-text-secondary text-sm font-medium text-center">Almohadas</span>
-          <input type="number" min="0" [(ngModel)]="roomForm.inventory.pillows"
-            class="w-full bg-input border border-border rounded-lg px-2 py-1.5 text-text-primary text-sm font-bold text-center focus:outline-none focus:border-amber-400 transition-colors" />
-        </div>
-      </div>
-    </div>
+    </section>
   </div>
 </modal-nova>
 <ng-template #roomFooter>
-  <div class="flex gap-3">
-    <button (click)="showRoomForm.set(false)"
-      class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">Cancelar</button>
-    <button (click)="saveRoom()" [disabled]="saving()"
-      class="flex-1 bg-brand hover:bg-brand-accent text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+  <div class="modal-actions">
+    <button data-variant="ghost" (click)="showRoomForm.set(false)">Cancelar</button>
+    <button data-tone="brand" (click)="saveRoom()" [disabled]="saving()" [attr.aria-busy]="saving() || null">
       {{ saving() ? 'Guardando...' : 'Guardar' }}
     </button>
   </div>
@@ -561,46 +283,28 @@
 <!-- ======= MODAL BAÑO ======= -->
 <modal-nova [visible]="showBathForm()" [title]="(editingBath() ? 'Editar' : 'Añadir') + ' baño'" size="sm"
   (closed)="showBathForm.set(false)" [footerTemplate]="bathFooter">
-  <div class="space-y-5">
-    <div>
-      <label class="block text-text-secondary text-sm mb-1.5">Nombre</label>
-      <input type="text" [(ngModel)]="bathForm.name" placeholder="Ej: Baño principal" autocomplete="off"
-        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm focus:outline-none focus:border-brand" />
-    </div>
-    <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-      <div class="flex items-center gap-2 px-4 py-2.5 bg-cyan-500/10 border-b border-cyan-500/20">
-        <lucide-icon [img]="ShowerHead" class="w-4 h-4 text-cyan-400" [strokeWidth]="2" />
-        <span class="text-cyan-400 font-semibold text-xs uppercase tracking-wider">Instalaciones</span>
+  <div class="stack" style="--gap: var(--sp-5)">
+    <label class="field">
+      <span class="field-label">Nombre</span>
+      <input type="text" [(ngModel)]="bathForm.name" placeholder="Ej: Baño principal" autocomplete="off" />
+    </label>
+    <section class="surface panel tint-sky">
+      <header class="panel-head mini"><lucide-icon [img]="ShowerHead" [size]="16" [strokeWidth]="2.2" /> Instalaciones</header>
+      <div class="panel-body counters mini three">
+        <label class="counter"><lucide-icon [img]="Droplets" [size]="22" [strokeWidth]="2" /><span>Sanitarios</span>
+          <input type="number" min="0" [(ngModel)]="bathForm.fixtures.toilets" /></label>
+        <label class="counter"><lucide-icon [img]="Droplets" [size]="22" [strokeWidth]="2" /><span>Lavamanos</span>
+          <input type="number" min="0" [(ngModel)]="bathForm.fixtures.sinks" /></label>
+        <label class="counter"><lucide-icon [img]="ShowerHead" [size]="22" [strokeWidth]="2" /><span>Duchas eléctricas</span>
+          <input type="number" min="0" [(ngModel)]="bathForm.fixtures.electricShowers" /></label>
       </div>
-      <div class="p-4 grid grid-cols-3 gap-3">
-        <div class="bg-bg rounded-xl p-3 flex flex-col items-center gap-2 border border-border">
-          <lucide-icon [img]="Droplets" class="w-5 h-5 text-cyan-400" [strokeWidth]="1.8" />
-          <span class="text-text-secondary text-sm font-medium text-center">Sanitarios</span>
-          <input type="number" min="0" [(ngModel)]="bathForm.fixtures.toilets"
-            class="w-full bg-input border border-border rounded-lg px-2 py-1.5 text-text-primary text-sm font-bold text-center focus:outline-none focus:border-cyan-400 transition-colors" />
-        </div>
-        <div class="bg-bg rounded-xl p-3 flex flex-col items-center gap-2 border border-border">
-          <lucide-icon [img]="Droplets" class="w-5 h-5 text-cyan-400" [strokeWidth]="1.8" />
-          <span class="text-text-secondary text-sm font-medium text-center">Lavamanos</span>
-          <input type="number" min="0" [(ngModel)]="bathForm.fixtures.sinks"
-            class="w-full bg-input border border-border rounded-lg px-2 py-1.5 text-text-primary text-sm font-bold text-center focus:outline-none focus:border-cyan-400 transition-colors" />
-        </div>
-        <div class="bg-bg rounded-xl p-3 flex flex-col items-center gap-2 border border-border">
-          <lucide-icon [img]="ShowerHead" class="w-5 h-5 text-cyan-400" [strokeWidth]="1.8" />
-          <span class="text-text-secondary text-sm font-medium text-center">Duchas eléctricas</span>
-          <input type="number" min="0" [(ngModel)]="bathForm.fixtures.electricShowers"
-            class="w-full bg-input border border-border rounded-lg px-2 py-1.5 text-text-primary text-sm font-bold text-center focus:outline-none focus:border-cyan-400 transition-colors" />
-        </div>
-      </div>
-    </div>
+    </section>
   </div>
 </modal-nova>
 <ng-template #bathFooter>
-  <div class="flex gap-3">
-    <button (click)="showBathForm.set(false)"
-      class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">Cancelar</button>
-    <button (click)="saveBath()" [disabled]="saving()"
-      class="flex-1 bg-brand hover:bg-brand-accent text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+  <div class="modal-actions">
+    <button data-variant="ghost" (click)="showBathForm.set(false)">Cancelar</button>
+    <button data-tone="brand" (click)="saveBath()" [disabled]="saving()" [attr.aria-busy]="saving() || null">
       {{ saving() ? 'Guardando...' : 'Guardar' }}
     </button>
   </div>

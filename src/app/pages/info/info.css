@@ -1,0 +1,9 @@
+.title { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-h3); }
+.title lucide-icon, .box-head lucide-icon { color: var(--brand); }
+.grid { display: grid; gap: var(--sp-5); grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
+.box { overflow: hidden; }
+.box-head { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); font-family: var(--font-display); font-weight: var(--fw-display); color: var(--text-1); background: rgb(0 0 0 / 0.15); border-bottom: var(--border) solid var(--line); }
+.box-body { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-4); }
+.kv { display: flex; justify-content: space-between; gap: var(--sp-4); font-size: var(--fs-small); }
+.kv span { color: var(--text-3); }
+.kv b { color: var(--text-1); font-weight: var(--fw-medium); text-align: right; }

@@ -7,7 +7,7 @@ import { ModalNova } from '../../shared/components/modal-nova';
 import { StatusBadge } from '../../shared/components/status-badge';
 import { Pagination } from '../../shared/components/pagination';
 import { AlertService } from '../../shared/components/services/alert.service';
-import { LucideAngularModule, Building2 } from 'lucide-angular';
+import { LucideAngularModule, Building2, Plus, Trash2 } from 'lucide-angular';
 import { EmptyState } from '../../shared/components/empty-state';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { loadList } from '../../shared/utils/list.util';
@@ -18,11 +18,6 @@ const STATUS_LABEL: Record<string, string> = {
   MAINTENANCE: 'Mantenimiento',
   INACTIVE: 'Inactivo',
 };
-const STATUS_CLASS: Record<string, string> = {
-  ACTIVE: 'bg-success/10 text-success',
-  MAINTENANCE: 'bg-warning/10 text-warning',
-  INACTIVE: 'bg-error/10 text-error',
-};
 
 @Component({
   selector: 'app-apartments',
@@ -32,6 +27,8 @@ const STATUS_CLASS: Record<string, string> = {
 })
 export class ApartmentsComponent implements OnInit {
   readonly Building2 = Building2;
+  readonly Plus = Plus;
+  readonly Trash2 = Trash2;
 
   private apartmentsService = inject(ApartmentsService);
   private router = inject(Router);
@@ -53,7 +50,6 @@ export class ApartmentsComponent implements OnInit {
   newName = '';
 
   statusLabel = STATUS_LABEL;
-  statusClass = STATUS_CLASS;
   statuses = Object.keys(STATUS_LABEL);
 
   ngOnInit() {

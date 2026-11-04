@@ -9,28 +9,21 @@ import { LucideAngularModule, Shield, Users, MessageSquare, ArrowUpDown, Info, T
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule],
   template: `
-    <div class="p-6 space-y-6">
-      <div class="page-header flex items-center justify-between">
-        <div>
-          <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2.5">
-            <span class="nova-icon-tile w-8 h-8 shrink-0">
-              <lucide-icon [img]="ShieldIcon" class="w-4.5 h-4.5" [strokeWidth]="2.2" />
-            </span>
-            Admin
+    <div class="page">
+      <header class="page-header">
+        <div class="stack" style="--gap: 2px">
+          <h1 class="page-title">
+            <span class="icon-tile"><lucide-icon [img]="ShieldIcon" [size]="18" [strokeWidth]="2.4" /></span>
+            <span>Admin</span>
           </h1>
-          <p class="text-text-secondary text-sm mt-0.5">Usuarios, mensajes, datos y sistema</p>
+          <p class="page-sub">Usuarios, mensajes, datos y sistema</p>
         </div>
-      </div>
+      </header>
 
-      <nav class="flex gap-1 glass rounded-2xl p-1 overflow-x-auto">
+      <nav class="subnav" aria-label="Secciones de admin">
         @for (t of tabs(); track t.route) {
-          <a [routerLink]="t.route"
-            routerLinkActive="tab-active"
-            #rla="routerLinkActive"
-            class="flex-1 py-2 px-3 text-sm font-medium rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap"
-            [class.text-text-secondary]="!rla.isActive"
-            [class.hover:text-text-primary]="!rla.isActive">
-            <lucide-icon [img]="t.icon" class="w-4 h-4 shrink-0" [strokeWidth]="2" />
+          <a [routerLink]="t.route" routerLinkActive="on" class="tab">
+            <lucide-icon [img]="t.icon" [size]="16" [strokeWidth]="2.2" />
             {{ t.label }}
           </a>
         }
@@ -38,6 +31,22 @@ import { LucideAngularModule, Shield, Users, MessageSquare, ArrowUpDown, Info, T
 
       <router-outlet />
     </div>
+  `,
+  styles: `
+    .subnav {
+      display: flex; gap: 4px; padding: 4px; overflow-x: auto; scrollbar-width: none;
+      background: var(--bg-2); border: var(--border) solid var(--line); border-radius: var(--r-full);
+      box-shadow: inset 0 var(--depth) 0 rgb(0 0 0 / 0.18);
+    }
+    .tab {
+      flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 40px; padding: 0 var(--sp-4);
+      font-family: var(--font-display); font-weight: var(--fw-display); font-size: 0.95rem; white-space: nowrap; text-decoration: none;
+      color: var(--text-3); border: var(--border) solid transparent; border-radius: var(--r-full);
+      transition: color var(--t-fast) ease, background-color var(--t-fast) ease, transform var(--t-base) var(--spring);
+    }
+    .tab:hover { color: var(--text-1); }
+    .tab:active { transform: scale(0.96); }
+    .tab.on { color: var(--brand); background: var(--brand-soft); border-color: var(--brand); box-shadow: 0 var(--depth) 0 var(--brand-deep); }
   `,
 })
 export class AdminLayoutComponent {

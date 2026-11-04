@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { NgTemplateOutlet } from '@angular/common';
 import { BookingsService } from '../../../core/services/bookings.service';
 import { ApartmentsService } from '../../../core/services/apartments.service';
 import { IBooking, IApartment, IExtraService } from '../../../core/interfaces';
@@ -35,6 +36,7 @@ import {
   Bike,
   Plus,
   Moon,
+  Check,
 } from 'lucide-angular';
 
 type FormTab = 'general' | 'guests' | 'billing';
@@ -59,8 +61,9 @@ interface GuestForm {
 @Component({
   selector: 'app-booking-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, PlatformIcon, PaymentMethodIcon, CurrencyCopPipe, DateEsPipe, AutocompleteSelect],
+  imports: [FormsModule, NgTemplateOutlet, LucideAngularModule, PlatformIcon, PaymentMethodIcon, CurrencyCopPipe, DateEsPipe, AutocompleteSelect],
   templateUrl: './booking-form.html',
+  styleUrl: './booking-form.css',
 })
 export class BookingFormComponent implements OnInit {
   readonly CalendarDays = CalendarDays;
@@ -69,6 +72,7 @@ export class BookingFormComponent implements OnInit {
   readonly LogOut = LogOut;
   readonly MessageSquare = MessageSquare;
   readonly Moon = Moon;
+  readonly Check = Check;
   readonly User = User;
   readonly UserPlus = UserPlus;
   readonly X = X;

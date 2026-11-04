@@ -37,6 +37,8 @@ import {
   Pencil,
   Trash2,
   Camera,
+  Plus,
+  Upload,
 } from 'lucide-angular';
 
 type Tab = 'general' | 'rooms' | 'bathrooms' | 'equipment' | 'photos';
@@ -46,6 +48,7 @@ type Tab = 'general' | 'rooms' | 'bathrooms' | 'equipment' | 'photos';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge],
   templateUrl: './apartment-detail.html',
+  styleUrl: './apartment-detail.css',
 })
 export class ApartmentDetailComponent implements OnInit {
   readonly Refrigerator = Refrigerator;
@@ -77,6 +80,8 @@ export class ApartmentDetailComponent implements OnInit {
   readonly Pencil = Pencil;
   readonly Trash2 = Trash2;
   readonly Camera = Camera;
+  readonly Plus = Plus;
+  readonly Upload = Upload;
 
   private apartmentsService = inject(ApartmentsService);
   private route = inject(ActivatedRoute);

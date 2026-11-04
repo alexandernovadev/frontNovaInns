@@ -1,56 +1,36 @@
-<div class="p-6 space-y-6">
+<div class="page">
 
   <!-- Header: título + acciones (fijo arriba en móvil) -->
-  <div class="page-header flex items-center justify-between gap-3">
-    <h1 class="text-text-primary text-2xl font-bold flex items-center gap-2.5 min-w-0">
-      <span class="nova-icon-tile hidden min-[360px]:inline-flex w-8 h-8 shrink-0">
-        <lucide-icon [img]="CalendarDays" class="w-4.5 h-4.5" [strokeWidth]="2.2" />
-      </span>
-      <span class="truncate">Reservas</span>
+  <header class="page-header">
+    <h1 class="page-title">
+      <span class="icon-tile"><lucide-icon [img]="CalendarDays" [size]="18" [strokeWidth]="2.2" /></span>
+      <span>Reservas</span>
     </h1>
-    <div class="flex items-center gap-1.5 min-[360px]:gap-2 shrink-0">
-      <button (click)="showFilters.set(true)"
-        class="relative w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 flex items-center justify-center bg-surface border border-border text-text-secondary hover:text-brand hover:border-brand
-               rounded-full transition-colors cursor-pointer shrink-0"
-        title="Filtros">
-        <lucide-icon [img]="SlidersHorizontal" class="w-5 h-5" [strokeWidth]="2" />
-        @if (hasActiveFilters()) {
-        <span class="absolute top-0.5 right-0.5 w-2.5 h-2.5 rounded-full bg-brand border-2 border-bg"></span>
-        }
+    <div class="header-actions">
+      <button data-variant="soft" data-icon class="has-dot" (click)="showFilters.set(true)" title="Filtros" aria-label="Filtros">
+        <lucide-icon [img]="SlidersHorizontal" [size]="18" [strokeWidth]="2.2" />
+        @if (hasActiveFilters()) { <span class="dot-on"></span> }
       </button>
-      <button (click)="showJson.set(true)"
-        class="w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 flex items-center justify-center bg-surface border border-border text-brand hover:border-brand
-               rounded-full transition-colors cursor-pointer shrink-0"
-        title="Reserva desde JSON">
-        <lucide-icon [img]="Braces" class="w-5 h-5" [strokeWidth]="2.5" />
+      <button data-variant="soft" data-icon (click)="showJson.set(true)" title="Reserva desde JSON" aria-label="Reserva desde JSON">
+        <lucide-icon [img]="Braces" [size]="18" [strokeWidth]="2.4" />
       </button>
-      <button (click)="openCreate()"
-        class="w-9 h-9 min-[360px]:w-10 min-[360px]:h-10 flex items-center justify-center bg-brand hover:bg-brand-accent text-bg font-bold
-               rounded-full transition-colors cursor-pointer shrink-0"
-        title="Nueva reserva">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-        </svg>
+      <button data-tone="brand" data-icon (click)="openCreate()" title="Nueva reserva" aria-label="Nueva reserva">
+        <lucide-icon [img]="Plus" [size]="20" [strokeWidth]="2.8" />
       </button>
     </div>
-  </div>
+  </header>
 
   <!-- Subtítulo + selects (se desplazan con la página) -->
-  <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-    <p class="text-text-secondary text-sm flex items-center gap-2">
-      <span>{{ meta().total }} reservas</span>
-      <span class="text-text-disabled">·</span>
-      <span class="px-2.5 py-0.5 rounded-full border border-brand/30 bg-brand/10 text-brand-accent text-xs font-semibold">{{ today | dateEs }}</span>
-      <button (click)="toggleView()" title="{{ viewMode() === 'cards' ? 'Vista tabla' : 'Vista tarjetas' }}"
-        class="ml-1 w-9 h-9 flex items-center justify-center rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-all cursor-pointer">
-        @if (viewMode() === 'cards') {
-        <lucide-icon [img]="Rows3" class="w-4 h-4" [strokeWidth]="2" />
-        } @else {
-        <lucide-icon [img]="LayoutGrid" class="w-4 h-4" [strokeWidth]="2" />
-        }
+  <div class="toolbar">
+    <div class="row" style="--gap: var(--sp-2)">
+      <span class="small soft">{{ meta().total }} reservas</span>
+      <span class="muted">·</span>
+      <span class="pill tint-butter">{{ today | dateEs }}</span>
+      <button class="icon-btn" (click)="toggleView()" [title]="viewMode() === 'cards' ? 'Vista tabla' : 'Vista tarjetas'" [attr.aria-label]="viewMode() === 'cards' ? 'Vista tabla' : 'Vista tarjetas'">
+        <lucide-icon [img]="viewMode() === 'cards' ? Rows3 : LayoutGrid" [size]="16" [strokeWidth]="2.2" />
       </button>
-    </p>
-    <div class="grid grid-cols-3 gap-2 xl:flex xl:items-center">
+    </div>
+    <div class="filters">
       <autocomplete-select
         [options]="apartmentOptions()"
         [(value)]="apartmentFilter"
@@ -72,260 +52,197 @@
     </div>
   </div>
 
-  <!-- Summary: lista compacta en móvil (montos completos), 3 tarjetas con franja de color en sm+ -->
-  <div class="nova-surface rounded-2xl divide-y divide-border overflow-hidden
-              sm:grid sm:grid-cols-3 sm:gap-4 sm:bg-none sm:border-0 sm:shadow-none sm:rounded-none sm:divide-y-0 sm:overflow-visible">
+  <!-- Resumen: lista compacta en móvil, 3 tarjetas en sm+ -->
+  <div class="summary">
     @for (k of kpis(); track k.label) {
-    <div class="relative px-4 py-2.5 flex items-center justify-between gap-3 min-w-0
-                sm:block sm:p-5 sm:nova-surface sm:rounded-2xl sm:overflow-hidden">
-      <span class="hidden sm:block absolute inset-x-0 top-0 h-0.5" [style.background]="k.bar"></span>
-      <p class="text-text-disabled text-xs uppercase tracking-wide sm:tracking-widest sm:mb-2 truncate">{{ k.label }}</p>
-      <p class="text-sm sm:text-2xl font-bold whitespace-nowrap sm:truncate tabular-nums"
-        [style.color]="k.color" [style.text-shadow]="'0 0 22px ' + k.glow">{{ k.value | currencyCop }}</p>
+    <div class="sum" [class]="k.tone">
+      <p class="sum-label">{{ k.label }}</p>
+      <p class="sum-value">{{ k.value | currencyCop }}</p>
     </div>
     }
   </div>
 
   @if (loading()) {
-  <div class="text-center py-16 text-text-disabled">Cargando...</div>
+  <div class="loading">Cargando...</div>
   } @else if (bookings().length === 0) {
-  <div class="flex flex-col items-center gap-3 py-16 text-center nova-in">
-    <span class="nova-icon-tile w-14 h-14 rounded-2xl">
-      <lucide-icon [img]="CalendarDays" class="w-7 h-7" [strokeWidth]="2" />
-    </span>
-    <p class="text-text-primary font-semibold">No hay reservas con estos filtros</p>
-    <p class="text-text-secondary text-sm">Cambia el mes o el apartamento, o crea una nueva con <span class="text-brand font-semibold">+</span></p>
+  <div class="empty">
+    <span class="icon-tile lg"><lucide-icon [img]="CalendarDays" [size]="26" [strokeWidth]="2" /></span>
+    <p>No hay reservas con estos filtros</p>
+    <p class="small soft">Cambia el mes o el apartamento, o crea una nueva con <b class="t-brand">+</b></p>
   </div>
   } @else {
 
   @if (viewMode() === 'cards') {
-  <div class="grid gap-4 grid-cols-1 min-[420px]:grid-cols-2 xl:grid-cols-4">
+  <div class="cards">
     @for (b of bookings(); track b._id) {
-    <div
-      class="@container min-w-0 nova-card overflow-hidden cursor-pointer nova-in"
-      [style.--nova-glow]="accent(b)"
-      (click)="openDetail(b)">
-      <div class="h-1" [style.background]="'linear-gradient(90deg, ' + accent(b) + ', transparent)'"></div>
+    <article class="bcard nova-in" [style.--acc]="accent(b)" (click)="openDetail(b)">
 
-      <!-- Top: platform + status + actions -->
-      <div class="px-3 pt-3 pb-2 sm:px-5 sm:pt-4 sm:pb-3 flex items-center justify-between gap-2">
-        <span class="p-1 sm:p-1.5 rounded-xl flex items-center shrink-0" [class]="PLATFORM_CLASS[b.billing.platform]">
+      <!-- Top: plataforma + estado + acciones -->
+      <div class="b-top">
+        <span class="platform-box" [class]="PLATFORM_CLASS[b.billing.platform]">
           <platform-icon [platform]="b.billing.platform" size="md" />
         </span>
-
-        <div class="flex items-center gap-1 sm:gap-2 ml-auto">
-          <!-- Status: solo punto si la tarjeta es angosta, pill completo si es ancha -->
-          <span class="@xs:hidden w-2 h-2 rounded-full shrink-0" [title]="b.billing.status"
-            [class]="b.billing.status === 'PAGADO' ? 'bg-success' : b.billing.status === 'NO SHOW' ? 'bg-error' : 'bg-warning'">
-          </span>
-          <span class="hidden @xs:flex whitespace-nowrap"><status-badge [value]="b.billing.status" type="billing" /></span>
-          <button (click)="openObservations(b, $event)" title="Observaciones" aria-label="Observaciones"
-            class="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
-            <lucide-icon [img]="MessageSquare" class="w-4 h-4" [strokeWidth]="2" />
+        <div class="b-actions">
+          <!-- Estado: solo punto si la tarjeta es angosta, pill completo si es ancha -->
+          <span class="b-dot narrow" [title]="b.billing.status"
+            [attr.data-tone]="b.billing.status === 'PAGADO' ? 'success' : b.billing.status === 'NO SHOW' ? 'danger' : 'warning'"></span>
+          <span class="wide"><status-badge [value]="b.billing.status" type="billing" /></span>
+          <button class="icon-btn" (click)="openObservations(b, $event)" title="Observaciones" aria-label="Observaciones">
+            <lucide-icon [img]="MessageSquare" [size]="16" [strokeWidth]="2" />
           </button>
-          <button (click)="openEdit(b, $event)" title="Editar" aria-label="Editar reserva"
-            class="w-8 h-8 flex items-center justify-center rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-              viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
-            </svg>
+          <button class="icon-btn" (click)="openEdit(b, $event)" title="Editar" aria-label="Editar reserva">
+            <lucide-icon [img]="Pencil" [size]="16" [strokeWidth]="2" />
           </button>
-          <span class="hidden sm:block w-px h-4 bg-border mx-0.5"></span>
-          <button (click)="openDeleteConfirm(b, $event)" title="Borrar" aria-label="Borrar reserva"
-            class="hidden sm:flex w-8 h-8 items-center justify-center rounded-lg text-text-disabled hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-              viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round"
-                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-            </svg>
+          <button class="icon-btn danger hide-sm" (click)="openDeleteConfirm(b, $event)" title="Borrar" aria-label="Borrar reserva">
+            <lucide-icon [img]="Trash2" [size]="16" [strokeWidth]="2" />
           </button>
         </div>
       </div>
 
       <!-- Huésped (protagonista) + apartamento como etiqueta de color -->
-      <div class="px-3 pb-2 sm:px-5 sm:pb-3 space-y-1.5">
-        <div class="flex items-start gap-2 min-w-0">
-          <h2 class="text-text-primary text-base sm:text-lg font-bold leading-tight line-clamp-2 break-words min-w-0">{{ b.group.host.fullName }}</h2>
-          <span class="ml-auto shrink-0 mt-0.5 px-1.5 py-px rounded-md bg-white/5 text-text-secondary text-[11px] font-semibold" [title]="totalGuests(b) + ' huéspedes'">
-            {{ totalGuests(b) }}p
-          </span>
+      <div class="b-who">
+        <div class="row" style="align-items: flex-start; --gap: var(--sp-2)">
+          <h2 class="b-guest">{{ b.group.host.fullName }}</h2>
+          <span class="b-pax" [title]="totalGuests(b) + ' huéspedes'">{{ totalGuests(b) }}p</span>
         </div>
-        <span class="inline-flex items-center gap-1.5 max-w-full px-2 py-0.5 rounded-full text-[11px] font-semibold border"
-          [style.color]="aptColor(b)" [style.border-color]="aptColor(b) + '55'" [style.background]="aptColor(b) + '14'">
-          <span class="w-1.5 h-1.5 rounded-full shrink-0" [style.background]="aptColor(b)"></span>
-          <span class="truncate">{{ aptShort(b) }}</span>
+        <span class="b-apt" [style.--c]="aptColor(b)">
+          <i></i><span class="truncate">{{ aptShort(b) }}</span>
         </span>
       </div>
 
-      <!-- Dates: en fila si la tarjeta es ancha, apiladas si es angosta -->
-      <div class="mx-3 mb-3 sm:mx-5 sm:mb-4 bg-bg rounded-xl px-3 py-2 sm:px-4 sm:py-3">
-        <!-- Tarjeta angosta: apiladas -->
-        <div class="@xs:hidden space-y-1.5">
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <p class="text-text-disabled text-xs leading-none mb-0.5">Entrada</p>
-              <p class="text-text-primary font-bold text-xs sm:text-sm whitespace-nowrap">{{ b.stay.checkIn | dateEs:'short' }}</p>
+      <!-- Fechas: en fila si la tarjeta es ancha, apiladas si es angosta -->
+      <div class="b-dates">
+        <div class="narrow stack" style="--gap: 6px">
+          <div class="row between" style="align-items: flex-start">
+            <div>
+              <p class="b-lbl">Entrada</p>
+              <p class="b-date">{{ b.stay.checkIn | dateEs:'short' }}</p>
             </div>
-            <span class="text-brand text-xs font-bold px-2 py-0.5 bg-brand/10 rounded-lg shrink-0">{{ nights(b) }}n</span>
+            <span class="b-nights">{{ nights(b) }}n</span>
           </div>
-          <div class="min-w-0">
-            <p class="text-text-disabled text-xs leading-none mb-0.5">Salida</p>
-            <p class="text-text-primary font-bold text-xs sm:text-sm whitespace-nowrap">{{ b.stay.checkOut | dateEs:'short' }}</p>
+          <div>
+            <p class="b-lbl">Salida</p>
+            <p class="b-date">{{ b.stay.checkOut | dateEs:'short' }}</p>
           </div>
         </div>
-        <!-- Tarjeta ancha: layout original -->
-        <div class="hidden @xs:flex items-center justify-between gap-2">
-          <div class="text-center">
-            <p class="text-text-disabled text-xs mb-0.5 whitespace-nowrap">Check-in</p>
-            <p class="text-text-primary font-bold text-sm whitespace-nowrap">{{ b.stay.checkIn | dateEs:'short' }}</p>
+        <div class="wide row between">
+          <div class="center">
+            <p class="b-lbl">Check-in</p>
+            <p class="b-date">{{ b.stay.checkIn | dateEs:'short' }}</p>
           </div>
-          <div class="flex flex-col items-center gap-1">
-            <div class="flex items-center gap-1">
-              <div class="w-8 h-px bg-border"></div>
-              <svg class="w-3.5 h-3.5 text-brand" fill="none" stroke="currentColor" stroke-width="2.5"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-              <div class="w-8 h-px bg-border"></div>
-            </div>
-            <span class="text-brand text-xs font-bold">{{ nights(b) }}n</span>
+          <div class="b-arrow">
+            <span class="row" style="--gap: 4px"><i></i><lucide-icon [img]="ChevronRight" [size]="14" [strokeWidth]="2.6" /><i></i></span>
+            <span class="b-nights plain">{{ nights(b) }}n</span>
           </div>
-          <div class="text-center">
-            <p class="text-text-disabled text-xs mb-0.5 whitespace-nowrap">Check-out</p>
-            <p class="text-text-primary font-bold text-sm whitespace-nowrap">{{ b.stay.checkOut | dateEs:'short' }}</p>
+          <div class="center">
+            <p class="b-lbl">Check-out</p>
+            <p class="b-date">{{ b.stay.checkOut | dateEs:'short' }}</p>
           </div>
         </div>
       </div>
 
-      <!-- Billing -->
-      <div class="border-t border-border px-3 py-3 sm:px-5 sm:py-4">
-        <!-- Total + pendiente; si no caben en una línea, el pendiente baja -->
-        <div class="flex flex-wrap items-end justify-between gap-x-3 gap-y-1 mb-2 sm:mb-3">
+      <!-- Cobro -->
+      <div class="b-bill">
+        <div class="b-amounts">
           <div>
-            <p class="text-text-disabled text-xs mb-0.5">Total</p>
-            <p class="text-text-primary text-sm @xs:text-xl font-bold whitespace-nowrap">{{ b.billing.totalAmount | currencyCop }}</p>
+            <p class="b-lbl">Total</p>
+            <p class="b-total">{{ b.billing.totalAmount | currencyCop }}</p>
           </div>
           @if (pending(b) > 0) {
-          <div class="text-right ml-auto">
-            <p class="text-text-disabled text-xs mb-0.5">Pendiente</p>
-            <p class="text-warning text-sm @xs:text-xl font-bold whitespace-nowrap">{{ pending(b) | currencyCop }}</p>
+          <div class="end">
+            <p class="b-lbl">Pendiente</p>
+            <p class="b-total t-warning">{{ pending(b) | currencyCop }}</p>
           </div>
           } @else {
-          <div class="text-right ml-auto">
-            <p class="text-text-disabled text-xs mb-0.5">Recibido</p>
-            <p class="text-success text-sm @xs:text-base font-bold whitespace-nowrap">{{ b.billing.amountReceived | currencyCop }}</p>
+          <div class="end">
+            <p class="b-lbl">Recibido</p>
+            <p class="b-total sm t-success">{{ b.billing.amountReceived | currencyCop }}</p>
           </div>
           }
         </div>
 
-        <div class="h-1.5 bg-bg rounded-full overflow-hidden mb-2 sm:mb-3">
-          <div class="h-full rounded-full transition-all" [style.width.%]="paidPct(b)"
-            [class]="paidPct(b) === 100 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-amber-500 to-brand-accent'">
-          </div>
-        </div>
+        <div class="bar" [attr.data-tone]="paidPct(b) === 100 ? 'success' : 'warning'"><span [style.width.%]="paidPct(b)"></span></div>
 
-  <div class="flex items-center justify-between flex-wrap gap-2">
-          <div class="flex items-center gap-2">
-            <span class="px-2 py-0.5 rounded-lg text-[11px] font-semibold whitespace-nowrap select-none"
-              [class]="LIFECYCLE_CLASS[b.stay.status || 'PENDIENTE']"
-              [class.opacity-60]="b.stay.status === 'CHECK-OUT'"
+        <div class="row between wrap" style="--gap: var(--sp-2)">
+          <div class="row" style="--gap: var(--sp-2)">
+            <span class="pill life" [class]="LIFECYCLE_CLASS[b.stay.status || 'PENDIENTE']"
+              [class.done]="b.stay.status === 'CHECK-OUT'"
               (click)="updateLifecycleStatus(b, $event)"
               [title]="b.stay.status === 'CHECK-OUT' ? 'Estado final' : 'Cambiar estado'">
               {{ b.stay.status || 'PENDIENTE' }}
             </span>
-            <span class="text-text-disabled text-xs">{{ b.billing.paymentMethod }}</span>
+            <span class="tiny muted">{{ b.billing.paymentMethod }}</span>
           </div>
           @if (b.billing.status !== 'PAGADO' && b.billing.status !== 'NO SHOW') {
-          <button (click)="openPayment(b, $event)" class="text-xs font-bold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-brand/10 text-brand
-                         hover:bg-brand/20 transition-colors cursor-pointer">
-            + Pago
-          </button>
+          <button data-size="sm" data-variant="soft" data-tone="brand" (click)="openPayment(b, $event)">+ Pago</button>
           }
         </div>
       </div>
 
-    </div>
+    </article>
     }
   </div>
   } @else {
 
-  <!-- ═══════════ TABLE VIEW ═══════════ -->
-  <div class="glass rounded-2xl overflow-hidden overflow-x-auto">
-    <table class="text-sm w-full">
+  <!-- ═══════════ TABLA ═══════════ -->
+  <div class="surface table-wrap">
+    <table class="data-table">
       <thead>
-        <tr class="border-b border-white/5 text-text-disabled text-xs uppercase tracking-wider font-semibold">
-          <th class="text-left px-2 py-2">Huésped</th>
-          <th class="text-center px-2 py-2">Estado</th>
+        <tr>
+          <th>Huésped</th>
+          <th class="center">Estado</th>
         </tr>
       </thead>
       <tbody>
         @for (b of bookings(); track b._id) {
-        <tr class="border-b border-white/[0.03] hover:bg-white/[0.03] transition-colors cursor-pointer"
-          (click)="openDetail(b)">
-          <td class="px-3 py-2.5">
-            <div class="flex items-start gap-2.5">
-              <span class="p-1.5 rounded-xl inline-flex items-center shrink-0 mt-0.5" [class]="PLATFORM_CLASS[b.billing.platform]">
+        <tr class="clickable" (click)="openDetail(b)">
+          <td>
+            <div class="row" style="align-items: flex-start; --gap: 10px">
+              <span class="platform-box" [class]="PLATFORM_CLASS[b.billing.platform]">
                 <platform-icon [platform]="b.billing.platform" size="sm" />
               </span>
-              <div class="min-w-0 space-y-1">
+              <div class="stack" style="--gap: 4px; min-width: 0">
                 <div>
-                  <p class="text-text-primary font-semibold text-sm truncate">{{ b.group.host.fullName }}</p>
-                  <p class="text-text-disabled text-xs truncate">{{ aptName(b) }}</p>
+                  <p class="strong small truncate">{{ b.group.host.fullName }}</p>
+                  <p class="tiny muted truncate">{{ aptName(b) }}</p>
                 </div>
-                <div class="flex items-center gap-1.5 text-xs text-text-secondary">
+                <div class="row tiny soft" style="--gap: 6px">
                   <span>{{ b.stay.checkIn | dateEs:'short' }}</span>
-                  <svg class="w-3 h-3 text-brand shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
+                  <lucide-icon class="t-brand" [img]="ChevronRight" [size]="12" [strokeWidth]="2.6" />
                   <span>{{ b.stay.checkOut | dateEs:'short' }}</span>
-                  <span class="text-brand font-bold px-1.5 py-0.5 bg-brand/10 rounded-md">{{ nights(b) }}n</span>
+                  <span class="b-nights">{{ nights(b) }}n</span>
                 </div>
-                <div class="flex items-center gap-2">
-                  <span class="font-semibold text-sm whitespace-nowrap">{{ b.billing.totalAmount | currencyCop }}</span>
-                  <div class="w-16 h-1.5 bg-bg rounded-full overflow-hidden">
-                    <div class="h-full rounded-full transition-all" [style.width.%]="paidPct(b)"
-                      [class]="paidPct(b) === 100 ? 'bg-success' : 'bg-warning'"></div>
-                  </div>
+                <div class="row" style="--gap: var(--sp-2)">
+                  <span class="strong small nowrap num">{{ b.billing.totalAmount | currencyCop }}</span>
+                  <div class="bar mini" [attr.data-tone]="paidPct(b) === 100 ? 'success' : 'warning'"><span [style.width.%]="paidPct(b)"></span></div>
                   @if (pending(b) > 0) {
-                  <span class="text-warning text-xs font-semibold whitespace-nowrap">Pend. {{ pending(b) | currencyCop }}</span>
+                  <span class="tiny strong t-warning nowrap">Pend. {{ pending(b) | currencyCop }}</span>
                   }
                 </div>
               </div>
             </div>
           </td>
-          <td class="px-2 py-2 text-center align-middle">
-            <div class="flex flex-col items-center gap-1">
-              <span class="px-1.5 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap select-none"
-                [class]="LIFECYCLE_CLASS[b.stay.status || 'PENDIENTE']"
-                [class.opacity-60]="b.stay.status === 'CHECK-OUT'"
+          <td class="center">
+            <div class="stack" style="--gap: 4px; align-items: center">
+              <span class="pill life" [class]="LIFECYCLE_CLASS[b.stay.status || 'PENDIENTE']"
+                [class.done]="b.stay.status === 'CHECK-OUT'"
                 (click)="updateLifecycleStatus(b, $event)"
                 [title]="b.stay.status === 'CHECK-OUT' ? 'Estado final' : 'Cambiar estado'">
                 {{ b.stay.status || 'PENDIENTE' }}
               </span>
               <status-badge [value]="b.billing.status" type="billing" />
-              <div class="flex items-center gap-0.5 mt-0.5" (click)="$event.stopPropagation()">
-                <button (click)="openObservations(b, $event)" title="Observaciones"
-                  class="p-1 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
-                  <lucide-icon [img]="MessageSquare" class="w-3.5 h-3.5" [strokeWidth]="2" />
+              <div class="row" style="--gap: 0" (click)="$event.stopPropagation()">
+                <button class="icon-btn" (click)="openObservations(b, $event)" title="Observaciones" aria-label="Observaciones">
+                  <lucide-icon [img]="MessageSquare" [size]="14" [strokeWidth]="2" />
                 </button>
-                <button (click)="openEdit(b, $event)" title="Editar"
-                  class="p-1 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
-                  </svg>
+                <button class="icon-btn" (click)="openEdit(b, $event)" title="Editar" aria-label="Editar">
+                  <lucide-icon [img]="Pencil" [size]="14" [strokeWidth]="2" />
                 </button>
-                <button (click)="openPayment(b, $event)" title="Pago"
-                  class="p-1 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
-                  </svg>
+                <button class="icon-btn" (click)="openPayment(b, $event)" title="Pago" aria-label="Pago">
+                  <lucide-icon [img]="Plus" [size]="14" [strokeWidth]="2.4" />
                 </button>
-                <button (click)="openDeleteConfirm(b, $event)" title="Borrar"
-                  class="p-1 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                  </svg>
+                <button class="icon-btn danger" (click)="openDeleteConfirm(b, $event)" title="Borrar" aria-label="Borrar">
+                  <lucide-icon [img]="Trash2" [size]="14" [strokeWidth]="2" />
                 </button>
               </div>
             </div>
@@ -348,51 +265,49 @@
   (closed)="showJson.set(false)" (submitted)="createFromJson($event)" />
 
 <!-- =============== MODAL BORRAR =============== -->
-<modal-nova [visible]="deleteState.show()" title="Borrar reserva" size="sm" (closed)="onDeleteClosed()"
-  [footerTemplate]="deleteFooter">
-  <p class="text-text-secondary text-sm">
-    ¿Seguro que quieres borrar la reserva de
-    <span class="text-text-primary font-semibold">{{ deleteState.selected()?.group?.host?.fullName }}</span>?
-    Esta acción no se puede deshacer.
-  </p>
+<modal-nova [visible]="deleteState.show()" title="Borrar reserva" size="sm" (closed)="onDeleteClosed()" [footerTemplate]="deleteFooter">
+  <div class="stack confirm">
+    <span class="icon-tile lg tint-rose"><lucide-icon [img]="Trash2" [size]="24" [strokeWidth]="2" /></span>
+    <p class="soft small">
+      ¿Seguro que quieres borrar la reserva de
+      <strong class="strong">{{ deleteState.selected()?.group?.host?.fullName }}</strong>?
+      Esta acción no se puede deshacer.
+    </p>
+  </div>
 </modal-nova>
 <ng-template #deleteFooter>
-  <div class="flex gap-3">
-    <button (click)="deleteState.show.set(false)"
-      class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">Cancelar</button>
-    <button (click)="confirmDelete()" [disabled]="deleteState.saving()"
-      class="flex-1 bg-error hover:bg-error/80 text-white font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+  <div class="modal-actions">
+    <button data-variant="ghost" (click)="deleteState.show.set(false)">Cancelar</button>
+    <button data-tone="danger" (click)="confirmDelete()" [disabled]="deleteState.saving()" [attr.aria-busy]="deleteState.saving() || null">
       {{ deleteState.saving() ? 'Borrando...' : 'Borrar' }}
     </button>
   </div>
 </ng-template>
 
 <!-- =============== MODAL PAGO =============== -->
-<modal-nova [visible]="showPayment()" title="Registrar pago" size="sm" (closed)="onPaymentClosed()"
-  [footerTemplate]="paymentFooter">
-  <p class="text-text-secondary text-sm mb-3">
-    Pendiente: <span class="text-warning font-bold">{{ pending(paymentSelected()!) | currencyCop }}</span>
-  </p>
-  <label class="block text-text-secondary text-sm mb-1.5">Monto a registrar</label>
-   <input id="payInput" type="text" inputmode="numeric" placeholder="0" autocomplete="off"
-      (input)="onPaymentInput($event)"
-      class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary text-sm
-            focus:outline-none focus:border-brand transition-colors" />
+<modal-nova [visible]="showPayment()" title="Registrar pago" size="sm" (closed)="onPaymentClosed()" [footerTemplate]="paymentFooter">
+  <div class="stack">
+    <p class="small soft">
+      Pendiente: <b class="t-warning">{{ pending(paymentSelected()!) | currencyCop }}</b>
+    </p>
+    <label class="field">
+      <span class="field-label">Monto a registrar</span>
+      <input id="payInput" type="text" inputmode="numeric" placeholder="0" autocomplete="off" (input)="onPaymentInput($event)" />
+    </label>
+  </div>
 </modal-nova>
 
 <!-- =============== MODAL OBSERVACIONES =============== -->
 <modal-nova [visible]="!!observationsBooking()" title="Observaciones" size="md" (closed)="closeObservations()">
   @if (observationsBooking(); as b) {
     @if (b.observations) {
-    <div class="bg-bg rounded-xl p-4 text-text-primary text-sm leading-relaxed whitespace-pre-wrap">
-      {{ b.observations }}
-    </div>
+    <div class="inset obs">{{ b.observations }}</div>
     } @else {
-    <div class="text-center py-8 text-text-disabled text-sm">Sin observaciones</div>
+    <div class="small muted" style="text-align: center; padding: var(--sp-8) 0">Sin observaciones</div>
     }
-    <div class="mt-4 pt-3 border-t border-border flex items-center gap-3 text-xs text-text-secondary">
-      <span class="font-medium text-text-primary truncate">{{ b.group.host.fullName }}</span>
-      <span class="text-text-disabled">·</span>
+    <div class="row tiny soft obs-foot">
+      <span class="strong truncate">{{ b.group.host.fullName }}</span>
+      <span class="muted">·</span>
       <span>{{ aptName(b) }}</span>
     </div>
   }
@@ -400,49 +315,34 @@
 
 <!-- =============== MODAL FILTROS =============== -->
 <modal-nova [visible]="showFilters()" title="Filtros" size="sm" (closed)="showFilters.set(false)">
-  <div class="space-y-1">
-    <div class="py-2">
-      <input [(ngModel)]="search" (ngModelChange)="onFilterChange()" placeholder="Buscar por huésped..." class="w-full bg-input border border-border rounded-xl px-4 py-2.5
-               text-text-primary placeholder:text-text-disabled text-sm
-               focus:outline-none focus:border-brand transition-colors" />
-    </div>
-    <div class="py-2">
-      <autocomplete-select
-        [options]="PLATFORMS.map(p => ({ label: p, value: p }))"
-        [value]="platformFilter"
-        (valueChange)="platformFilter = $event; onFilterChange()"
-        [readonly]="true"
-        placeholder="Todas las plataformas" />
-    </div>
-    <div class="py-2">
-      <autocomplete-select
-        [options]="[{ label: 'Todos los estados', value: '' }, ...LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }))]"
-        [value]="lifecycleFilter()"
-        (valueChange)="lifecycleFilter.set($event); onFilterChange()"
-        [readonly]="true"
-        placeholder="Todos los estados" />
-    </div>
-    <div class="py-2">
-      <autocomplete-select
-        [options]="STATUSES.filter(s => s !== 'NO SHOW').map(s => ({ label: s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s, value: s }))"
-        [value]="statusFilter"
-        (valueChange)="statusFilter = $event; onFilterChange()"
-        [readonly]="true"
-        placeholder="Todos los pagos" />
-    </div>
+  <div class="stack">
+    <input type="search" [(ngModel)]="search" (ngModelChange)="onFilterChange()" placeholder="Buscar por huésped..." />
+    <autocomplete-select
+      [options]="PLATFORMS.map(p => ({ label: p, value: p }))"
+      [value]="platformFilter"
+      (valueChange)="platformFilter = $event; onFilterChange()"
+      [readonly]="true"
+      placeholder="Todas las plataformas" />
+    <autocomplete-select
+      [options]="[{ label: 'Todos los estados', value: '' }, ...LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }))]"
+      [value]="lifecycleFilter()"
+      (valueChange)="lifecycleFilter.set($event); onFilterChange()"
+      [readonly]="true"
+      placeholder="Todos los estados" />
+    <autocomplete-select
+      [options]="STATUSES.filter(s => s !== 'NO SHOW').map(s => ({ label: s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s, value: s }))"
+      [value]="statusFilter"
+      (valueChange)="statusFilter = $event; onFilterChange()"
+      [readonly]="true"
+      placeholder="Todos los pagos" />
+    <button data-variant="ghost" data-block (click)="resetFilters(); showFilters.set(false)">Restablecer</button>
   </div>
-  <button (click)="resetFilters(); showFilters.set(false)"
-    class="w-full mt-4 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">
-    Restablecer
-  </button>
 </modal-nova>
 
 <ng-template #paymentFooter>
-  <div class="flex gap-3">
-    <button (click)="showPayment.set(false)"
-      class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm cursor-pointer">Cancelar</button>
-    <button (click)="confirmPayment()" [disabled]="saving() || !payAmount"
-      class="flex-1 bg-success hover:bg-success/80 text-bg font-bold py-2.5 rounded-xl text-sm disabled:opacity-50 cursor-pointer">
+  <div class="modal-actions">
+    <button data-variant="ghost" (click)="showPayment.set(false)">Cancelar</button>
+    <button data-tone="success" (click)="confirmPayment()" [disabled]="saving() || !payAmount" [attr.aria-busy]="saving() || null">
       {{ saving() ? 'Guardando...' : 'Confirmar' }}
     </button>
   </div>

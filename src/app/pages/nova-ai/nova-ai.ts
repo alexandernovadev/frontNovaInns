@@ -13,63 +13,50 @@ import { renderRich } from './rich-text';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule, NovaActionCard],
   template: `
-    <div class="p-6 h-full flex flex-col gap-4 relative"
+    <div class="page chat"
       (dragenter)="onDragEnter($event)" (dragover)="$event.preventDefault()"
       (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
       <!-- Soltar screenshot -->
       @if (dragging()) {
-        <div class="pointer-events-none absolute inset-3 z-30 rounded-3xl border-2 border-dashed border-brand bg-bg/95 backdrop-blur-md
-                    flex flex-col items-center justify-center gap-3 nova-in">
-          <span class="w-16 h-16 rounded-full bg-gradient-to-br from-brand-accent to-brand-pressed flex items-center justify-center nova-glow">
-            <lucide-icon [img]="ImageUp" class="w-8 h-8 text-bg" [strokeWidth]="2" />
-          </span>
-          <p class="text-lg font-semibold text-brand">Suelta el screenshot aquí</p>
-          <p class="text-sm text-text-secondary">NovaAI lee la reserva de Booking o AirBnB y te la arma</p>
+        <div class="dropping nova-in">
+          <span class="orb md nova-glow"><lucide-icon [img]="ImageUp" [size]="30" [strokeWidth]="2" /></span>
+          <p class="display drop-title">Suelta el screenshot aquí</p>
+          <p class="small soft">NovaAI lee la reserva de Booking o AirBnB y te la arma</p>
         </div>
       }
       <!-- Resplandor decorativo -->
-      <div class="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(60%_100%_at_50%_0%,rgba(242,194,0,0.10),transparent)]"></div>
+      <div class="halo"></div>
 
       <!-- Header -->
-      <div class="page-header relative flex items-center justify-between gap-3">
-        <div>
-          <h1 class="text-2xl font-bold flex items-center gap-2.5">
-            <span class="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-accent to-brand-pressed flex items-center justify-center lg:shadow-[0_0_20px_rgba(242,194,0,0.35)] shrink-0">
-              <lucide-icon [img]="Sparkles" class="w-4.5 h-4.5 text-bg" [strokeWidth]="2.2" />
-            </span>
-            <span class="bg-gradient-to-r from-white via-brand-accent to-brand bg-clip-text text-transparent">NovaAI</span>
+      <header class="page-header">
+        <div class="stack" style="--gap: 2px; min-width: 0">
+          <h1 class="page-title">
+            <span class="icon-tile"><lucide-icon [img]="Sparkles" [size]="18" [strokeWidth]="2.2" /></span>
+            <span>NovaAI</span>
           </h1>
-          <p class="text-text-secondary text-sm mt-0.5">Pregúntale a tu negocio</p>
+          <p class="page-sub">Pregúntale a tu negocio</p>
         </div>
         @if (messages().length) {
-          <button (click)="reset()" [disabled]="sending()" title="Nueva conversación"
-            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-sm text-text-secondary hover:text-brand hover:border-brand/50 transition-colors cursor-pointer disabled:opacity-50 shrink-0">
-            <lucide-icon [img]="RotateCcw" class="w-4 h-4" [strokeWidth]="2" />
-            <span class="hidden sm:inline">Nueva conversación</span>
+          <button data-size="sm" data-variant="ghost" (click)="reset()" [disabled]="sending()" title="Nueva conversación">
+            <lucide-icon [img]="RotateCcw" [size]="16" [strokeWidth]="2.2" />
+            <span class="hide-sm">Nueva conversación</span>
           </button>
         }
-      </div>
+      </header>
 
       <!-- Mensajes -->
-      <div #scroller class="relative flex-1 min-h-0 overflow-y-auto space-y-5 pr-1 -mr-1">
+      <div #scroller class="scroller">
         @if (!messages().length) {
-          <div class="min-h-full flex flex-col items-center justify-center text-center gap-6 py-8 nova-in">
-            <div class="relative">
-              <div class="absolute inset-0 rounded-full bg-brand/30 blur-2xl nova-glow"></div>
-              <div class="relative w-20 h-20 rounded-full bg-gradient-to-br from-brand-accent via-brand to-brand-pressed flex items-center justify-center shadow-[0_0_40px_rgba(242,194,0,0.35)]">
-                <lucide-icon [img]="Sparkles" class="w-9 h-9 text-bg" [strokeWidth]="1.8" />
-              </div>
+          <div class="welcome nova-in">
+            <span class="orb lg nova-glow"><lucide-icon [img]="Sparkles" [size]="36" [strokeWidth]="1.9" /></span>
+            <div class="stack" style="--gap: 6px; align-items: center">
+              <h2 class="welcome-title">Hola, ¿qué quieres saber?</h2>
+              <p class="small soft" style="max-width: 24rem">Reservas, pagos, gastos, huéspedes… pregunta como le hablarías a tu socio, o arrastra el screenshot de una reserva.</p>
             </div>
-            <div class="space-y-1.5">
-              <h2 class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white via-brand-accent to-brand bg-clip-text text-transparent">Hola, ¿qué quieres saber?</h2>
-              <p class="text-text-secondary text-sm max-w-sm mx-auto">Reservas, pagos, gastos, huéspedes… pregunta como le hablarías a tu socio, o arrastra el screenshot de una reserva.</p>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-xl">
+            <div class="suggestions">
               @for (s of suggestions; track s.text) {
-                <button (click)="send(s.text)"
-                  class="group flex items-center gap-3 px-4 py-3 rounded-2xl border border-border bg-surface/80 text-left text-sm text-text-secondary
-                         hover:border-brand/50 hover:text-text-primary hover:bg-elevated hover:-translate-y-0.5 transition-all cursor-pointer">
-                  <span class="text-lg shrink-0 group-hover:scale-110 transition-transform">{{ s.icon }}</span>
+                <button class="suggestion" (click)="send(s.text)">
+                  <span class="emoji">{{ s.icon }}</span>
                   <span>{{ s.text }}</span>
                 </button>
               }
@@ -79,33 +66,25 @@ import { renderRich } from './rich-text';
 
         @for (m of messages(); track $index) {
           @if (m.role === 'user') {
-            <div class="flex flex-col items-end gap-1.5 nova-in">
+            <div class="msg-user nova-in">
               @if (m.image) {
-                <img [src]="m.image" alt="Screenshot enviado"
-                  class="max-w-[60%] sm:max-w-[280px] max-h-64 object-cover rounded-2xl rounded-br-md border-2 border-brand/60 shadow-[0_4px_20px_-6px_rgba(242,194,0,0.45)]" />
+                <img [src]="m.image" alt="Screenshot enviado" class="shot" />
               }
-              <div data-msg="user"
-                class="max-w-[85%] sm:max-w-[70%] rounded-2xl rounded-br-md px-4 py-2.5 text-sm font-medium whitespace-pre-wrap break-words
-                       bg-gradient-to-br from-brand-accent to-brand text-bg shadow-[0_4px_20px_-6px_rgba(242,194,0,0.45)]">{{ m.text }}</div>
+              <div data-msg="user" class="bubble-user">{{ m.text }}</div>
             </div>
           } @else {
-            <div class="flex gap-3 nova-in">
-              <span class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-accent to-brand-pressed flex items-center justify-center shrink-0 mt-0.5 shadow-[0_0_14px_rgba(242,194,0,0.25)]">
-                <lucide-icon [img]="Sparkles" class="w-4 h-4 text-bg" [strokeWidth]="2.2" />
-              </span>
-              <div class="min-w-0 flex-1 flex flex-col items-start">
-                <div data-msg="model"
-                  class="max-w-full sm:max-w-[85%] rounded-2xl rounded-tl-md px-4 py-3 text-sm leading-relaxed text-text-secondary break-words
-                         bg-gradient-to-b from-elevated to-surface border border-border shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
-                  [innerHTML]="rich(m.text)"></div>
+            <div class="msg-model nova-in">
+              <span class="orb sm"><lucide-icon [img]="Sparkles" [size]="16" [strokeWidth]="2.2" /></span>
+              <div class="msg-body">
+                <div data-msg="model" class="bubble-model rt" [innerHTML]="rich(m.text)"></div>
                 @if (m.queries?.length) {
-                  <span class="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface/60 border border-border text-[11px] text-text-disabled">
-                    <lucide-icon [img]="Database" class="w-3 h-3 shrink-0 text-brand/70" [strokeWidth]="2" />
+                  <span class="queried">
+                    <lucide-icon [img]="Database" [size]="12" [strokeWidth]="2" />
                     Consulté: {{ querySummary(m.queries!) }}
                   </span>
                 }
                 @for (a of m.actions ?? []; track a.id) {
-                  <nova-action-card class="w-full" [card]="a" [busy]="busyAction() === a.id" [apartmentNames]="apartmentNames()"
+                  <nova-action-card [card]="a" [busy]="busyAction() === a.id" [apartmentNames]="apartmentNames()"
                     (cancel)="cancelAction($event)" (confirm)="confirmAction($event.id, $event.apartmentId)" />
                 }
               </div>
@@ -114,49 +93,220 @@ import { renderRich } from './rich-text';
         }
 
         @if (sending()) {
-          <div class="flex gap-3 nova-in">
-            <span class="w-8 h-8 rounded-full bg-gradient-to-br from-brand-accent to-brand-pressed flex items-center justify-center shrink-0 nova-glow">
-              <lucide-icon [img]="Sparkles" class="w-4 h-4 text-bg" [strokeWidth]="2.2" />
-            </span>
-            <div class="rounded-2xl rounded-tl-md px-4 py-3 bg-gradient-to-b from-elevated to-surface border border-border flex items-center gap-3">
-              <span class="flex gap-1">
-                <span class="w-1.5 h-1.5 rounded-full bg-brand animate-bounce [animation-delay:-0.3s]"></span>
-                <span class="w-1.5 h-1.5 rounded-full bg-brand animate-bounce [animation-delay:-0.15s]"></span>
-                <span class="w-1.5 h-1.5 rounded-full bg-brand animate-bounce"></span>
-              </span>
-              <span class="text-xs text-text-secondary">{{ readingImage() ? 'Leyendo el screenshot…' : 'Consultando tu negocio…' }}</span>
+          <div class="msg-model nova-in">
+            <span class="orb sm nova-glow"><lucide-icon [img]="Sparkles" [size]="16" [strokeWidth]="2.2" /></span>
+            <div class="bubble-model typing">
+              <span class="dots"><i></i><i></i><i></i></span>
+              <span class="tiny soft">{{ readingImage() ? 'Leyendo el screenshot…' : 'Consultando tu negocio…' }}</span>
             </div>
           </div>
         }
         @if (error(); as err) {
-          <div class="flex items-center gap-3 ml-11 px-3 py-2 rounded-xl bg-error/10 border border-error/30 text-xs text-error w-fit nova-in">
+          <div class="note err nova-in" data-tone="danger">
             <span>{{ err }}</span>
-            <button (click)="retry()" class="font-semibold underline underline-offset-2 cursor-pointer hover:text-text-primary">Reintentar</button>
+            <button data-size="sm" data-variant="ghost" (click)="retry()">Reintentar</button>
           </div>
         }
       </div>
 
       <!-- Caja de texto -->
-      <form (submit)="$event.preventDefault(); send(draft())"
-        class="relative flex items-end gap-2 p-1.5 rounded-2xl bg-surface border border-border transition-all
-               focus-within:border-brand/60 focus-within:shadow-[0_0_0_4px_rgba(242,194,0,0.08),0_0_24px_-4px_rgba(242,194,0,0.25)]">
-        <input #fileInput type="file" accept="image/*" class="hidden" (change)="onFilePicked($event)" />
-        <button type="button" (click)="fileInput.click()" [disabled]="sending()" title="Adjuntar screenshot de una reserva"
-          class="w-10 h-10 flex items-center justify-center rounded-xl text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer shrink-0 disabled:opacity-40">
-          <lucide-icon [img]="Paperclip" class="w-5 h-5" [strokeWidth]="2" />
+      <form class="composer" (submit)="$event.preventDefault(); send(draft())">
+        <input #fileInput type="file" accept="image/*" hidden (change)="onFilePicked($event)" />
+        <button type="button" class="icon-btn attach" (click)="fileInput.click()" [disabled]="sending()" title="Adjuntar screenshot de una reserva" aria-label="Adjuntar screenshot">
+          <lucide-icon [img]="Paperclip" [size]="20" [strokeWidth]="2" />
         </button>
         <textarea [ngModel]="draft()" (ngModelChange)="draft.set($event)" name="draft"
           (keydown.enter)="onEnter($any($event))"
-          rows="1" placeholder="Pregúntale a NovaAI…"
-          class="flex-1 bg-transparent px-3 py-2.5 text-text-primary text-sm resize-none max-h-40
-                 placeholder:text-text-disabled focus:outline-none"></textarea>
-        <button type="submit" [disabled]="!draft().trim() || sending()" title="Enviar"
-          class="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-brand-accent to-brand text-bg cursor-pointer shrink-0
-                 transition-all hover:scale-105 hover:shadow-[0_0_16px_rgba(242,194,0,0.5)] disabled:opacity-30 disabled:hover:scale-100 disabled:hover:shadow-none">
-          <lucide-icon [img]="SendHorizontal" class="w-5 h-5" [strokeWidth]="2.2" />
+          rows="1" placeholder="Pregúntale a NovaAI…"></textarea>
+        <button type="submit" data-tone="brand" data-icon [disabled]="!draft().trim() || sending()" title="Enviar" aria-label="Enviar">
+          <lucide-icon [img]="SendHorizontal" [size]="20" [strokeWidth]="2.2" />
         </button>
       </form>
     </div>
+  `,
+  styles: `
+    :host { display: block; height: 100%; }
+    .chat { position: relative; height: 100%; gap: var(--sp-4); }
+    .halo {
+      pointer-events: none;
+      position: absolute;
+      inset: 0 0 auto;
+      height: 18rem;
+      background: radial-gradient(60% 100% at 50% 0%, var(--brand-soft), transparent);
+    }
+    .page-header { position: relative; }
+
+    .dropping {
+      pointer-events: none;
+      position: absolute;
+      inset: var(--sp-3);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-3);
+      text-align: center;
+      background: color-mix(in srgb, var(--bg-0) 94%, transparent);
+      backdrop-filter: blur(10px);
+      border: 2px dashed var(--brand);
+      border-radius: var(--r-lg);
+    }
+    .drop-title { font-size: 1.3rem; color: var(--brand); }
+
+    /* Orbe de NovaAI (pastel de marca, relieve 3D) */
+    .orb {
+      display: grid;
+      place-items: center;
+      flex: none;
+      color: var(--ink);
+      background: var(--brand);
+      border-radius: 50%;
+      box-shadow: 0 var(--depth) 0 var(--brand-deep);
+    }
+    .orb.sm { width: 32px; height: 32px; margin-top: 2px; }
+    .orb.md { width: 64px; height: 64px; }
+    .orb.lg { width: 84px; height: 84px; box-shadow: 0 4px 0 var(--brand-deep); }
+
+    .scroller {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-5);
+      padding-right: 4px;
+      margin-right: -4px;
+    }
+
+    /* Bienvenida */
+    .welcome {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-6);
+      padding-block: var(--sp-8);
+      text-align: center;
+    }
+    .welcome-title { font-size: var(--fs-h2); color: var(--brand); }
+    .suggestions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      width: 100%;
+      max-width: 36rem;
+    }
+    @media (width >= 40rem) { .suggestions { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    .suggestion {
+      justify-content: flex-start;
+      gap: var(--sp-3);
+      min-height: 52px;
+      padding: var(--sp-3) var(--sp-4);
+      font-family: var(--font-body);
+      font-weight: var(--fw-regular, 400);
+      font-size: var(--fs-small);
+      letter-spacing: normal;
+      text-align: left;
+      color: var(--text-2);
+      background: var(--bg-1);
+      border: var(--border) solid var(--line);
+      border-radius: var(--r-md);
+      box-shadow: 0 var(--depth) 0 var(--bg-3);
+      filter: none;
+    }
+    .suggestion:hover { color: var(--text-1); border-color: var(--brand); box-shadow: 0 var(--depth) 0 var(--brand-deep); translate: 0 -2px; }
+    .emoji { font-size: 1.15rem; flex: none; transition: scale var(--t-base) var(--spring); }
+    .suggestion:hover .emoji { scale: 1.15; }
+
+    /* Mensajes */
+    .msg-user { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .shot {
+      max-width: 60%;
+      max-height: 16rem;
+      object-fit: cover;
+      border: 2px solid var(--brand);
+      border-radius: var(--r-md) var(--r-md) 6px var(--r-md);
+    }
+    @media (width >= 40rem) { .shot { max-width: 280px; } }
+    .bubble-user {
+      max-width: 85%;
+      padding: 10px var(--sp-4);
+      font-size: var(--fs-small);
+      font-weight: var(--fw-semibold);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: var(--ink);
+      background: var(--brand);
+      border-radius: var(--r-md) var(--r-md) 6px var(--r-md);
+      box-shadow: 0 var(--depth) 0 var(--brand-deep);
+    }
+    @media (width >= 40rem) { .bubble-user { max-width: 70%; } }
+    .msg-model { display: flex; gap: var(--sp-3); }
+    .msg-body { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
+    .bubble-model {
+      max-width: 100%;
+      padding: var(--sp-3) var(--sp-4);
+      font-size: var(--fs-small);
+      line-height: 1.65;
+      color: var(--text-2);
+      overflow-wrap: anywhere;
+      background: var(--bg-1);
+      border: var(--border) solid var(--line);
+      border-radius: 6px var(--r-md) var(--r-md) var(--r-md);
+      box-shadow: 0 var(--depth) 0 var(--bg-3);
+    }
+    @media (width >= 40rem) { .bubble-model { max-width: 85%; } }
+    .queried {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      color: var(--text-3);
+      background: var(--bg-1);
+      border: 1px solid var(--line);
+      border-radius: var(--r-full);
+    }
+    .queried lucide-icon { color: var(--brand); flex: none; }
+    .typing { display: flex; align-items: center; gap: var(--sp-3); }
+    .dots { display: flex; gap: 4px; }
+    .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--brand); animation: dot 1s var(--ease-in-out, ease-in-out) infinite; }
+    .dots i:nth-child(1) { animation-delay: -0.3s; }
+    .dots i:nth-child(2) { animation-delay: -0.15s; }
+    @keyframes dot { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+    .err { align-items: center; width: fit-content; margin-left: 44px; color: var(--danger); font-size: var(--fs-caption); }
+
+    /* Caja de texto */
+    .composer {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      gap: var(--sp-2);
+      padding: 6px;
+      background: var(--bg-1);
+      border: var(--border) solid var(--line);
+      border-radius: var(--r-md);
+      box-shadow: 0 var(--depth) 0 var(--bg-3);
+      transition: border-color var(--t-fast) ease, box-shadow var(--t-fast) ease;
+    }
+    .composer:focus-within { border-color: var(--brand); box-shadow: 0 var(--depth) 0 var(--brand-deep), 0 0 0 4px var(--brand-soft); }
+    .composer textarea {
+      flex: 1;
+      min-height: 44px;
+      max-height: 10rem;
+      padding: 10px var(--sp-3);
+      font-size: var(--fs-small);
+      resize: none;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      outline: none;
+    }
+    .attach { width: 44px; height: 44px; }
   `,
 })
 export class NovaAiComponent {

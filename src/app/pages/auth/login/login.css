@@ -1,0 +1,108 @@
+.screen {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-10) var(--sp-4);
+  overflow: hidden;
+  background: var(--bg-0);
+}
+.glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(55% 45% at 50% 0%, var(--brand-soft), transparent 70%),
+    radial-gradient(40% 35% at 50% 100%, rgb(236 220 146 / 0.06), transparent 70%);
+}
+.box {
+  position: relative;
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  animation: lai-reveal var(--t-slow) var(--ease-out) both;
+}
+.logo-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.halo {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgb(236 220 146 / 0.2);
+  filter: blur(48px);
+  animation: lai-breathe 3s var(--ease-in-out) infinite;
+}
+.logo {
+  position: relative;
+  width: 190px;
+  height: 190px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 30px rgb(0 0 0 / 0.55));
+}
+.hello {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.hello h1 {
+  font-size: clamp(1.75rem, 6vw, 2.1rem);
+  color: var(--brand);
+}
+.hello p {
+  color: var(--text-2);
+  font-size: var(--fs-small);
+}
+.card-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+  padding: var(--sp-6);
+  background: var(--bg-1);
+  border: var(--border) solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: 0 var(--depth) 0 var(--bg-3);
+}
+.with-icon {
+  position: relative;
+}
+.with-icon lucide-icon {
+  position: absolute;
+  left: var(--sp-4);
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--text-3);
+  pointer-events: none;
+}
+.with-icon input {
+  padding-left: calc(var(--sp-4) + 28px);
+}
+.with-icon:focus-within lucide-icon {
+  color: var(--brand);
+}
+.error {
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-small);
+  color: var(--danger);
+  background: var(--danger-soft);
+  border: var(--border) solid var(--danger-deep);
+  border-radius: var(--r-sm);
+  animation: lai-shake 420ms var(--ease-in-out);
+}
+.go lucide-icon {
+  transition: translate var(--t-base) var(--spring);
+}
+.go:hover lucide-icon {
+  translate: 3px 0;
+}
+.copy {
+  text-align: center;
+  font-size: var(--fs-caption);
+  color: var(--text-3);
+}

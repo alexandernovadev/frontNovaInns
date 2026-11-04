@@ -1,0 +1,1037 @@
+/* ════════════════════════════════════════════════════════════════
+   NovaInns · ELEMENTOS NATIVOS con nuestro estilo
+   Todo va dentro de :where() → especificidad 0. Cualquier clase de
+   un CSS Module lo pisa sin pelear.
+
+   Color por atributo:  data-tone="brand|success|danger|warning|info|ai"
+                         (se hereda: ponlo en un <fieldset> y lo toman sus hijos)
+   Tamaño de botón:     data-size="sm|lg"   ·  data-block (ancho completo)
+   Variante de botón:   data-variant="soft|ghost"  ·  data-icon (cuadrado)
+   Interruptor:         <input type="checkbox" role="switch">
+   Cargando:            <button aria-busy="true">
+   Range con relleno:   style="--val: 40%"
+   Hoja inferior:       <dialog data-sheet>  (los <select> ya son hoja en tablet/móvil)
+
+   Descartados a propósito (no encajan o el navegador no deja estilarlos):
+   iframe, video, audio (haremos reproductor propio para TTS),
+   input image/reset/color/hidden/month/week.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Tono por defecto (se hereda) ─────────────────────────────── */
+:root {
+  --c: var(--brand);
+  --c-deep: var(--brand-deep);
+  --c-soft: var(--brand-soft);
+  --line-hover: color-mix(in oklab, var(--line), var(--text-1) 14%);
+  accent-color: var(--brand);
+}
+:where([data-tone="brand"])   { --c: var(--brand);   --c-deep: var(--brand-deep);   --c-soft: var(--brand-soft); }
+:where([data-tone="success"]) { --c: var(--success); --c-deep: var(--success-deep); --c-soft: var(--success-soft); }
+:where([data-tone="danger"])  { --c: var(--danger);  --c-deep: var(--danger-deep);  --c-soft: var(--danger-soft); }
+:where([data-tone="warning"]) { --c: var(--warning); --c-deep: var(--warning-deep); --c-soft: var(--warning-soft); }
+:where([data-tone="info"])    { --c: var(--info);    --c-deep: var(--info-deep);    --c-soft: var(--info-soft); }
+:where([data-tone="ai"])      { --c: var(--ai);      --c-deep: var(--ai-deep);      --c-soft: var(--ai-soft); }
+
+/* ══ 1. BOTÓN ═════════════════════════════════════════════════════
+   Neutro por defecto · submit o data-tone = pastel con borde 3D    */
+:where(button, input:is([type="button"], [type="submit"])) {
+  --btn-bg: var(--bg-2);
+  --btn-fg: var(--text-1);
+  --btn-edge: var(--bg-3);
+  --btn-border: var(--line);
+  --btn-h: var(--h-md);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: var(--btn-h);
+  padding: 0 22px;
+  font-family: var(--font-display);
+  font-weight: var(--fw-display);
+  font-size: 1.05rem;
+  line-height: normal;
+  letter-spacing: 0.02em;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: var(--border) solid var(--btn-border);
+  border-radius: var(--r-md);
+  box-shadow: 0 var(--depth) 0 var(--btn-edge);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition:
+    transform var(--t-base) var(--spring),
+    box-shadow var(--t-instant) ease,
+    background-color var(--t-fast) ease,
+    color var(--t-fast) ease,
+    filter var(--t-fast) ease;
+}
+:where(button[type="submit"], input[type="submit"], button[data-tone]) {
+  --btn-bg: var(--c);
+  --btn-fg: var(--ink);
+  --btn-edge: var(--c-deep);
+  --btn-border: transparent;
+  border: 0; /* igual que el diseño aprobado: el pastel no lleva borde */
+}
+:where(button[data-variant="soft"]) {
+  --btn-bg: var(--c-soft);
+  --btn-fg: var(--c);
+  --btn-edge: transparent;
+  --btn-border: transparent;
+  border: 0;
+}
+:where(button[data-variant="ghost"]) {
+  --btn-bg: transparent;
+  --btn-fg: var(--c);
+  --btn-edge: transparent;
+  --btn-border: transparent;
+  border: 0;
+}
+:where(button:hover, input:is([type="button"], [type="submit"]):hover) {
+  filter: brightness(1.06);
+}
+:where(button[data-variant="ghost"]:hover) {
+  --btn-bg: var(--c-soft);
+  filter: none;
+}
+:where(button:active:not(:disabled, [aria-busy="true"]), input:is([type="button"], [type="submit"]):active:not(:disabled, [aria-busy="true"])) {
+  transform: translateY(var(--depth)) scale(var(--press-scale));
+  box-shadow: 0 0 0 var(--btn-edge);
+  transition-duration: var(--t-instant);
+}
+:where(button:disabled, input:is([type="button"], [type="submit"]):disabled) {
+  --btn-bg: var(--bg-2);
+  --btn-fg: var(--text-3);
+  --btn-edge: var(--bg-3);
+  --btn-border: var(--line);
+  cursor: not-allowed;
+  filter: none;
+  opacity: 0.6;
+}
+:where(button[data-size="sm"]) { --btn-h: var(--h-sm); padding: 0 var(--sp-4); font-size: 0.95rem; border-radius: var(--r-sm); }
+:where(button[data-size="lg"]) { --btn-h: var(--h-lg); padding: 0 var(--sp-6); font-size: 1.2rem; }
+:where(button[data-block]) { display: flex; width: 100%; }
+:where(button[data-icon]) { width: var(--btn-h); padding: 0; border-radius: var(--r-full); font-size: 1.25rem; }
+
+/* Cargando: el texto se esconde y gira un anillo del color del texto */
+:where(button[aria-busy="true"]) {
+  color: transparent;
+  cursor: progress;
+}
+:where(button[aria-busy="true"])::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 1.25em;
+  height: 1.25em;
+  border-radius: 50%;
+  border: 3px solid var(--btn-fg);
+  border-right-color: transparent;
+  animation: n-spin 0.7s linear infinite;
+}
+
+/* ══ 2. LABEL (base; las variantes con :has() van después y la pisan) */
+:where(label) {
+  display: inline-block;
+  font-size: var(--fs-small);
+  font-weight: var(--fw-semibold);
+  color: var(--text-2);
+}
+
+/* ══ 2b. CAMPOS DE TEXTO · input, textarea, select ══════════════════ */
+:where(
+  input:is(:not([type]), [type="text"], [type="password"], [type="email"], [type="number"],
+    [type="tel"], [type="url"], [type="search"], [type="date"], [type="time"], [type="datetime-local"]),
+  textarea,
+  select
+) {
+  --field-border: var(--line);
+  --field-ring: transparent;
+
+  width: 100%;
+  min-height: var(--h-md);
+  padding: 0 var(--sp-4);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-regular);
+  color: var(--text-1);
+  background: var(--bg-2);
+  border: var(--border) solid var(--field-border);
+  border-radius: var(--r-md);
+  /* "hundido": lo contrario del botón 3D */
+  box-shadow:
+    inset 0 var(--depth) 0 rgb(0 0 0 / 0.18),
+    0 0 0 4px var(--field-ring);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    border-color var(--t-fast) ease,
+    box-shadow var(--t-base) var(--ease-out),
+    background-color var(--t-fast) ease;
+}
+:where(input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="button"], [type="submit"]):hover:not(:disabled, :focus), textarea:hover:not(:disabled, :focus), select:hover:not(:disabled, :focus)) {
+  --field-border: var(--line-hover);
+}
+:where(input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="button"], [type="submit"]):focus, textarea:focus, select:focus),
+:where(input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="button"], [type="submit"]):focus-visible, textarea:focus-visible, select:focus-visible) {
+  --field-border: var(--c);
+  --field-ring: var(--c-soft);
+  background-color: var(--bg-1); /* solo el color: no borra la lupa ni la flecha */
+  outline: none;
+}
+:where(input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="button"], [type="submit"]):is(:user-invalid, [aria-invalid="true"]), textarea:is(:user-invalid, [aria-invalid="true"]), select:is(:user-invalid, [aria-invalid="true"])) {
+  --field-border: var(--danger-deep);
+  --c: var(--danger);
+  --c-soft: var(--danger-soft);
+}
+:where(input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="button"], [type="submit"]):is(:user-invalid, [aria-invalid="true"]):focus, textarea:is(:user-invalid, [aria-invalid="true"]):focus, select:is(:user-invalid, [aria-invalid="true"]):focus) {
+  --field-border: var(--danger);
+}
+:where(input:disabled, textarea:disabled, select:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+:where(input:read-only:not(:disabled, [type="checkbox"], [type="radio"], [type="range"], [type="file"]), textarea:read-only:not(:disabled, [type="checkbox"], [type="radio"], [type="range"], [type="file"])) {
+  border-style: dashed;
+  color: var(--text-2);
+}
+:where(input, textarea)::placeholder {
+  color: var(--text-3);
+  opacity: 1;
+}
+
+/* Textarea: crece con el contenido (field-sizing) */
+:where(textarea) {
+  padding: var(--sp-3) var(--sp-4);
+  line-height: var(--lh-body);
+  min-height: calc(3lh + var(--sp-6));
+  max-height: calc(12lh + var(--sp-6));
+  field-sizing: content;
+  resize: vertical;
+}
+
+/* Número: sin las flechitas del sistema, cifras alineadas */
+:where(input[type="number"]) {
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+}
+:where(input[type="number"])::-webkit-inner-spin-button,
+:where(input[type="number"])::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Búsqueda: lupa a la izquierda, píldora, X propia */
+:where(input[type="search"]) {
+  padding-left: calc(var(--sp-4) + 26px);
+  border-radius: var(--r-full);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B0B0B9' stroke-width='2.6' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5 20 20'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: var(--sp-4) 50%;
+  background-size: 18px;
+}
+:where(input[type="search"])::-webkit-search-decoration { -webkit-appearance: none; }
+:where(input[type="search"])::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: var(--bg-3) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F7F7F9' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M8 8l8 8M16 8l-8 8'/%3E%3C/svg%3E") center / 12px no-repeat;
+}
+
+/* Fecha y hora: icono del calendario en lila */
+:where(input:is([type="date"], [type="time"], [type="datetime-local"])) {
+  font-variant-numeric: tabular-nums;
+}
+:where(input:is([type="date"], [type="time"], [type="datetime-local"]))::-webkit-calendar-picker-indicator {
+  width: 20px;
+  height: 20px;
+  padding: 6px;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  color: transparent;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ECDC92' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15.5' rx='4'/%3E%3Cpath d='M3.5 10h17M8 3v4M16 3v4'/%3E%3C/svg%3E") center / 20px no-repeat;
+  transition: background-color var(--t-fast) ease, scale var(--t-base) var(--spring);
+}
+:where(input[type="time"])::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ECDC92' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='8.5'/%3E%3Cpath d='M12 7.5V12l3 2'/%3E%3C/svg%3E");
+}
+:where(input:is([type="date"], [type="time"], [type="datetime-local"]))::-webkit-calendar-picker-indicator:hover {
+  background-color: var(--c-soft);
+  scale: 1.1;
+}
+:where(input)::-webkit-datetime-edit-fields-wrapper { padding: 0; }
+:where(input)::-webkit-datetime-edit-text { color: var(--text-3); padding: 0 2px; }
+:where(input)::-webkit-datetime-edit-day-field:focus,
+:where(input)::-webkit-datetime-edit-month-field:focus,
+:where(input)::-webkit-datetime-edit-year-field:focus,
+:where(input)::-webkit-datetime-edit-hour-field:focus,
+:where(input)::-webkit-datetime-edit-minute-field:focus,
+:where(input)::-webkit-datetime-edit-ampm-field:focus {
+  background: var(--c-soft);
+  color: var(--c);
+  border-radius: 6px;
+}
+
+/* ══ 3. SELECT · flecha propia; menú 100% nuestro donde se pueda ═══ */
+:where(select) {
+  padding-right: calc(var(--sp-4) + 24px);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ECDC92' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--sp-4) center;
+  background-size: 18px;
+  text-overflow: ellipsis;
+}
+:where(select[multiple], select[size]) {
+  padding: var(--sp-2);
+  background-image: none;
+}
+:where(optgroup) {
+  font-weight: var(--fw-bold);
+  color: var(--text-3);
+}
+:where(option) {
+  font-weight: var(--fw-regular);
+  color: var(--text-1);
+  background: var(--bg-1);
+}
+
+/* Select personalizable (Chrome 135+): el desplegable es nuestro */
+@supports (appearance: base-select) {
+  :where(select:not([multiple], [size])),
+  :where(select:not([multiple], [size]))::picker(select) {
+    appearance: base-select;
+  }
+  :where(select:not([multiple], [size])) {
+    display: flex;
+    align-items: center;
+    background-image: none;
+    padding-right: var(--sp-4);
+  }
+  :where(select)::picker-icon {
+    content: "";
+    width: 18px;
+    height: 18px;
+    margin-left: auto;
+    background: var(--c);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center / contain no-repeat;
+    transition: rotate var(--t-base) var(--spring);
+  }
+  :where(select:open)::picker-icon {
+    rotate: 180deg;
+  }
+  :where(select)::picker(select) {
+    margin-block: var(--sp-2);
+    padding: var(--sp-2);
+    min-width: anchor-size(width);
+    max-height: min(360px, 60dvh);
+    color: var(--text-1);
+    background: var(--bg-1);
+    border: var(--border) solid var(--line);
+    border-radius: var(--r-md);
+    box-shadow: 0 var(--depth) 0 var(--bg-3), 0 16px 40px rgb(0 0 0 / 0.35);
+    opacity: 0;
+    translate: 0 -6px;
+    scale: 0.97;
+    transform-origin: top center;
+    transition:
+      opacity var(--t-fast) ease,
+      translate var(--t-base) var(--spring),
+      scale var(--t-base) var(--spring),
+      overlay var(--t-base) allow-discrete,
+      display var(--t-base) allow-discrete;
+  }
+  :where(select:open)::picker(select) {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+  @starting-style {
+    :where(select:open)::picker(select) {
+      opacity: 0;
+      translate: 0 -6px;
+      scale: 0.97;
+    }
+  }
+  :where(select) :where(option) {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    min-height: var(--h-sm);
+    padding: 0 var(--sp-3);
+    border-radius: var(--r-sm);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color var(--t-fast) ease, color var(--t-fast) ease;
+  }
+  :where(select) :where(option:is(:hover, :focus-visible)) {
+    background: var(--bg-2);
+    outline: none;
+  }
+  :where(select) :where(option:checked) {
+    background: var(--c-soft);
+    color: var(--c);
+    font-weight: var(--fw-semibold);
+  }
+  :where(select) :where(option)::checkmark {
+    order: 1;
+    margin-left: auto;
+    color: var(--c);
+    font-weight: var(--fw-heavy);
+  }
+  :where(select) :where(optgroup) {
+    padding-top: var(--sp-2);
+  }
+  :where(select) :where(optgroup) > :where(legend) {
+    padding: var(--sp-1) var(--sp-3);
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-heavy);
+    letter-spacing: var(--ls-caption);
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+}
+
+/* ══ 4. CHECKBOX y RADIO ═══════════════════════════════════════════ */
+:where(input:is([type="checkbox"], [type="radio"])) {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  display: inline-grid;
+  place-content: center;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  vertical-align: middle;
+  background: var(--bg-2) center / 16px no-repeat;
+  border: var(--border) solid var(--line);
+  box-shadow: 0 var(--depth) 0 var(--bg-3);
+  cursor: pointer;
+  transition:
+    background-color var(--t-fast) ease,
+    border-color var(--t-fast) ease,
+    box-shadow var(--t-base) var(--spring),
+    transform var(--t-base) var(--spring);
+}
+:where(input[type="checkbox"]:not([role="switch"])) {
+  border-radius: 9px;
+}
+:where(input:is([type="checkbox"], [type="radio"]):hover:not(:disabled)) {
+  border-color: var(--line-hover);
+}
+:where(input:is([type="checkbox"], [type="radio"]):active:not(:disabled)) {
+  transform: translateY(var(--depth)) scale(0.9);
+  box-shadow: 0 0 0 var(--bg-3);
+  transition-duration: var(--t-instant);
+}
+:where(input:is([type="checkbox"], [type="radio"]):focus-visible) {
+  outline: var(--border) solid var(--c);
+  outline-offset: 3px;
+}
+:where(input:is([type="checkbox"], [type="radio"]):disabled) {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ✓ marcado: rellena con el tono y la palomita hace "pop" */
+:where(input[type="checkbox"]:not([role="switch"]):is(:checked, :indeterminate)) {
+  background-color: var(--c);
+  border-color: var(--c);
+  box-shadow: 0 var(--depth) 0 var(--c-deep);
+  animation: n-pop var(--t-slow) var(--spring);
+}
+:where(input[type="checkbox"]:not([role="switch"]):checked) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231A1A1E' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E");
+}
+:where(input[type="checkbox"]:not([role="switch"]):indeterminate) {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231A1A1E' stroke-width='3.6' stroke-linecap='round'%3E%3Cpath d='M6 12h12'/%3E%3C/svg%3E");
+}
+
+/* ◉ radio: el anillo interior se cierra hasta dejar un punto */
+:where(input[type="radio"]) {
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 13px var(--bg-2),
+    0 var(--depth) 0 var(--bg-3);
+}
+:where(input[type="radio"]:checked) {
+  background-color: var(--c);
+  border-color: var(--c);
+  box-shadow:
+    inset 0 0 0 5px var(--bg-2),
+    0 var(--depth) 0 var(--c-deep);
+}
+:where(input[type="radio"]:active:not(:disabled)) {
+  box-shadow: inset 0 0 0 7px var(--bg-2), 0 0 0 var(--bg-3);
+}
+
+/* ⏻ INTERRUPTOR · <input type="checkbox" role="switch">
+   La bolita es un degradado (funciona en todos los navegadores, sin ::before):
+   capa 1 = bolita blanca, capa 2 = su sombra 3D 2px más abajo.
+   Se desliza con un resorte corto y al pulsar se estira hacia donde va. */
+:where(input[type="checkbox"][role="switch"]) {
+  --knob: 22px;
+  --knob-w: var(--knob);
+  --pad: 3px;
+  --knob-x: var(--pad);
+  width: 54px;
+  height: 32px;
+  border-radius: var(--r-full);
+  background-color: var(--bg-3);
+  background-image:
+    radial-gradient(closest-side, var(--text-1) calc(100% - 1.5px), transparent 100%),
+    radial-gradient(closest-side, rgb(0 0 0 / 0.28) calc(100% - 1.5px), transparent 100%);
+  background-repeat: no-repeat;
+  background-size: var(--knob-w) var(--knob), var(--knob-w) var(--knob);
+  background-position:
+    var(--knob-x) 50%,
+    var(--knob-x) calc(50% + 2px);
+  transition:
+    background-position 320ms cubic-bezier(0.3, 1.3, 0.5, 1),
+    background-size 180ms var(--ease-out),
+    background-color var(--t-base) ease,
+    border-color var(--t-base) ease,
+    box-shadow var(--t-base) var(--spring),
+    transform var(--t-base) var(--spring);
+}
+:where(input[type="checkbox"][role="switch"]:checked) {
+  --knob-x: calc(100% - var(--pad));
+  background-color: var(--c);
+  border-color: var(--c);
+  box-shadow: 0 var(--depth) 0 var(--c-deep);
+}
+/* al pulsar: la bolita se estira (como la de iOS) y el interruptor se hunde */
+:where(input[type="checkbox"][role="switch"]:active:not(:disabled)) {
+  --knob-w: 29px;
+  transform: translateY(var(--depth)) scale(0.97);
+  box-shadow: 0 0 0 var(--c-deep);
+}
+:where(input[type="checkbox"][role="switch"]:hover:not(:disabled, :checked)) {
+  background-color: color-mix(in oklab, var(--bg-3), var(--text-1) 8%);
+}
+
+/* Etiqueta que envuelve un check/radio/switch → fila táctil de 48 px */
+:where(label:has(> input:is([type="checkbox"], [type="radio"]))) {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--h-md);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: color var(--t-fast) ease;
+}
+:where(label:has(> input:is([type="checkbox"], [type="radio"]):checked)) {
+  color: var(--text-1);
+}
+:where(label:has(> input:disabled)) {
+  cursor: not-allowed;
+  color: var(--text-3);
+}
+:where(label:has(> input[role="switch"])) {
+  justify-content: space-between;
+}
+
+/* ══ 5. RANGE · deslizador ═════════════════════════════════════════ */
+:where(input[type="range"]) {
+  --val: 50%;
+  --track: 12px;
+  --knob: 28px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: var(--h-md);
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+:where(input[type="range"])::-webkit-slider-runnable-track {
+  height: var(--track);
+  border-radius: var(--r-full);
+  background: linear-gradient(to right, var(--c) 0 var(--val), var(--bg-2) var(--val) 100%);
+  box-shadow: inset 0 var(--depth) 0 rgb(0 0 0 / 0.18);
+}
+:where(input[type="range"])::-moz-range-track {
+  height: var(--track);
+  border-radius: var(--r-full);
+  background: var(--bg-2);
+}
+:where(input[type="range"])::-moz-range-progress {
+  height: var(--track);
+  border-radius: var(--r-full);
+  background: var(--c);
+}
+:where(input[type="range"])::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--knob);
+  height: var(--knob);
+  margin-top: calc((var(--track) - var(--knob)) / 2);
+  border-radius: 50%;
+  background: var(--text-1);
+  border: 3px solid var(--c);
+  box-shadow: 0 var(--depth) 0 var(--c-deep);
+  transition: transform var(--t-base) var(--spring);
+}
+:where(input[type="range"])::-moz-range-thumb {
+  width: var(--knob);
+  height: var(--knob);
+  border-radius: 50%;
+  background: var(--text-1);
+  border: 3px solid var(--c);
+  box-shadow: 0 var(--depth) 0 var(--c-deep);
+  transition: transform var(--t-base) var(--spring);
+}
+:where(input[type="range"]:hover)::-webkit-slider-thumb { transform: scale(1.08); }
+:where(input[type="range"]:active)::-webkit-slider-thumb { transform: scale(1.2); }
+:where(input[type="range"]:active)::-moz-range-thumb { transform: scale(1.2); }
+:where(input[type="range"]:focus-visible) { outline: none; }
+:where(input[type="range"]:focus-visible)::-webkit-slider-thumb { box-shadow: 0 var(--depth) 0 var(--c-deep), 0 0 0 6px var(--c-soft); }
+:where(input[type="range"]:disabled) { opacity: 0.45; cursor: not-allowed; }
+
+/* ══ 6. ARCHIVO · zona punteada con botón 3D dentro ════════════════ */
+:where(input[type="file"]) {
+  width: 100%;
+  padding: var(--sp-2);
+  font-size: var(--fs-small);
+  color: var(--text-3);
+  background: var(--bg-1);
+  border: var(--border) dashed var(--line);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: border-color var(--t-fast) ease, background-color var(--t-fast) ease;
+}
+:where(input[type="file"]:hover) {
+  border-color: var(--c);
+  background: var(--c-soft);
+}
+:where(input[type="file"])::file-selector-button {
+  margin-right: var(--sp-3);
+  min-height: var(--h-sm);
+  padding: 0 var(--sp-4);
+  font-family: var(--font-display);
+  font-weight: var(--fw-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  background: var(--c);
+  border: 0;
+  border-radius: var(--r-sm);
+  box-shadow: 0 var(--depth) 0 var(--c-deep);
+  cursor: pointer;
+  transition: transform var(--t-base) var(--spring), box-shadow var(--t-instant) ease;
+}
+:where(input[type="file"])::file-selector-button:active {
+  transform: translateY(var(--depth)) scale(var(--press-scale));
+  box-shadow: 0 0 0 var(--c-deep);
+}
+
+/* ══ 7. LABEL con campo · FIELDSET · LEGEND · OUTPUT ═════════════════════════ */
+/* <label> seguido de su campo, o envolviendo texto + campo */
+:where(label:has(> :is(input:not([type="checkbox"], [type="radio"]), textarea, select))) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+:where(label:has(+ :is(input, textarea, select))) {
+  margin-bottom: var(--sp-2);
+}
+
+:where(fieldset) {
+  min-width: 0;
+  margin: 0;
+  padding: var(--sp-4) var(--sp-5) var(--sp-5);
+  border: var(--border) solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--bg-1);
+}
+:where(fieldset:disabled) {
+  opacity: 0.6;
+}
+:where(legend) {
+  padding: 0 var(--sp-2);
+  margin-left: calc(var(--sp-2) * -1);
+  font-family: var(--font-display);
+  font-weight: var(--fw-display);
+  font-size: 1.1rem;
+  color: var(--text-1);
+}
+
+:where(output) {
+  display: inline-flex;
+  align-items: center;
+  min-width: 3.2em;
+  justify-content: center;
+  padding: 2px var(--sp-3);
+  font-family: var(--font-display);
+  font-weight: var(--fw-display);
+  font-variant-numeric: tabular-nums;
+  color: var(--c);
+  background: var(--c-soft);
+  border-radius: var(--r-full);
+}
+
+/* ══ 8. PROGRESS · METER ═══════════════════════════════════════════ */
+:where(progress, meter) {
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  width: 100%;
+  height: 16px;
+  border: 0;
+  border-radius: var(--r-full);
+  overflow: hidden;
+  background: var(--bg-2);
+  box-shadow: inset 0 var(--depth) 0 rgb(0 0 0 / 0.18);
+}
+/* el relleno lleva brillo arriba y sombra abajo: se ve "gordito" */
+:where(progress)::-webkit-progress-bar {
+  background: transparent;
+}
+:where(progress)::-webkit-progress-value {
+  border-radius: var(--r-full);
+  background: var(--c);
+  box-shadow:
+    inset 0 -4px 0 rgb(0 0 0 / 0.14),
+    inset 0 3px 0 rgb(255 255 255 / 0.28);
+  transition: inline-size var(--t-slow) var(--spring);
+}
+:where(progress)::-moz-progress-bar {
+  border-radius: var(--r-full);
+  background: var(--c);
+  box-shadow:
+    inset 0 -4px 0 rgb(0 0 0 / 0.14),
+    inset 0 3px 0 rgb(255 255 255 / 0.28);
+}
+/* sin valor = indeterminado: rayas que avanzan */
+:where(progress:indeterminate) {
+  background:
+    repeating-linear-gradient(-45deg, var(--c-soft) 0 12px, transparent 12px 24px),
+    var(--bg-2);
+  background-size: 34px 100%, auto;
+  animation: n-stripes 0.8s linear infinite;
+}
+:where(progress:indeterminate)::-webkit-progress-bar { background: transparent; }
+:where(progress:indeterminate)::-moz-progress-bar { background: transparent; }
+
+:where(meter)::-webkit-meter-bar {
+  height: 100%;
+  border: 0;
+  border-radius: var(--r-full);
+  background: transparent;
+}
+:where(meter)::-webkit-meter-optimum-value,
+:where(meter)::-webkit-meter-suboptimum-value,
+:where(meter)::-webkit-meter-even-less-good-value {
+  border-radius: var(--r-full);
+  box-shadow:
+    inset 0 -4px 0 rgb(0 0 0 / 0.14),
+    inset 0 3px 0 rgb(255 255 255 / 0.28);
+}
+:where(meter)::-webkit-meter-optimum-value { background: var(--success); }
+:where(meter)::-webkit-meter-suboptimum-value { background: var(--warning); }
+:where(meter)::-webkit-meter-even-less-good-value { background: var(--danger); }
+:where(meter:-moz-meter-optimum)::-moz-meter-bar { background: var(--success); border-radius: var(--r-full); }
+:where(meter:-moz-meter-sub-optimum)::-moz-meter-bar { background: var(--warning); border-radius: var(--r-full); }
+:where(meter:-moz-meter-sub-sub-optimum)::-moz-meter-bar { background: var(--danger); border-radius: var(--r-full); }
+
+/* ══ 9. DETAILS / SUMMARY · acordeón que se abre animado ═══════════ */
+:where(details) {
+  background: var(--bg-1);
+  border: var(--border) solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: 0 var(--depth) 0 var(--bg-3);
+  transition: border-color var(--t-fast) ease;
+}
+:where(details[open]) {
+  border-color: var(--c-deep);
+}
+:where(summary) {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: var(--h-lg);
+  padding: 0 var(--sp-5);
+  font-family: var(--font-display);
+  font-weight: var(--fw-display);
+  font-size: 1.1rem;
+  color: var(--text-1);
+  list-style: none;
+  cursor: pointer;
+  border-radius: calc(var(--r-lg) - var(--border));
+  user-select: none;
+  -webkit-user-select: none;
+}
+:where(summary)::-webkit-details-marker { display: none; }
+:where(summary)::after {
+  content: "";
+  flex: none;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--c-soft);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ECDC92' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 16px;
+  transition: rotate var(--t-base) var(--spring);
+}
+:where(details[open]) > :where(summary)::after {
+  rotate: 180deg;
+}
+:where(summary:hover) {
+  background: rgb(255 255 255 / 0.03);
+}
+:where(summary:focus-visible) {
+  outline-offset: -2px;
+}
+:where(details) > :where(:not(summary)) {
+  padding-inline: var(--sp-5);
+  color: var(--text-2);
+}
+:where(details) > :where(:not(summary):last-child) {
+  padding-bottom: var(--sp-5);
+}
+/* Al abrir: el contenido baja un poco y aparece. Sin animar la altura
+   (animar height:auto da tirones al final en varios navegadores). */
+:where(details[open]) > :where(:not(summary)) {
+  animation: n-reveal var(--t-base) var(--ease-out) both;
+}
+
+/* ══ 10. DIALOG · modal nativo que entra con resorte ═══════════════ */
+:where(dialog) {
+  margin: auto; /* el reset pone margin:0 y lo descentraría */
+  width: min(440px, calc(100vw - 2 * var(--gutter)));
+  max-height: calc(100dvh - 2 * var(--gutter));
+  padding: var(--sp-6);
+  color: var(--text-1);
+  background: var(--bg-1);
+  border: var(--border) solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: 0 var(--depth) 0 var(--bg-3);
+  opacity: 0;
+  scale: 0.9;
+  translate: 0 12px;
+  transition:
+    opacity var(--t-base) ease,
+    scale var(--t-slow) var(--spring),
+    translate var(--t-slow) var(--spring),
+    overlay var(--t-slow) allow-discrete,
+    display var(--t-slow) allow-discrete;
+}
+:where(dialog[open]) {
+  opacity: 1;
+  scale: 1;
+  translate: 0 0;
+}
+@starting-style {
+  :where(dialog[open]) {
+    opacity: 0;
+    scale: 0.9;
+    translate: 0 12px;
+  }
+}
+:where(dialog)::backdrop {
+  background: rgb(20 20 24 / 0);
+  backdrop-filter: blur(0);
+  transition:
+    background-color var(--t-base) ease,
+    backdrop-filter var(--t-base) ease,
+    overlay var(--t-slow) allow-discrete,
+    display var(--t-slow) allow-discrete;
+}
+:where(dialog[open])::backdrop {
+  background: rgb(20 20 24 / 0.66);
+  backdrop-filter: blur(4px);
+}
+@starting-style {
+  :where(dialog[open])::backdrop {
+    background: rgb(20 20 24 / 0);
+    backdrop-filter: blur(0);
+  }
+}
+/* ══ 11. HOJA INFERIOR (bottom sheet) ═════════════════════════════
+   · <dialog data-sheet>  → siempre hoja que sube desde abajo
+   · <dialog> normal      → hoja en móvil (≤ 520 px), modal centrado en el resto
+   · <select>             → su menú es hoja en tablet y móvil (más abajo)
+   Tirador arriba, esquinas solo arriba, respeta el "notch" de abajo. */
+:where(dialog[data-sheet]) {
+  position: fixed;
+  inset: auto 0 0 0;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 640px;
+  max-height: 88dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--sp-8) var(--sp-5) calc(var(--sp-6) + env(safe-area-inset-bottom, 0px));
+  border-bottom: 0;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  box-shadow: none;
+  opacity: 1;
+  scale: 1;
+  translate: 0 100%;
+  transition:
+    translate var(--t-slow) var(--ease-sheet),
+    overlay var(--t-slow) allow-discrete,
+    display var(--t-slow) allow-discrete;
+}
+:where(dialog[data-sheet][open]) { translate: 0 0; }
+@starting-style {
+  :where(dialog[data-sheet][open]) { translate: 0 100%; }
+}
+@media (max-width: 520px) {
+  :where(dialog:modal) {
+    position: fixed;
+    inset: auto 0 0 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 640px;
+    max-height: 88dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--sp-8) var(--sp-5) calc(var(--sp-6) + env(safe-area-inset-bottom, 0px));
+    border-bottom: 0;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    box-shadow: none;
+    opacity: 1;
+    scale: 1;
+    translate: 0 100%;
+    transition:
+      translate var(--t-slow) var(--ease-sheet),
+      overlay var(--t-slow) allow-discrete,
+      display var(--t-slow) allow-discrete;
+  }
+  :where(dialog:modal[open]) { translate: 0 0; }
+  @starting-style {
+    :where(dialog:modal[open]) { translate: 0 100%; }
+  }
+}
+/* tirador */
+:where(dialog[data-sheet])::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 44px;
+  height: 5px;
+  translate: -50% 0;
+  border-radius: var(--r-full);
+  background: var(--line);
+}
+@media (max-width: 520px) {
+  :where(dialog:modal)::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 44px;
+    height: 5px;
+    translate: -50% 0;
+    border-radius: var(--r-full);
+    background: var(--line);
+  }
+}
+
+/* El menú del <select> como hoja en tablet y móvil (Chrome/Android).
+   En iPhone/iPad Safari ya abre su propia rueda/hoja del sistema. */
+@supports (appearance: base-select) {
+  @media (max-width: 1024px), (pointer: coarse) {
+    :where(select)::picker(select) {
+      position: fixed;
+      inset: auto 0 0 0;
+      position-area: none;
+      position-try-fallbacks: none;
+      margin: 0 auto;
+      width: 100%;
+      min-width: 0;
+      max-width: 640px;
+      max-height: 70dvh;
+      padding: var(--sp-8) var(--sp-3) calc(var(--sp-4) + env(safe-area-inset-bottom, 0px));
+      border-bottom: 0;
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+      /* tirador + fondo */
+      background:
+        radial-gradient(circle at 2.5px 50%, var(--line) 2.5px, transparent 3px) top 12px left calc(50% - 19.5px) / 5px 5px no-repeat,
+        radial-gradient(circle at 2.5px 50%, var(--line) 2.5px, transparent 3px) top 12px left calc(50% + 19.5px) / 5px 5px no-repeat,
+        linear-gradient(var(--line), var(--line)) top 12px center / 39px 5px no-repeat,
+        var(--bg-1);
+      /* velo oscuro detrás: una sombra gigante (el picker no tiene ::backdrop) */
+      box-shadow: 0 0 0 100vmax rgb(20 20 24 / 0);
+      opacity: 1;
+      scale: 1;
+      translate: 0 100%;
+      transition:
+        translate var(--t-slow) var(--ease-sheet),
+        box-shadow var(--t-base) ease,
+        overlay var(--t-slow) allow-discrete,
+        display var(--t-slow) allow-discrete;
+    }
+    :where(select:open)::picker(select) {
+      translate: 0 0;
+      box-shadow: 0 0 0 100vmax rgb(20 20 24 / 0.66);
+    }
+    @starting-style {
+      :where(select:open)::picker(select) {
+        translate: 0 100%;
+        box-shadow: 0 0 0 100vmax rgb(20 20 24 / 0);
+      }
+    }
+    /* filas más grandes para el dedo */
+    :where(select) :where(option) {
+      min-height: 52px;
+      padding: 0 var(--sp-4);
+      font-size: 1.05rem;
+    }
+  }
+}
+
+/* ══ Extras pequeños que aparecen en contenido ═════════════════════ */
+:where(hr) {
+  border: 0;
+  height: var(--border);
+  background: var(--line);
+  border-radius: var(--r-full);
+}
+:where(kbd) {
+  display: inline-block;
+  padding: 1px 7px;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--text-1);
+  background: var(--bg-2);
+  border: var(--border) solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 var(--depth) 0 var(--bg-3);
+}
+:where(mark) {
+  color: var(--ink);
+  background: var(--butter);
+  padding: 0 4px;
+  border-radius: 6px;
+}
+
+/* ── Animaciones ───────────────────────────────────────────────── */
+@keyframes n-spin {
+  to { rotate: 360deg; }
+}
+@keyframes n-pop {
+  0% { scale: 0.7; }
+  60% { scale: var(--pop-scale); }
+  100% { scale: 1; }
+}
+@keyframes n-reveal {
+  from { opacity: 0; translate: 0 -6px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes n-stripes {
+  to { background-position: 34px 0, 0 0; }
+}

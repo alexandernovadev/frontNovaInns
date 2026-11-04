@@ -9,6 +9,7 @@ import { LucideAngularModule, Mail, Lock, ArrowRight, LoaderCircle } from 'lucid
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule],
   templateUrl: './login.html',
+  styleUrl: './login.css',
 })
 export class LoginComponent {
   readonly Mail = Mail;

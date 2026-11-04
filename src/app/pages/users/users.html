@@ -1,37 +1,26 @@
-<div class="space-y-6">
+<div class="stack" style="--gap: var(--sp-5)">
 
   <!-- Header -->
-  <div class="flex items-center justify-between gap-3">
-    <div>
-      <h2 class="text-text-primary text-lg font-semibold flex items-center gap-2">
-        <lucide-icon [img]="UsersIcon" class="w-5 h-5 text-brand" [strokeWidth]="2"/>
+  <header class="row between">
+    <div class="stack" style="--gap: 2px">
+      <h2 class="sec-title">
+        <lucide-icon [img]="UsersIcon" [size]="20" [strokeWidth]="2" />
         Usuarios
       </h2>
-      <p class="text-text-secondary text-sm mt-0.5">{{ meta().total }} usuarios registrados</p>
+      <p class="page-sub">{{ meta().total }} usuarios registrados</p>
     </div>
-    <button (click)="openCreate()"
-      class="sm:flex hidden items-center gap-2 bg-brand hover:bg-brand-accent text-bg font-bold
-             px-4 py-2.5 rounded-xl transition-colors cursor-pointer text-sm">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-      </svg>
+    <button (click)="openCreate()" data-tone="brand" class="hide-sm">
+      <lucide-icon [img]="Plus" [size]="18" [strokeWidth]="2.6" />
       Nuevo usuario
     </button>
-    <button (click)="openCreate()" aria-label="Nuevo usuario" title="Nuevo usuario"
-      class="sm:hidden w-10 h-10 flex items-center justify-center bg-brand hover:bg-brand-accent text-bg font-bold
-             rounded-full transition-colors cursor-pointer shrink-0">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-      </svg>
+    <button (click)="openCreate()" data-tone="brand" data-icon class="only-sm" aria-label="Nuevo usuario" title="Nuevo usuario">
+      <lucide-icon [img]="Plus" [size]="20" [strokeWidth]="2.8" />
     </button>
-  </div>
+  </header>
 
   <!-- Filtros -->
-  <div class="flex flex-wrap gap-3">
-    <input [(ngModel)]="search" (ngModelChange)="onSearch()" placeholder="Buscar por nombre o email..."
-      class="flex-1 min-w-52 bg-input border border-border rounded-xl px-4 py-2.5
-             text-text-primary placeholder:text-text-disabled text-sm
-             focus:outline-none focus:border-brand transition-colors"/>
+  <div class="row wrap">
+    <input type="search" [(ngModel)]="search" (ngModelChange)="onSearch()" placeholder="Buscar por nombre o email..." class="grow" />
     <autocomplete-select
       [options]="roles.map(r => ({ label: roleLabels[r], value: r }))"
       [value]="roleFilter"
@@ -47,55 +36,45 @@
   </div>
 
   <!-- Tabla -->
-  <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="nova-table w-full text-sm">
+  <div class="surface">
+    <div class="table-wrap">
+      <table class="data-table cards">
         <thead>
-          <tr class="border-b border-border">
-            <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Nombre</th>
-            <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Email</th>
-            <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Rol</th>
-            <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Estado</th>
-            <th class="text-left px-5 py-3.5 text-text-disabled font-medium">Teléfono</th>
-            <th class="px-5 py-3.5"></th>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Teléfono</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           @if (loading()) {
-            <tr><td colspan="6" class="text-center py-12 text-text-disabled">Cargando...</td></tr>
+            <tr><td colspan="6" class="loading">Cargando...</td></tr>
           } @else if (users().length === 0) {
             <tr><td colspan="6"><nova-empty [icon]="UsersIcon" title="No hay usuarios con estos filtros" hint="Prueba con otro rol o estado." /></td></tr>
           } @else {
             @for (user of users(); track user._id) {
-              <tr class="border-b border-border last:border-0 hover:bg-hover transition-colors">
-                <td data-primary class="px-5 py-4 text-text-primary font-medium">{{ user.profile.fullName }}</td>
-                <td data-label="Email" class="px-5 py-4 text-text-secondary">{{ user.auth.email }}</td>
-                <td data-label="Rol" class="px-5 py-4">
-                  <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-brand/10 text-brand">
-                    {{ roleLabels[user.auth.role] }}
-                  </span>
-                </td>
-                <td data-label="Estado" class="px-5 py-4">
+              <tr>
+                <td data-primary class="strong">{{ user.profile.fullName }}</td>
+                <td data-label="Email" class="soft">{{ user.auth.email }}</td>
+                <td data-label="Rol"><span class="pill tint-butter">{{ roleLabels[user.auth.role] }}</span></td>
+                <td data-label="Estado">
                   @if (user.workContext.isActive) {
-                    <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-success/10 text-success">Activo</span>
+                    <span class="pill tint-mint">Activo</span>
                   } @else {
-                    <span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-error/10 text-error">Inactivo</span>
+                    <span class="pill tint-rose">Inactivo</span>
                   }
                 </td>
-                <td data-label="Teléfono" class="px-5 py-4 text-text-secondary">{{ user.profile.phone }}</td>
-                <td class="px-5 py-4">
-                  <div class="flex items-center gap-2 justify-end">
-                    <button (click)="openEdit(user)" aria-label="Editar usuario" title="Editar usuario"
-                      class="p-2 rounded-lg text-text-secondary hover:text-brand hover:bg-brand/10 transition-colors cursor-pointer">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                      </svg>
+                <td data-label="Teléfono" class="soft">{{ user.profile.phone }}</td>
+                <td class="right">
+                  <div class="row end" style="--gap: var(--sp-1)">
+                    <button class="icon-btn" (click)="openEdit(user)" aria-label="Editar usuario" title="Editar usuario">
+                      <lucide-icon [img]="Pencil" [size]="16" [strokeWidth]="2" />
                     </button>
-                    <button (click)="openDelete(user)" aria-label="Eliminar usuario" title="Eliminar usuario"
-                      class="p-2 rounded-lg text-text-secondary hover:text-error hover:bg-error/10 transition-colors cursor-pointer">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                      </svg>
+                    <button class="icon-btn danger" (click)="openDelete(user)" aria-label="Eliminar usuario" title="Eliminar usuario">
+                      <lucide-icon [img]="Trash2" [size]="16" [strokeWidth]="2" />
                     </button>
                   </div>
                 </td>
@@ -106,36 +85,31 @@
       </table>
     </div>
 
-    <!-- Paginador -->
     <app-pagination [page]="meta().page" [totalPages]="meta().totalPages" (pageChange)="load($event)" />
   </div>
 </div>
 
 <!-- ======= MODAL CREAR ======= -->
 <modal-nova [visible]="showCreate()" title="Nuevo usuario" size="md" (closed)="showCreate.set(false)" [footerTemplate]="createFooter">
-  <div class="space-y-4">
-    <div>
-      <label class="block text-text-secondary text-sm mb-1.5">Nombre completo</label>
-      <input type="text" [(ngModel)]="form.fullName" placeholder="Nombre completo" autocomplete="off"
-        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand transition-colors"/>
-    </div>
-    <div>
-      <label class="block text-text-secondary text-sm mb-1.5">Email</label>
-      <input type="email" [(ngModel)]="form.email" placeholder="correo@novainns.com" autocomplete="off"
-        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand transition-colors"/>
-    </div>
-    <div>
-      <label class="block text-text-secondary text-sm mb-1.5">Contraseña</label>
-      <input type="password" [(ngModel)]="form.password" placeholder="••••••••" autocomplete="new-password"
-        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand transition-colors"/>
-    </div>
-    <div>
-      <label class="block text-text-secondary text-sm mb-1.5">Teléfono</label>
-      <input type="text" [(ngModel)]="form.phone" placeholder="3001234567" autocomplete="off"
-        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand transition-colors"/>
-    </div>
-    <div>
-      <label class="block text-text-secondary text-sm mb-1.5">Rol</label>
+  <div class="stack">
+    <label class="field">
+      <span class="field-label">Nombre completo</span>
+      <input type="text" [(ngModel)]="form.fullName" placeholder="Nombre completo" autocomplete="off" />
+    </label>
+    <label class="field">
+      <span class="field-label">Email</span>
+      <input type="email" [(ngModel)]="form.email" placeholder="correo@novainns.com" autocomplete="off" />
+    </label>
+    <label class="field">
+      <span class="field-label">Contraseña</span>
+      <input type="password" [(ngModel)]="form.password" placeholder="••••••••" autocomplete="new-password" />
+    </label>
+    <label class="field">
+      <span class="field-label">Teléfono</span>
+      <input type="text" [(ngModel)]="form.phone" placeholder="3001234567" autocomplete="off" />
+    </label>
+    <div class="field">
+      <span class="field-label">Rol</span>
       <autocomplete-select
         [options]="roles.map(r => ({ label: roleLabels[r], value: r }))"
         [value]="form.role"
@@ -143,15 +117,13 @@
         [readonly]="true"
         placeholder="Seleccionar rol" />
     </div>
-    @if (errorMsg()) { <p class="text-error text-sm">{{ errorMsg() }}</p> }
+    @if (errorMsg()) { <p class="small t-danger">{{ errorMsg() }}</p> }
   </div>
 </modal-nova>
 <ng-template #createFooter>
-  <div class="flex gap-3">
-    <button (click)="showCreate.set(false)"
-      class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancelar</button>
-    <button (click)="submitCreate()" [disabled]="saving()"
-      class="flex-1 bg-brand hover:bg-brand-accent text-bg font-bold py-2.5 rounded-xl text-sm transition-colors disabled:opacity-50 cursor-pointer">
+  <div class="modal-actions">
+    <button data-variant="ghost" (click)="showCreate.set(false)">Cancelar</button>
+    <button data-tone="brand" (click)="submitCreate()" [disabled]="saving()" [attr.aria-busy]="saving() || null">
       {{ saving() ? 'Guardando...' : 'Crear usuario' }}
     </button>
   </div>
@@ -159,24 +131,21 @@
 
 <!-- ======= MODAL EDITAR ======= -->
 <modal-nova [visible]="showEdit()" title="Editar usuario" size="md" (closed)="showEdit.set(false)" [footerTemplate]="editFooter">
-  <div class="space-y-4">
-    <div>
-      <label class="block text-text-secondary text-sm mb-1.5">Nombre completo</label>
-      <input type="text" [(ngModel)]="form.fullName" placeholder="Nombre completo" autocomplete="off"
-        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand transition-colors"/>
-    </div>
-    <div>
-      <label class="block text-text-secondary text-sm mb-1.5">Email</label>
-      <input type="email" [(ngModel)]="form.email" disabled
-        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-disabled text-sm opacity-50"/>
-    </div>
-    <div>
-      <label class="block text-text-secondary text-sm mb-1.5">Teléfono</label>
-      <input type="text" [(ngModel)]="form.phone" placeholder="3001234567" autocomplete="off"
-        class="w-full bg-input border border-border rounded-xl px-4 py-2.5 text-text-primary placeholder:text-text-disabled text-sm focus:outline-none focus:border-brand transition-colors"/>
-    </div>
-    <div>
-      <label class="block text-text-secondary text-sm mb-1.5">Rol</label>
+  <div class="stack">
+    <label class="field">
+      <span class="field-label">Nombre completo</span>
+      <input type="text" [(ngModel)]="form.fullName" placeholder="Nombre completo" autocomplete="off" />
+    </label>
+    <label class="field">
+      <span class="field-label">Email</span>
+      <input type="email" [(ngModel)]="form.email" disabled />
+    </label>
+    <label class="field">
+      <span class="field-label">Teléfono</span>
+      <input type="text" [(ngModel)]="form.phone" placeholder="3001234567" autocomplete="off" />
+    </label>
+    <div class="field">
+      <span class="field-label">Rol</span>
       <autocomplete-select
         [options]="roles.map(r => ({ label: roleLabels[r], value: r }))"
         [value]="form.role"
@@ -184,15 +153,13 @@
         [readonly]="true"
         placeholder="Seleccionar rol" />
     </div>
-    @if (errorMsg()) { <p class="text-error text-sm">{{ errorMsg() }}</p> }
+    @if (errorMsg()) { <p class="small t-danger">{{ errorMsg() }}</p> }
   </div>
 </modal-nova>
 <ng-template #editFooter>
-  <div class="flex gap-3">
-    <button (click)="showEdit.set(false)"
-      class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancelar</button>
-    <button (click)="submitEdit()" [disabled]="saving()"
-      class="flex-1 bg-brand hover:bg-brand-accent text-bg font-bold py-2.5 rounded-xl text-sm transition-colors disabled:opacity-50 cursor-pointer">
+  <div class="modal-actions">
+    <button data-variant="ghost" (click)="showEdit.set(false)">Cancelar</button>
+    <button data-tone="brand" (click)="submitEdit()" [disabled]="saving()" [attr.aria-busy]="saving() || null">
       {{ saving() ? 'Guardando...' : 'Guardar cambios' }}
     </button>
   </div>
@@ -200,23 +167,17 @@
 
 <!-- ======= MODAL ELIMINAR ======= -->
 <modal-nova [visible]="deleteState.show()" title="Eliminar usuario" size="sm" (closed)="onDeleteClosed()" [footerTemplate]="deleteFooter">
-  <div class="flex flex-col items-center gap-3 py-2">
-    <div class="w-12 h-12 bg-error/10 rounded-full flex items-center justify-center">
-      <svg class="w-6 h-6 text-error" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-      </svg>
-    </div>
-    <p class="text-text-secondary text-sm text-center">
-      Se eliminará <strong class="text-text-primary">{{ deleteState.selected()?.profile?.fullName }}</strong> de forma permanente.
+  <div class="stack confirm">
+    <span class="icon-tile lg tint-rose"><lucide-icon [img]="Trash2" [size]="24" [strokeWidth]="2" /></span>
+    <p class="soft">
+      Se eliminará <strong class="strong">{{ deleteState.selected()?.profile?.fullName }}</strong> de forma permanente.
     </p>
   </div>
 </modal-nova>
 <ng-template #deleteFooter>
-  <div class="flex gap-3">
-    <button (click)="deleteState.show.set(false)"
-      class="flex-1 border border-border text-text-secondary hover:text-text-primary py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Cancelar</button>
-    <button (click)="confirmDelete()" [disabled]="deleteState.saving()"
-      class="flex-1 bg-error hover:bg-error/80 text-white font-bold py-2.5 rounded-xl text-sm transition-colors disabled:opacity-50 cursor-pointer">
+  <div class="modal-actions">
+    <button data-variant="ghost" (click)="deleteState.show.set(false)">Cancelar</button>
+    <button data-tone="danger" (click)="confirmDelete()" [disabled]="deleteState.saving()" [attr.aria-busy]="deleteState.saving() || null">
       {{ deleteState.saving() ? 'Eliminando...' : 'Eliminar' }}
     </button>
   </div>

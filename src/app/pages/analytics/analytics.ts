@@ -29,6 +29,7 @@ import {
   imports: [NgxEchartsDirective, LucideAngularModule, CurrencyCopPipe, AutocompleteSelect],
   providers: [provideEchartsCore({ echarts })],
   templateUrl: './analytics.html',
+  styleUrl: './analytics.css',
 })
 export class AnalyticsComponent implements OnInit, OnDestroy {
   readonly BarChart3 = BarChart3;
@@ -287,9 +288,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   private deptColors = [
-    '#EF4444','#F97316','#EAB308','#22C55E','#14B8A6','#06B6D4',
-    '#3B82F6','#8B5CF6','#D946EF','#EC4899','#F43F5E','#84CC16',
-    '#10B981','#0EA5E9','#6366F1','#A855F7','#F59E0B','#65A30D',
+    '#ecdc92','#91debc','#9bd2fa','#cbbdf9','#f9bb92','#f6b2b9',
+    '#af9b3e','#3ca17b','#4e94c3','#8e7cc2','#bf7946','#bd6f79',
+    '#f3e7b0','#b8ead3','#c3e3fb','#ddd3fb','#fbd2b6','#f9cdd2',
   ];
 
   private drawDeptLayer(geo: any, countryCode: string) {
@@ -315,7 +316,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         );
         const guests = dept?.guests ?? 0;
         if (guests > 0) {
-          const c = colorMap.get(dept!.department) || '#F2C200';
+          const c = colorMap.get(dept!.department) || '#ecdc92';
           return {
             color: c,
             weight: 2,
@@ -324,7 +325,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           };
         }
         return {
-          color: 'rgba(255,255,255,0.08)',
+          color: 'rgba(255,255,255,0.10)',
           weight: 1,
           fillColor: 'rgba(255,255,255,0.02)',
           fillOpacity: 0.5,
@@ -354,7 +355,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             const target = e.target;
             target.setStyle({
               weight: 3,
-              color: guests > 0 ? '#F2C200' : 'rgba(255,255,255,0.3)',
+              color: guests > 0 ? '#ecdc92' : 'rgba(255,255,255,0.3)',
               fillOpacity: guests > 0 ? 0.95 : 0.3,
             });
             target.bringToFront();
@@ -415,17 +416,17 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   // Estilo Nova para todos los gráficos: tooltip oscuro y barras con degradé
   private readonly TOOLTIP = {
-    backgroundColor: 'rgba(21,21,24,0.96)',
-    borderColor: '#2A2A2E',
+    backgroundColor: '#29292e',
+    borderColor: '#4a4a51',
     borderWidth: 1,
     padding: [8, 12],
-    textStyle: { color: '#FFFFFF', fontSize: 12 },
-    extraCssText: 'border-radius:12px;box-shadow:0 12px 30px -10px rgba(0,0,0,0.7);',
+    textStyle: { color: '#f7f7f9', fontSize: 12, fontFamily: 'Lexend Variable, Lexend, sans-serif' },
+    extraCssText: 'border-radius:14px;border-width:2px;box-shadow:0 2px 0 #3e3e44;',
   };
   private readonly AXIS_TOOLTIP = {
     ...this.TOOLTIP,
     trigger: 'axis',
-    axisPointer: { type: 'shadow', shadowStyle: { color: 'rgba(242,194,0,0.06)' } },
+    axisPointer: { type: 'shadow', shadowStyle: { color: 'rgba(236,220,146,0.08)' } },
   };
   private grad(top: string, bottom: string) {
     return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -433,29 +434,29 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       { offset: 1, color: bottom },
     ]);
   }
-  private readonly PIE_ITEM = { borderRadius: 6, borderColor: '#151518', borderWidth: 3 };
+  private readonly PIE_ITEM = { borderRadius: 6, borderColor: '#29292e', borderWidth: 3 };
 
   private buildMonthlyOptions(d: DashboardData) {
     const months = d.monthly.map((m) => m.month);
     this.monthlyOptions = {
       tooltip: { ...this.AXIS_TOOLTIP, valueFormatter: (v: number) => `$${fmtNumber(Math.round(v)) || '0'}` },
       // Leyenda arriba: abajo chocaba con las etiquetas del eje
-      legend: { data: ['Pendiente', 'Recibido'], top: 0, right: 0, textStyle: { color: '#B3B3B8' } },
+      legend: { data: ['Pendiente', 'Recibido'], top: 0, right: 0, textStyle: { color: '#d4d4da' } },
       grid: { left: 60, right: 20, top: 40, bottom: months.length > 6 ? 50 : 30 },
       xAxis: {
         type: 'category',
         data: months,
-        axisLabel: { color: '#6E6E73', rotate: months.length > 6 ? 30 : 0, fontSize: 11 },
-        axisLine: { lineStyle: { color: '#2A2A2E' } },
+        axisLabel: { color: '#b0b0b9', rotate: months.length > 6 ? 30 : 0, fontSize: 11 },
+        axisLine: { lineStyle: { color: '#3e3e44' } },
       },
       yAxis: {
         type: 'value',
         axisLabel: {
-          color: '#6E6E73',
+          color: '#b0b0b9',
           formatter: (v: number) =>
             v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`,
         },
-        splitLine: { lineStyle: { color: '#2A2A2E' } },
+        splitLine: { lineStyle: { color: '#3e3e44' } },
       },
       series: [
         {
@@ -463,14 +464,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           type: 'bar',
           barMaxWidth: 56,
           data: d.monthly.map((m) => m.pending),
-          itemStyle: { color: this.grad('#FFD21A', 'rgba(242,194,0,0.35)'), borderRadius: [6, 6, 0, 0] },
+          itemStyle: { color: this.grad('#ecdc92', 'rgba(236,220,146,0.35)'), borderRadius: [6, 6, 0, 0] },
         },
         {
           name: 'Recibido',
           type: 'bar',
           barMaxWidth: 56,
           data: d.monthly.map((m) => m.received),
-          itemStyle: { color: this.grad('#4ADE80', 'rgba(34,197,94,0.35)'), borderRadius: [6, 6, 0, 0] },
+          itemStyle: { color: this.grad('#91debc', 'rgba(145,222,188,0.35)'), borderRadius: [6, 6, 0, 0] },
         },
       ],
     };
@@ -484,7 +485,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           type: 'pie',
           radius: ['38%', '60%'],
           center: ['50%', '46%'],
-          label: { color: '#B3B3B8', fontSize: 11 },
+          label: { color: '#d4d4da', fontSize: 11 },
           data: d.platforms.map((p) => ({ value: p.total, name: p.platform, itemStyle: { color: this.resolvePlatformColor(p.platform) } })),
           itemStyle: this.PIE_ITEM,
           emphasis: { scale: true, scaleSize: 6 },
@@ -495,10 +496,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   private resolvePlatformColor(name: string): string {
     switch (name) {
-      case 'AirBnB': return '#FF5A5F';
-      case 'Booking': return '#023580';
-      case 'Directo': return '#CA8A04';
-      default: return '#6E6E73';
+      case 'AirBnB': return '#f6b2b9';
+      case 'Booking': return '#9bd2fa';
+      case 'Directo': return '#ecdc92';
+      default: return '#b0b0b9';
     }
   }
 
@@ -510,7 +511,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           type: 'pie',
           radius: ['38%', '60%'],
           center: ['50%', '46%'],
-          label: { color: '#B3B3B8', fontSize: 11 },
+          label: { color: '#d4d4da', fontSize: 11 },
           data: d.payments.map((p) => ({ value: p.total, name: p.method, itemStyle: { color: this.resolvePaymentColor(p.method) } })),
           itemStyle: this.PIE_ITEM,
           emphasis: { scale: true, scaleSize: 6 },
@@ -521,10 +522,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   private resolvePaymentColor(name: string): string {
     switch (name) {
-      case 'Bancolombia': return '#FACC15';
-      case 'Nequi': return '#6D28D9';
-      case 'Efectivo': return '#22C55E';
-      default: return '#6E6E73';
+      case 'Bancolombia': return '#ecdc92';
+      case 'Nequi': return '#cbbdf9';
+      case 'Efectivo': return '#91debc';
+      default: return '#b0b0b9';
     }
   }
 
@@ -535,20 +536,20 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   // (intentionally blank — top apartments chart removed)
 
   private buildDayOfWeekOptions(d: DashboardData) {
-    const colors = ['#F97316','#EAB308','#22C55E','#06B6D4','#3B82F6','#8B5CF6','#EC4899'];
+    const colors = ['#f9bb92','#ecdc92','#91debc','#9bd2fa','#cbbdf9','#f6b2b9','#d4d4da'];
     this.dayOfWeekOptions = {
       tooltip: this.AXIS_TOOLTIP,
       grid: { left: 50, right: 20, top: 20, bottom: 30 },
       xAxis: {
         type: 'category',
         data: d.dayOfWeek.map((dw) => dw.day),
-        axisLabel: { color: '#6E6E73' },
-        axisLine: { lineStyle: { color: '#2A2A2E' } },
+        axisLabel: { color: '#b0b0b9' },
+        axisLine: { lineStyle: { color: '#3e3e44' } },
       },
       yAxis: {
         type: 'value',
-        axisLabel: { color: '#6E6E73' },
-        splitLine: { lineStyle: { color: '#2A2A2E' } },
+        axisLabel: { color: '#b0b0b9' },
+        splitLine: { lineStyle: { color: '#3e3e44' } },
       },
       series: [
         {
@@ -569,23 +570,23 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
         ...this.AXIS_TOOLTIP,
         valueFormatter: (v: number) => `$${fmtNumber(Math.round(v))}`,
       },
-      legend: { data: ['Recibido', 'Pendiente'], top: 0, right: 0, textStyle: { color: '#B3B3B8' } },
+      legend: { data: ['Recibido', 'Pendiente'], top: 0, right: 0, textStyle: { color: '#d4d4da' } },
       grid: { left: 60, right: 20, top: 40, bottom: 30 },
       xAxis: {
         type: 'category',
         data: d.apartments.map((a) => a.name.replace(/^Apartamento /, '')),
         // interval 0: en móvil ECharts escondía nombres de apartamentos
-        axisLabel: { color: '#6E6E73', fontSize: 11, interval: 0 },
-        axisLine: { lineStyle: { color: '#2A2A2E' } },
+        axisLabel: { color: '#b0b0b9', fontSize: 11, interval: 0 },
+        axisLine: { lineStyle: { color: '#3e3e44' } },
       },
       yAxis: {
         type: 'value',
         axisLabel: {
-          color: '#6E6E73',
+          color: '#b0b0b9',
           formatter: (v: number) =>
             v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(1)}M` : `$${(v / 1000).toFixed(0)}k`,
         },
-        splitLine: { lineStyle: { color: '#2A2A2E' } },
+        splitLine: { lineStyle: { color: '#3e3e44' } },
       },
       series: [
         {
@@ -594,7 +595,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           stack: 'total',
           barMaxWidth: 80,
           data: d.apartments.map((a) => a.received),
-          itemStyle: { color: this.grad('#4ADE80', 'rgba(34,197,94,0.45)') },
+          itemStyle: { color: this.grad('#91debc', 'rgba(145,222,188,0.45)') },
         },
         {
           name: 'Pendiente',
@@ -602,7 +603,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           stack: 'total',
           barMaxWidth: 80,
           data: d.apartments.map((a) => a.pending),
-          itemStyle: { color: this.grad('#FFD21A', 'rgba(242,194,0,0.5)'), borderRadius: [6, 6, 0, 0] },
+          itemStyle: { color: this.grad('#ecdc92', 'rgba(236,220,146,0.5)'), borderRadius: [6, 6, 0, 0] },
         },
       ],
     };

@@ -3,38 +3,11 @@ import { LucideAngularModule, Pencil, Trash2, ArrowRight, CalendarPlus, Triangle
 import { ActionCard } from '../../core/services/assistant.service';
 import { ACTION_STATUS_TEXT, fieldLabel, formatValue, prettyDatesIn } from './nova-format';
 
-// Estilo de cada tipo de propuesta
+// Estilo de cada tipo de propuesta (tono del sistema: data-tone)
 const KIND = {
-  create: {
-    title: '¿Crear reserva?',
-    icon: CalendarPlus,
-    border: 'border-emerald-500/40 shadow-[0_8px_30px_-12px_rgba(34,197,94,0.35)]',
-    bar: 'bg-gradient-to-r from-emerald-400 to-teal-500',
-    tile: 'bg-emerald-500/15 text-emerald-400',
-    text: 'text-emerald-400',
-    button: 'bg-emerald-500 hover:bg-emerald-400 text-bg',
-    action: 'Crear reserva',
-  },
-  update: {
-    title: '¿Editar?',
-    icon: Pencil,
-    border: 'border-brand/40 shadow-[0_8px_30px_-12px_rgba(242,194,0,0.35)]',
-    bar: 'bg-gradient-to-r from-brand-accent to-brand-pressed',
-    tile: 'bg-brand/15 text-brand',
-    text: 'text-brand',
-    button: 'bg-brand hover:bg-brand-accent text-bg',
-    action: 'Confirmar',
-  },
-  delete: {
-    title: '¿Eliminar?',
-    icon: Trash2,
-    border: 'border-error/40 shadow-[0_8px_30px_-12px_rgba(239,68,68,0.35)]',
-    bar: 'bg-gradient-to-r from-error to-rose-400',
-    tile: 'bg-error/15 text-error',
-    text: 'text-error',
-    button: 'bg-error hover:bg-error/80 text-white',
-    action: 'Eliminar',
-  },
+  create: { title: '¿Crear reserva?', icon: CalendarPlus, tone: 'success', action: 'Crear reserva' },
+  update: { title: '¿Editar?', icon: Pencil, tone: 'brand', action: 'Confirmar' },
+  delete: { title: '¿Eliminar?', icon: Trash2, tone: 'danger', action: 'Eliminar' },
 };
 
 @Component({
@@ -44,48 +17,43 @@ const KIND = {
   template: `
     @let c = card();
     @let k = kind();
-    <div class="w-full sm:max-w-[85%] mt-2.5 rounded-2xl overflow-hidden border nova-in bg-gradient-to-b from-elevated to-surface"
-      [class]="k.border"
-      [class.opacity-60]="c.status !== 'pending' && c.status !== 'confirmed'">
-      <div class="h-1" [class]="k.bar"></div>
-      <div class="px-4 py-3 border-b border-border flex items-start gap-3">
-        <span class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0" [class]="k.tile">
-          <lucide-icon [img]="k.icon" class="w-4 h-4" [strokeWidth]="2" />
-        </span>
-        <div class="min-w-0">
-          <p class="text-sm font-semibold" [class]="k.text">{{ k.title }}</p>
-          <p class="text-text-secondary text-xs">{{ c.summary }}</p>
+    <div class="ac nova-in" [attr.data-tone]="k.tone" [class.faded]="c.status !== 'pending' && c.status !== 'confirmed'">
+      <div class="ac-head">
+        <span class="icon-tile"><lucide-icon [img]="k.icon" [size]="16" [strokeWidth]="2.2" /></span>
+        <div style="min-width: 0">
+          <p class="ac-title">{{ k.title }}</p>
+          <p class="tiny soft">{{ c.summary }}</p>
         </div>
       </div>
 
       @for (w of c.warnings ?? []; track w) {
-        <div class="mx-4 mt-3 flex gap-2 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs">
-          <lucide-icon [img]="TriangleAlert" class="w-4 h-4 shrink-0" [strokeWidth]="2" />
+        <div class="ac-warn">
+          <lucide-icon [img]="TriangleAlert" [size]="16" [strokeWidth]="2" />
           <span>{{ w }}</span>
         </div>
       }
 
       @for (t of c.targets; track t.id) {
-        <div class="px-4 py-3 border-b border-border last:border-0">
-          <p class="text-text-primary text-xs font-medium mb-2">{{ pretty(t.label) }}</p>
+        <div class="ac-block">
+          <p class="tiny strong" style="margin-bottom: var(--sp-2)">{{ pretty(t.label) }}</p>
           @if (c.type !== 'update') {
-            <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+            <dl class="ac-details">
               @for (d of t.details; track d.field) {
                 @if (d.value !== '' && d.value !== null && d.value !== undefined) {
-                  <dt class="text-text-disabled">{{ label(d.field) }}</dt>
-                  <dd class="text-text-secondary break-words">{{ format(d.field, d.value) }}</dd>
+                  <dt>{{ label(d.field) }}</dt>
+                  <dd>{{ format(d.field, d.value) }}</dd>
                 }
               }
             </dl>
           } @else {
-            <div class="space-y-1.5">
+            <div class="stack" style="--gap: 6px">
               @for (ch of t.changes; track ch.field) {
-                <div class="grid grid-cols-[minmax(0,7rem)_1fr] gap-x-3 text-xs items-baseline">
-                  <span class="text-text-disabled truncate">{{ label(ch.field) }}</span>
-                  <span class="flex flex-wrap items-center gap-1.5 min-w-0">
-                    <span class="text-text-disabled line-through break-words">{{ format(ch.field, ch.before) }}</span>
-                    <lucide-icon [img]="ArrowRight" class="w-3 h-3 text-text-disabled shrink-0" [strokeWidth]="2" />
-                    <span class="px-1.5 py-px rounded-md bg-brand/10 text-brand-accent font-semibold break-words">{{ format(ch.field, ch.after) }}</span>
+                <div class="ac-change">
+                  <span class="muted truncate">{{ label(ch.field) }}</span>
+                  <span class="ac-diff">
+                    <s>{{ format(ch.field, ch.before) }}</s>
+                    <lucide-icon [img]="ArrowRight" [size]="12" [strokeWidth]="2" />
+                    <b>{{ format(ch.field, ch.after) }}</b>
                   </span>
                 </div>
               }
@@ -96,42 +64,72 @@ const KIND = {
 
       <!-- Crear: el apartamento no viene en el screenshot, se elige aquí -->
       @if (c.type === 'create' && c.status === 'pending') {
-        <div class="px-4 py-3 border-b border-border">
-          <label class="text-xs text-text-secondary flex items-center gap-1.5 mb-1.5">
-            <lucide-icon [img]="Building2" class="w-3.5 h-3.5 text-emerald-400" [strokeWidth]="2" />
-            Apartamento <span class="text-error">*</span>
-          </label>
-          <select [value]="apartmentId()" (change)="apartmentId.set($any($event.target).value)"
-            class="w-full bg-input border rounded-xl px-3 py-2 text-sm text-text-primary focus:outline-none cursor-pointer transition-colors"
-            [class]="apartmentId() ? 'border-emerald-500/50' : 'border-border focus:border-emerald-500/60'">
+        <label class="ac-block field">
+          <span class="field-label ac-lbl">
+            <lucide-icon [img]="Building2" [size]="14" [strokeWidth]="2" />
+            Apartamento <span class="t-danger">*</span>
+          </span>
+          <select [value]="apartmentId()" (change)="apartmentId.set($any($event.target).value)">
             <option value="" disabled>Elige el apartamento…</option>
             @for (a of apartmentOptions(); track a.id) {
               <option [value]="a.id">{{ a.name }}</option>
             }
           </select>
-        </div>
+        </label>
       }
 
-      <div class="px-4 py-3 bg-bg/40 flex items-center justify-end gap-2">
+      <div class="ac-foot">
         @if (c.status === 'pending') {
-          <button (click)="cancel.emit(c.id)" [disabled]="busy()"
-            class="px-4 py-2 rounded-xl border border-border text-text-secondary hover:text-text-primary text-xs font-medium transition-colors cursor-pointer disabled:opacity-50">
-            Cancelar
-          </button>
-          <button (click)="confirm.emit({ id: c.id, apartmentId: apartmentId() || undefined })"
+          <button data-size="sm" data-variant="ghost" (click)="cancel.emit(c.id)" [disabled]="busy()">Cancelar</button>
+          <button data-size="sm" [attr.data-tone]="k.tone"
+            (click)="confirm.emit({ id: c.id, apartmentId: apartmentId() || undefined })"
             [disabled]="busy() || (c.type === 'create' && !apartmentId())"
-            [title]="c.type === 'create' && !apartmentId() ? 'Elige el apartamento primero' : ''"
-            class="px-4 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            [class]="k.button">
+            [attr.aria-busy]="busy() || null"
+            [title]="c.type === 'create' && !apartmentId() ? 'Elige el apartamento primero' : ''">
             {{ busy() ? 'Guardando…' : k.action }}
           </button>
         } @else {
-          <span class="text-xs" [class]="c.status === 'confirmed' ? 'text-success font-semibold' : c.status === 'failed' ? 'text-error' : 'text-text-disabled'">
+          <span class="tiny" [class]="c.status === 'confirmed' ? 't-success strong' : c.status === 'failed' ? 't-danger' : 'muted'">
             {{ statusText(c.status) }}
           </span>
         }
       </div>
     </div>
+  `,
+  styles: `
+    :host { display: block; width: 100%; }
+    .ac {
+      width: 100%;
+      margin-top: 10px;
+      overflow: hidden;
+      background: var(--bg-1);
+      border: var(--border) solid color-mix(in srgb, var(--c) 45%, var(--line));
+      border-top: 4px solid var(--c);
+      border-radius: var(--r-md);
+      box-shadow: 0 var(--depth) 0 var(--c-deep);
+    }
+    @media (width >= 40rem) { .ac { max-width: 85%; } }
+    .ac.faded { opacity: 0.6; }
+    .ac-head { display: flex; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--line); }
+    .ac-title { font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--c); }
+    .ac-warn {
+      display: flex; gap: var(--sp-2); margin: var(--sp-3) var(--sp-4) 0; padding: 10px;
+      font-size: var(--fs-caption); color: var(--warning);
+      background: var(--warning-soft); border: 1px solid color-mix(in srgb, var(--warning) 35%, transparent); border-radius: var(--r-sm);
+    }
+    .ac-warn lucide-icon { flex: none; }
+    .ac-block { padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--line); }
+    .ac-details { display: grid; grid-template-columns: auto 1fr; gap: 4px var(--sp-3); margin: 0; font-size: var(--fs-caption); }
+    .ac-details dt { color: var(--text-3); }
+    .ac-details dd { margin: 0; color: var(--text-2); overflow-wrap: anywhere; }
+    .ac-change { display: grid; grid-template-columns: minmax(0, 7rem) 1fr; gap: var(--sp-3); align-items: baseline; font-size: var(--fs-caption); }
+    .ac-diff { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
+    .ac-diff s { color: var(--text-3); overflow-wrap: anywhere; }
+    .ac-diff lucide-icon { color: var(--text-3); flex: none; }
+    .ac-diff b { padding: 1px 6px; border-radius: 6px; background: var(--brand-soft); color: var(--brand); overflow-wrap: anywhere; }
+    .ac-lbl { display: flex; align-items: center; gap: 6px; font-size: var(--fs-caption); }
+    .ac-lbl lucide-icon { color: var(--c); }
+    .ac-foot { display: flex; align-items: center; justify-content: flex-end; gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); background: rgb(0 0 0 / 0.15); }
   `,
 })
 export class NovaActionCard {

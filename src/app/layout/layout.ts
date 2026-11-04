@@ -10,6 +10,7 @@ import { LucideAngularModule, CalendarDays, Calendar, Building2, BarChart3, Rece
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideAngularModule, AlertNova],
   templateUrl: './layout.html',
+  styleUrl: './layout.css',
 })
 export class LayoutComponent {
   auth = inject(AuthService);

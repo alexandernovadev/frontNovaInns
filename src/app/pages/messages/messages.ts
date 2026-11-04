@@ -13,43 +13,40 @@ interface MessageTemplate {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LucideAngularModule],
   template: `
-    <div class="space-y-6">
-      <!-- Header -->
-      <div class="flex items-center justify-between gap-3">
-        <div>
-          <h2 class="text-text-primary text-lg font-semibold flex items-center gap-2">
-            <lucide-icon [img]="MessageSquare" class="w-5 h-5 text-brand" [strokeWidth]="2" />
-            Mensajes
-          </h2>
-          <p class="text-text-secondary text-sm mt-0.5">Plantillas de mensajes para huéspedes</p>
-        </div>
-      </div>
+    <div class="stack" style="--gap: var(--sp-5)">
+      <header class="stack" style="--gap: 2px">
+        <h2 class="sec-title">
+          <lucide-icon [img]="MessageSquare" [size]="20" [strokeWidth]="2" />
+          Mensajes
+        </h2>
+        <p class="page-sub">Plantillas de mensajes para huéspedes</p>
+      </header>
 
-      <div class="space-y-4">
+      <div class="stack" style="--gap: var(--sp-4)">
         @for (tpl of templates; track tpl.id) {
-          <div class="bg-surface border border-border rounded-2xl overflow-hidden">
-            <div class="px-5 py-4 border-b border-border flex items-center justify-between gap-3">
-              <div class="flex items-center gap-2.5">
-                <span class="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-bold"
-                  [class]="badgeClass(tpl.id)">
-                  {{ tpl.icon }}
-                </span>
-                <h2 class="text-text-primary font-semibold text-sm">{{ tpl.title }}</h2>
+          <article class="surface tpl" [class]="badgeClass(tpl.id)">
+            <header class="tpl-head">
+              <div class="row">
+                <span class="badge">{{ tpl.icon }}</span>
+                <h3>{{ tpl.title }}</h3>
               </div>
-              <button (click)="copy(tpl.text, tpl.id)"
-                class="flex items-center gap-1.5 px-3 py-1.5 min-h-9 rounded-lg text-xs font-semibold transition-all cursor-pointer shrink-0"
-                [class]="copiedId() === tpl.id ? 'bg-success/15 text-success' : 'bg-brand/10 text-brand hover:bg-brand/20'">
-                <lucide-icon [img]="copiedId() === tpl.id ? ClipboardCheck : ClipboardCopy" class="w-3.5 h-3.5" [strokeWidth]="2" />
+              <button (click)="copy(tpl.text, tpl.id)" data-size="sm" [attr.data-tone]="copiedId() === tpl.id ? 'success' : null" [attr.data-variant]="copiedId() === tpl.id ? null : 'soft'">
+                <lucide-icon [img]="copiedId() === tpl.id ? ClipboardCheck : ClipboardCopy" [size]="16" [strokeWidth]="2.2" />
                 {{ copiedId() === tpl.id ? 'Copiado' : 'Copiar' }}
               </button>
-            </div>
-            <div class="px-5 py-4">
-              <pre class="text-text-primary text-sm leading-relaxed whitespace-pre-wrap font-sans">{{ tpl.text }}</pre>
-            </div>
-          </div>
+            </header>
+            <pre>{{ tpl.text }}</pre>
+          </article>
         }
       </div>
     </div>
+  `,
+  styles: `
+    .tpl { overflow: hidden; }
+    .tpl-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); padding: var(--sp-4) var(--sp-5); border-bottom: var(--border) solid var(--line); }
+    .tpl-head h3 { font-size: 1.05rem; }
+    .badge { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 12px; font-weight: var(--fw-heavy); color: var(--c); background: var(--c-soft); }
+    pre { margin: 0; padding: var(--sp-4) var(--sp-5); font-family: var(--font-body); font-size: var(--fs-small); line-height: 1.7; color: var(--text-1); white-space: pre-wrap; }
   `,
 })
 export class MessagesComponent {
@@ -61,15 +58,15 @@ export class MessagesComponent {
 
   badgeClass(id: string): string {
     const map: Record<string, string> = {
-      welcome: 'bg-emerald-500/15 text-emerald-400',
-      checkin: 'bg-blue-500/15 text-blue-400',
-      checkout: 'bg-purple-500/15 text-purple-400',
-      pre_welcome: 'bg-amber-500/15 text-amber-400',
-      transport: 'bg-cyan-500/15 text-cyan-400',
-      taxi: 'bg-rose-500/15 text-rose-400',
-      improve_id: 'bg-indigo-500/15 text-indigo-400',
+      welcome: 'tint-mint',
+      checkin: 'tint-sky',
+      checkout: 'tint-lilac',
+      pre_welcome: 'tint-butter',
+      transport: 'tint-sky',
+      taxi: 'tint-rose',
+      improve_id: 'tint-peach',
     };
-    return map[id] || 'bg-surface text-text-secondary';
+    return map[id] || 'tint-neutral';
   }
 
   async copy(text: string, id: string) {

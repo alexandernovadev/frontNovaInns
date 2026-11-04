@@ -1,0 +1,222 @@
+.shell {
+  display: flex;
+  height: 100dvh;
+  background: var(--bg-0);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgb(0 0 0 / 0.6);
+  animation: lai-reveal var(--t-fast) ease both;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  width: 256px;
+  background: var(--bg-1);
+  border-right: var(--border) solid var(--line);
+  translate: -100% 0;
+  transition: translate var(--t-slow) var(--ease-out), width var(--t-slow) var(--ease-out);
+}
+.sidebar.open {
+  translate: 0 0;
+}
+.version {
+  padding-top: var(--sp-4);
+  text-align: center;
+  font-size: var(--fs-caption);
+  color: var(--text-3);
+}
+.brand {
+  display: flex;
+  justify-content: center;
+  padding: var(--sp-1) var(--sp-4) var(--sp-5);
+  border-bottom: var(--border) solid var(--line);
+}
+.logo {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+}
+.logo-mini {
+  display: none;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+.collapse-btn {
+  display: none;
+}
+
+.nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--sp-4) var(--sp-3);
+  overflow-y: auto;
+}
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--sp-3);
+  width: 100%;
+  min-height: 46px;
+  padding: 0 var(--sp-4);
+  font-family: var(--font-display);
+  font-weight: var(--fw-display);
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+  color: var(--text-2);
+  text-decoration: none;
+  background: transparent;
+  border: var(--border) solid transparent;
+  border-radius: var(--r-md);
+  box-shadow: none;
+  filter: none;
+  transition:
+    background-color var(--t-fast) ease,
+    border-color var(--t-fast) ease,
+    color var(--t-fast) ease,
+    transform var(--t-base) var(--spring);
+}
+.nav-item:hover {
+  color: var(--text-1);
+  background: var(--bg-2);
+}
+.nav-item:active {
+  transform: scale(0.97);
+}
+.nav-item lucide-icon {
+  flex: none;
+}
+/* Ítem activo: pastel de marca con borde y relieve 3D */
+.nav-item.nav-active {
+  color: var(--brand);
+  background: var(--brand-soft);
+  border-color: var(--brand);
+  box-shadow: 0 var(--depth) 0 var(--brand-deep);
+}
+.logout:hover {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+.foot {
+  padding: var(--sp-3);
+  border-top: var(--border) solid var(--line);
+}
+
+.tooltip {
+  display: none;
+}
+
+/* ── Main ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
+.burger {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 15;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  min-height: 0;
+  padding: 0;
+  color: var(--text-2);
+  background: transparent;
+  border: 0;
+  border-radius: 12px;
+  box-shadow: none;
+  filter: none;
+}
+.burger:hover {
+  color: var(--text-1);
+  background: var(--bg-2);
+}
+
+/* ── Escritorio ── */
+@media (width >= 64rem) {
+  .sidebar {
+    position: static;
+    translate: 0 0;
+  }
+  .sidebar.collapsed {
+    width: 72px;
+  }
+  .sidebar.collapsed .label,
+  .sidebar.collapsed .logo {
+    display: none;
+  }
+  .sidebar.collapsed .logo-mini {
+    display: block;
+  }
+  .sidebar.collapsed .brand {
+    padding-top: var(--sp-6);
+  }
+  .sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding: 0;
+  }
+  .collapse-btn {
+    position: absolute;
+    top: 96px;
+    right: -13px;
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    min-height: 0;
+    padding: 0;
+    color: var(--text-2);
+    background: var(--bg-2);
+    border: var(--border) solid var(--line);
+    border-radius: 50%;
+    box-shadow: 0 var(--depth) 0 var(--bg-3);
+    transition: rotate var(--t-base) var(--spring);
+  }
+  .collapse-btn.flip {
+    rotate: 180deg;
+  }
+  .tooltip {
+    position: fixed;
+    left: 80px;
+    z-index: 999;
+    display: block;
+    translate: 0 -50%;
+    padding: var(--sp-2) var(--sp-3);
+    font-size: var(--fs-small);
+    font-weight: var(--fw-semibold);
+    color: var(--text-1);
+    white-space: nowrap;
+    pointer-events: none;
+    background: var(--bg-2);
+    border: var(--border) solid var(--line);
+    border-radius: 12px;
+    box-shadow: 0 var(--depth) 0 var(--bg-3);
+    animation: lai-reveal var(--t-fast) var(--ease-out) both;
+  }
+  .burger {
+    display: none;
+  }
+}

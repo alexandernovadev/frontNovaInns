@@ -16,6 +16,7 @@ interface AdminModel {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [LucideAngularModule, ModalNova],
   templateUrl: './admin.html',
+  styleUrl: './admin.css',
 })
 export class AdminComponent implements OnInit {
   readonly TrashIcon = Trash2;

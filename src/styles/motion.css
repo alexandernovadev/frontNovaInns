@@ -1,0 +1,68 @@
+/* ════════════════════════════════════════════════════════════════
+   NovaInns · MOVIMIENTO compartido
+   Keyframes globales (prefijo lai-) que usan todos los componentes.
+   Usan las propiedades individuales scale/translate/rotate para no
+   pelear con el `transform` del :active de los botones.
+   ════════════════════════════════════════════════════════════════ */
+
+/* Acierto: crece y vuelve con resorte */
+@keyframes lai-pop {
+  0% { scale: 1; }
+  35% { scale: var(--pop-scale); }
+  100% { scale: 1; }
+}
+
+/* Contador o globo que cambia: aparece pequeño y rebota */
+@keyframes lai-bump {
+  0% { scale: 0.85; }
+  50% { scale: 1.06; }
+  100% { scale: 1; }
+}
+
+/* Fallo: sacudida lateral que se amortigua */
+@keyframes lai-shake {
+  0%, 100% { translate: 0 0; }
+  20% { translate: calc(var(--shake) * -1) 0; }
+  40% { translate: var(--shake) 0; }
+  60% { translate: calc(var(--shake) * -0.6) 0; }
+  80% { translate: calc(var(--shake) * 0.6) 0; }
+}
+
+/* Anillo de luz que se expande (racha, botón que llama la atención) */
+@keyframes lai-glow {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c) 55%, transparent); }
+  100% { box-shadow: 0 0 0 16px color-mix(in srgb, var(--c) 0%, transparent); }
+}
+
+/* Entrada suave de contenido */
+@keyframes lai-reveal {
+  from { opacity: 0; translate: 0 8px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* Palabra que llega en streaming */
+@keyframes lai-word {
+  from { opacity: 0; filter: blur(3px); }
+  to { opacity: 1; filter: blur(0); }
+}
+
+/* Cursor de escritura */
+@keyframes lai-blink {
+  50% { opacity: 0; }
+}
+
+/* Esqueleto de carga */
+@keyframes lai-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Respirar (botón principal esperando, blob de la IA) */
+@keyframes lai-breathe {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.035; }
+}
+
+@keyframes lai-spin {
+  to { rotate: 360deg; }
+}
