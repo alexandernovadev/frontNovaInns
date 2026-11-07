@@ -108,7 +108,6 @@ const KIND = {
       border-radius: var(--r-md);
       box-shadow: 0 var(--depth) 0 var(--c-deep);
     }
-    @media (width >= 40rem) { .ac { max-width: 85%; } }
     .ac.faded { opacity: 0.6; }
     .ac-head { display: flex; align-items: flex-start; gap: var(--sp-3); padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--line); }
     .ac-title { font-size: var(--fs-small); font-weight: var(--fw-semibold); color: var(--c); }

@@ -247,6 +247,7 @@ import { renderRich } from './rich-text';
     .msg-model { display: flex; gap: var(--sp-3); }
     .msg-body { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; }
     .bubble-model {
+      width: 100%;
       max-width: 100%;
       padding: var(--sp-3) var(--sp-4);
       font-size: var(--fs-small);
@@ -258,7 +259,6 @@ import { renderRich } from './rich-text';
       border-radius: 6px var(--r-md) var(--r-md) var(--r-md);
       box-shadow: 0 var(--depth) 0 var(--bg-3);
     }
-    @media (width >= 40rem) { .bubble-model { max-width: 85%; } }
     .queried {
       display: inline-flex;
       align-items: center;
@@ -272,7 +272,7 @@ import { renderRich } from './rich-text';
       border-radius: var(--r-full);
     }
     .queried lucide-icon { color: var(--brand); flex: none; }
-    .typing { display: flex; align-items: center; gap: var(--sp-3); }
+    .typing { display: flex; align-items: center; gap: var(--sp-3); width: fit-content; }
     .dots { display: flex; gap: 4px; }
     .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--brand); animation: dot 1s var(--ease-in-out, ease-in-out) infinite; }
     .dots i:nth-child(1) { animation-delay: -0.3s; }
