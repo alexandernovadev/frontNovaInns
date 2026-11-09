@@ -3,6 +3,12 @@
    Va global porque se inserta con [innerHTML] (sin encapsulación).
    Todo cuelga de .rt para no filtrarse a otras pantallas.
    ════════════════════════════════════════════════════════════════ */
+/* ── Rich text ─────────────────────────────────────────────────────
+   .rt es el contenedor del bubble: se usa como container query para que
+   las tarjetas se acomoden al ancho real (chat ancho de NovaAI vs ventana
+   chica del Tracker), no al de la ventana. */
+.rt { container-type: inline-size; }
+
 .rt strong { color: var(--text-1); font-weight: var(--fw-semibold); }
 .rt em { color: var(--text-2); }
 .rt code {
@@ -116,16 +122,16 @@
 }
 .rt-table tbody tr:nth-child(even) { background: rgb(255 255 255 / 0.02); }
 
-/* Tarjetas de reserva */
+/* Tarjetas de reserva: 4 por fila en ancho completo, 2 como mínimo.
+   Los @container están al final del archivo para que pisen las reglas base. */
 .rt-cards {
   display: grid;
   gap: 10px;
   margin: 10px 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-@media (width >= 40rem) {
-  .rt-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .rt-cards.one { grid-template-columns: minmax(0, 24rem); }
-}
+.rt-cards.one { grid-template-columns: minmax(0, 24rem); }
+
 .rt-card {
   position: relative;
   overflow: hidden;
@@ -175,3 +181,25 @@
   color: var(--brand);
 }
 .rt-note { margin-top: var(--sp-2); font-size: var(--fs-caption); color: var(--text-3); }
+
+/* ── Acomodo de las tarjetas según el ancho del contenedor ────────── */
+
+/* Chat de NovaAI a pantalla completo → 4 columnas. El card va más
+   compacto para que las fechas no se recorten en 4. */
+@container (width >= 68rem) {
+  .rt-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .rt-card { font-size: 0.84em; }
+  .rt-day { padding: 5px 8px; }
+}
+
+/* Contenedor angosto (burbuja del Tracker, móvil) → siguen en 2 columnas
+   pero las fechas y los estados se apilan para que no se corten */
+@container (width < 30rem) {
+  .rt-cards.one { grid-template-columns: minmax(0, 1fr); }
+  .rt-card { padding: 12px 10px 12px 16px; }
+  .rt-card-head { flex-wrap: wrap; }
+  .rt-statuses { flex: 1 1 100%; flex-direction: row; align-items: flex-start; }
+  .rt-stay { flex-wrap: wrap; }
+  .rt-day { flex: 1 1 100%; }
+  .rt-nights { flex: 1 1 100%; flex-direction: row; gap: 6px; }
+}
