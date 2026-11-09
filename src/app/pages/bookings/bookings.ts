@@ -80,13 +80,28 @@ export class BookingsComponent implements OnInit {
     this.syncUrl();
   }
 
+  // Mismo orden que el backend: activas primero por check-in ascendente,
+  // y las CHECK-OUT terminadas caen al final (también por check-in).
+  private static sortBookings(list: IBooking[]): IBooking[] {
+    const done = (x: IBooking) => (x.stay.status === 'CHECK-OUT' ? 1 : 0);
+    return [...list].sort(
+      (a, b) =>
+        done(a) - done(b) ||
+        new Date(a.stay.checkIn).getTime() - new Date(b.stay.checkIn).getTime(),
+    );
+  }
+
   updateLifecycleStatus(b: IBooking, e: Event) {
     e.stopPropagation();
     if (b.stay.status === 'CHECK-OUT') return;
     const next = b.stay.status === 'PENDIENTE' ? 'CHECK-IN' : 'CHECK-OUT';
     this.bookingsService.updateStatus(b._id, next).subscribe({
       next: (updated) => {
-        this.bookings.update(list => list.map(item => item._id === updated._id ? updated : item));
+        this.bookings.update((list) =>
+          BookingsComponent.sortBookings(
+            list.map((item) => (item._id === updated._id ? updated : item)),
+          ),
+        );
       },
       error: () => this.alert.error('Error al actualizar estado'),
     });
