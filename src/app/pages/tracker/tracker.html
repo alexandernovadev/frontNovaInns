@@ -1,0 +1,579 @@
+<div class="page">
+
+  <header class="page-header">
+    <div class="stack" style="--gap: 2px; min-width: 0">
+      <h1 class="page-title">
+        <span class="icon-tile tint-lilac"><lucide-icon [img]="Radar" [size]="18" [strokeWidth]="2.2" /></span>
+        <span>Precios Booking — Zipaquirá</span>
+      </h1>
+      <p class="page-sub">Listado completo con impuestos y total · guardado en tu navegador</p>
+    </div>
+
+    @if (snapshots().length > 0) {
+      <div class="header-actions history-bar">
+        <lucide-icon [img]="Clock" [size]="15" class="muted hide-sm" />
+        <select
+          class="history-select"
+          [ngModel]="activeSnapshotId()"
+          (ngModelChange)="selectSnapshot($event)"
+          aria-label="Historial de consultas">
+          @for (s of snapshots(); track s.id) {
+            <option [value]="s.id">{{ snapshotLabel(s) }}</option>
+          }
+        </select>
+        <button
+          type="button"
+          class="icon-btn danger"
+          (click)="clearHistory()"
+          title="Borrar historial guardado">
+          <lucide-icon [img]="Trash2" [size]="16" />
+        </button>
+      </div>
+    }
+  </header>
+
+  <section class="surface pad search-bar">
+    <div class="quote-form">
+
+      <div class="field">
+        <span class="field-label">Entrada</span>
+        <button
+          type="button"
+          class="date-trigger"
+          [class.open]="calendarOpen() === 'checkIn'"
+          (click)="toggleCalendar('checkIn')">
+          <lucide-icon [img]="CalendarDays" [size]="18" [strokeWidth]="2.2" />
+          <span>{{ dateText(checkIn) }}</span>
+        </button>
+      </div>
+
+      <div class="field">
+        <span class="field-label">Salida · {{ nightsCount() }} {{ nightsCount() === 1 ? 'noche' : 'noches' }}</span>
+        <button
+          type="button"
+          class="date-trigger"
+          [class.open]="calendarOpen() === 'checkOut'"
+          (click)="toggleCalendar('checkOut')">
+          <lucide-icon [img]="CalendarDays" [size]="18" [strokeWidth]="2.2" />
+          <span>{{ dateText(checkOut) }}</span>
+        </button>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Adultos</span>
+        <input type="number" [(ngModel)]="adults" min="1" max="16" />
+      </label>
+
+      <label class="field">
+        <span class="field-label">Niños</span>
+        <input type="number" [(ngModel)]="children" min="0" max="10" />
+      </label>
+
+      @if (children > 0) {
+        <label class="field">
+          <span class="field-label">Edad niño</span>
+          <input type="number" [(ngModel)]="childAge" min="0" max="17" />
+        </label>
+      }
+
+      <button
+        type="button"
+        data-tone="brand"
+        class="search-btn"
+        (click)="runBookingSearch()"
+        [disabled]="loading() || sweepRunning()"
+        [attr.aria-busy]="loading() || null">
+        <lucide-icon [img]="Search" [size]="18" [strokeWidth]="2.2" />
+        <span>{{ loading() ? 'Buscando…' : 'Buscar precios' }}</span>
+      </button>
+    </div>
+
+    <div class="sweep-actions">
+      @if (!sweepRunning()) {
+        <button
+          type="button"
+          data-variant="soft"
+          data-size="sm"
+          (click)="runDailySweep('range')"
+          [disabled]="loading()"
+          title="Consulta día por día cada noche entre Entrada y Salida y guarda cada snapshot">
+          <lucide-icon [img]="CalendarDays" [size]="15" [strokeWidth]="2.2" />
+          <span>Barrer rango día×día ({{ nightsCount() }}d)</span>
+        </button>
+        <button
+          type="button"
+          data-tone="info"
+          data-variant="soft"
+          data-size="sm"
+          (click)="runDailySweep('month')"
+          [disabled]="loading()"
+          title="Consulta día por día todo el mes seleccionado y alimenta el padrón maestro">
+          <lucide-icon [img]="Radar" [size]="15" [strokeWidth]="2.2" />
+          <span style="text-transform: capitalize">Barrer todo {{ monthSweepLabel() }} ({{ monthDaysCount() }}d)</span>
+        </button>
+        <span class="tiny muted">
+          Padrón acumulado: <b>{{ catalogSize() }} alojamientos</b> · {{ snapshots().length }} snapshots
+        </span>
+      } @else if (sweepProgress(); as p) {
+        <div class="sweep-progress">
+          <lucide-icon [img]="RefreshCw" [size]="16" class="spin" />
+          <div class="stack" style="--gap: 4px; flex: 1; min-width: 0">
+            <div class="row between small">
+              <span>Barriendo <b>{{ dateText(p.date) }}</b> (día {{ p.current }} de {{ p.total }})</span>
+              <span class="num muted">Padrón: {{ catalogSize() }} alojamientos</span>
+            </div>
+            <div class="bar" data-tone="info">
+              <span [style.width.%]="(p.current / p.total) * 100"></span>
+            </div>
+          </div>
+          <button type="button" data-tone="danger" data-size="sm" (click)="stopDailySweep()">
+            <lucide-icon [img]="X" [size]="14" />
+            <span>Detener</span>
+          </button>
+        </div>
+      }
+    </div>
+
+    @if (calendarOpen(); as target) {
+      <div class="cal-pop" [class.for-checkout]="target === 'checkOut'">
+
+        <div class="cal-tabs">
+          <button
+            type="button"
+            class="cal-tab"
+            [class.active]="target === 'checkIn'"
+            (click)="calendarOpen.set('checkIn')">
+            <span class="caption">Entrada</span>
+            <b>{{ dateText(checkIn) }}</b>
+          </button>
+          <button
+            type="button"
+            class="cal-tab"
+            [class.active]="target === 'checkOut'"
+            (click)="calendarOpen.set('checkOut')">
+            <span class="caption">Salida</span>
+            <b>{{ dateText(checkOut) }}</b>
+          </button>
+        </div>
+
+        <div class="cal-head">
+          <button type="button" data-variant="soft" data-icon data-size="sm" (click)="shiftMonth(-1)" aria-label="Mes anterior">
+            <lucide-icon [img]="ChevronLeft" [size]="16" [strokeWidth]="2.4" />
+          </button>
+          <span class="display cal-month">{{ calendarLabel() }}</span>
+          <button type="button" data-variant="soft" data-icon data-size="sm" (click)="shiftMonth(1)" aria-label="Mes siguiente">
+            <lucide-icon [img]="ChevronRight" [size]="16" [strokeWidth]="2.4" />
+          </button>
+        </div>
+
+        <div class="cal-week">
+          @for (h of dayHeaders; track h) {
+            <span>{{ h }}</span>
+          }
+        </div>
+
+        <div class="cal-grid" (mouseleave)="hoverDay.set(null)">
+          @for (cell of calendarCells(); track $index) {
+            @if (cell; as c) {
+              <button
+                type="button"
+                class="cal-day"
+                [class.past]="c.past"
+                [class.today]="c.isToday"
+                [class.holiday]="!!c.holiday && !c.isStart && !c.isEnd"
+                [class.in-range]="c.inRange"
+                [class.selected]="c.isStart || c.isEnd"
+                [disabled]="c.past"
+                [attr.title]="c.holiday"
+                (mouseenter)="hoverDay.set(c.iso)"
+                (click)="chooseDay(c)">
+                {{ c.day }}
+              </button>
+            } @else {
+              <span class="cal-pad"></span>
+            }
+          }
+        </div>
+
+        <div class="cal-foot">
+          <span class="tiny muted">{{ nightsCount() }} {{ nightsCount() === 1 ? 'noche seleccionada' : 'noches seleccionadas' }}</span>
+          <span class="cal-legend">
+            <span><i class="lg-dot holiday"></i> Festivo</span>
+            <span><i class="lg-dot brand"></i> Rango</span>
+          </span>
+        </div>
+
+      </div>
+    }
+  </section>
+
+  @if (error()) {
+    <div class="note tint-rose">
+      <lucide-icon [img]="AlertTriangle" [size]="18" />
+      <div><b>No se pudo consultar.</b> {{ error() }}</div>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="surface pad loading-state">
+      <lucide-icon [img]="RefreshCw" [size]="30" class="spin" />
+      <p class="strong">Consultando precios en Booking para Zipaquirá…</p>
+      <p class="muted small">Abriendo Chrome y leyendo los alojamientos disponibles.</p>
+    </div>
+  } @else if (bookingResults(); as data) {
+
+    @if (diff(); as d) {
+      @if (d.bookedOut.length > 0 || d.newOnes.length > 0 || d.priceChanges.length > 0) {
+        <section class="surface pad diff-banner">
+          <div class="row wrap between" style="--gap: var(--sp-2)">
+            <div class="row wrap" style="--gap: var(--sp-2)">
+              <span class="caption">Cambios vs {{ timeAgo(d.previousAt) }}</span>
+              @if (d.bookedOut.length > 0) {
+                <span class="pill tint-rose"><span class="dot"></span> {{ d.bookedOut.length }} se reservaron / agotaron</span>
+              }
+              @if (d.newOnes.length > 0) {
+                <span class="pill tint-mint"><span class="dot"></span> {{ d.newOnes.length }} nuevos disponibles</span>
+              }
+              @if (d.priceChanges.length > 0) {
+                <span class="pill tint-butter"><span class="dot"></span> {{ d.priceChanges.length }} cambiaron de precio</span>
+              }
+            </div>
+          </div>
+
+          @if (d.bookedOut.length > 0) {
+            <div class="booked-out-list">
+              <span class="tiny muted">Ya no están disponibles (reservados):</span>
+              @for (b of d.bookedOut; track b.url) {
+                <a class="booked-chip" [href]="b.url" target="_blank" rel="noopener">
+                  <span>{{ b.name }}</span>
+                  @if (b.total != null) {
+                    <b>{{ b.total | currencyCop }}</b>
+                  }
+                </a>
+              }
+            </div>
+          }
+        </section>
+      }
+    }
+
+    <section class="surface panel tint-sky">
+      <header class="panel-head">
+        <lucide-icon [img]="Building2" [size]="18" [strokeWidth]="2.2" />
+        <span>{{ data.totalResults }} disponibles</span>
+        @if (missingFromCatalog().length > 0) {
+          <button
+            type="button"
+            class="pill tint-rose toggle-pill"
+            (click)="showMissing.set(!showMissing())"
+            title="Mostrar/ocultar los alojamientos del padrón que no tienen cupo en estas fechas">
+            <span class="dot"></span>
+            {{ missingFromCatalog().length }} reservados / sin cupo
+          </button>
+        }
+        <span class="pill tint-mint"><span class="dot"></span> Padrón {{ catalogSize() }}</span>
+        <span class="spacer"></span>
+        <span class="tiny muted hide-sm">
+          {{ dateText(data.checkIn) }} → {{ dateText(data.checkOut) }} · {{ data.adults }} adultos@if (data.children) { · {{ data.children }} niño(s) }
+        </span>
+        <button type="button" class="sort-btn" (click)="cycleSort()" title="Cambiar orden">
+          <lucide-icon [img]="ArrowUpDown" [size]="14" [strokeWidth]="2.2" />
+          <span>{{ sortLabel() }}</span>
+        </button>
+      </header>
+
+      <div class="table-wrap">
+        <table class="data-table cards tracker-table">
+          <thead>
+            <tr>
+              <th class="idx-col">#</th>
+              <th>Alojamiento</th>
+              <th>Unidad y configuración</th>
+              <th>Condiciones</th>
+              <th class="right">Precio base</th>
+              <th class="right">Impuestos / IVA</th>
+              <th class="right">Total con IVA</th>
+              <th class="act-col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of sortedResults(); track item.url; let idx = $index) {
+              @let ch = itemChange(item);
+              <tr>
+                <td class="idx-col hide-sm">
+                  <span class="num-badge">{{ idx + 1 }}</span>
+                </td>
+
+                <!-- 1. Alojamiento: foto + nombre + distancia + calificación -->
+                <td data-primary>
+                  <div class="prop-cell">
+                    @if (item.image) {
+                      <img [src]="item.image" [alt]="item.name" class="prop-thumb" loading="lazy" />
+                    }
+                    <div class="hotel-cell">
+                      <div class="row wrap" style="--gap: var(--sp-2)">
+                        <a class="hotel-link" [href]="item.url" target="_blank" rel="noopener">
+                          {{ item.name }}
+                        </a>
+                        @if (ch?.status === 'new') {
+                          <span class="pill tint-mint">Nuevo</span>
+                        } @else if (ch?.status === 'up') {
+                          <span class="pill tint-rose" [attr.title]="'Antes: ' + (ch?.previousTotal | currencyCop)">
+                            ▲ +{{ ch?.delta | currencyCop }}
+                          </span>
+                        } @else if (ch?.status === 'down') {
+                          <span class="pill tint-mint" [attr.title]="'Antes: ' + (ch?.previousTotal | currencyCop)">
+                            ▼ {{ ch?.delta | currencyCop }}
+                          </span>
+                        }
+                      </div>
+
+                      <div class="hotel-meta">
+                        @if (item.distance) {
+                          <span class="meta-chip">
+                            <lucide-icon [img]="MapPin" [size]="12" [strokeWidth]="2.2" />
+                            {{ item.distance }}
+                          </span>
+                        }
+                        @if (item.score != null) {
+                          <span class="score-chip">
+                            <b>{{ item.score }}</b>
+                            @if (item.reviewLabel) { <span>{{ item.reviewLabel }}</span> }
+                            @if (item.reviewsCount) { <span class="muted">({{ item.reviewsCount }})</span> }
+                          </span>
+                        }
+                        @if (item.secondaryScore) {
+                          <span class="tiny muted">{{ item.secondaryScore }}</span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- 2. Unidad / configuración / camas (multilínea limpio) -->
+                <td data-label="Unidad">
+                  <div class="unit-cell">
+                    @if (item.unitType) {
+                      <span class="unit-title">{{ item.unitType }}</span>
+                    }
+                    @if (item.unitConfig) {
+                      <span class="unit-config">{{ item.unitConfig }}</span>
+                    }
+                    @if (item.beds) {
+                      <span class="unit-beds">{{ item.beds }}</span>
+                    }
+                    @if (!item.unitType && !item.unitConfig && !item.beds && item.room) {
+                      <span class="unit-config">{{ item.room }}</span>
+                    }
+                  </div>
+                </td>
+
+                <!-- 3. Condiciones / políticas -->
+                <td data-label="Condiciones">
+                  <div class="perks-cell">
+                    @if (item.breakfastIncluded) {
+                      <span class="pill tint-butter">☕ Desayuno incl.</span>
+                    }
+                    @if (item.freeCancellation) {
+                      <span class="pill tint-mint">✓ Cancelación gratis</span>
+                    }
+                    @if (item.noPrepayment) {
+                      <span class="pill tint-sky">Pago en destino</span>
+                    }
+                    @if (!item.breakfastIncluded && !item.freeCancellation && !item.noPrepayment) {
+                      <span class="tiny muted">Tarifa estándar</span>
+                    }
+                  </div>
+                </td>
+
+                <!-- 4. Precio base -->
+                <td data-label="Precio base" class="right num strong">
+                  {{ item.price | currencyCop }}
+                </td>
+
+                <!-- 5. Impuestos / IVA -->
+                <td data-label="Impuestos / IVA" class="right num">
+                  @if (item.taxesIncluded) {
+                    <span class="pill tint-mint"><span class="dot"></span> Incluido</span>
+                  } @else if (item.taxes != null) {
+                    <span class="pill tint-peach">+ {{ item.taxes | currencyCop }}</span>
+                  } @else {
+                    <span class="muted">—</span>
+                  }
+                </td>
+
+                <!-- 6. Total con IVA -->
+                <td data-label="Total con IVA" class="right num">
+                  <div class="total-cell">
+                    <span class="total-badge">{{ item.total | currencyCop }}</span>
+                    @if (nightsCount() > 1 && item.total != null) {
+                      <span class="tiny muted">{{ (item.total / nightsCount()) | currencyCop }}/noche</span>
+                    }
+                  </div>
+                </td>
+
+                <td class="act-col right">
+                  <a class="icon-btn" [href]="item.url" target="_blank" rel="noopener" title="Abrir en Booking">
+                    <lucide-icon [img]="ExternalLink" [size]="16" [strokeWidth]="2.2" />
+                  </a>
+                </td>
+              </tr>
+            }
+
+            @if (showMissing() && missingFromCatalog().length > 0) {
+              @for (m of missingFromCatalog(); track m.slug) {
+                <tr class="booked-row">
+                  <td class="idx-col hide-sm">
+                    <span class="num-badge">✕</span>
+                  </td>
+                  <td data-primary>
+                    <div class="prop-cell">
+                      @if (m.image) {
+                        <img [src]="m.image" [alt]="m.name" class="prop-thumb" loading="lazy" />
+                      }
+                      <div class="hotel-cell">
+                        <div class="row wrap" style="--gap: var(--sp-2)">
+                          <a class="hotel-link" [href]="m.url" target="_blank" rel="noopener">
+                            {{ m.name }}
+                          </a>
+                          <span class="pill tint-rose"><span class="dot"></span> Reservado / Sin cupo</span>
+                        </div>
+                        <div class="hotel-meta">
+                          @if (m.distance) {
+                            <span class="meta-chip">
+                              <lucide-icon [img]="MapPin" [size]="12" [strokeWidth]="2.2" />
+                              {{ m.distance }}
+                            </span>
+                          }
+                          <span class="tiny muted">Visto disponible el {{ timeAgo(m.lastSeenAt) }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td data-label="Unidad">
+                    <div class="unit-cell">
+                      @if (m.unitType) { <span class="unit-title">{{ m.unitType }}</span> }
+                      @if (m.unitConfig) { <span class="unit-config">{{ m.unitConfig }}</span> }
+                      @if (m.beds) { <span class="unit-beds">{{ m.beds }}</span> }
+                    </div>
+                  </td>
+                  <td data-label="Condiciones">
+                    <span class="tiny muted">Sin disponibilidad</span>
+                  </td>
+                  <td data-label="Último base" class="right num muted">
+                    {{ m.lastPrice | currencyCop }}
+                  </td>
+                  <td data-label="Impuestos / IVA" class="right num muted">
+                    @if (m.lastTaxesIncluded) {
+                      Incluido
+                    } @else if (m.lastTaxes != null) {
+                      + {{ m.lastTaxes | currencyCop }}
+                    } @else {
+                      —
+                    }
+                  </td>
+                  <td data-label="Último total" class="right num">
+                    <span class="last-total">{{ m.lastTotal | currencyCop }}</span>
+                  </td>
+                  <td class="act-col right">
+                    <a class="icon-btn" [href]="m.url" target="_blank" rel="noopener" title="Abrir en Booking">
+                      <lucide-icon [img]="ExternalLink" [size]="16" [strokeWidth]="2.2" />
+                    </a>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+
+  <!-- ═══════════ BURBUJA DE IA CON CONTEXTO ═══════════ -->
+  @if (bookingResults(); as data) {
+    <button
+      type="button"
+      data-tone="ai"
+      class="ai-fab"
+      (click)="toggleChat()"
+      title="Hablar con NovaAI sobre esta tabla">
+      <lucide-icon [img]=" chatOpen() ? X : Sparkles " [size]="20" [strokeWidth]="2.2" />
+      <span>Analizar con IA</span>
+      <span class="fab-count">{{ data.totalResults }}</span>
+    </button>
+
+    @if (chatOpen()) {
+      <aside class="surface ai-drawer">
+        <header class="ai-head">
+          <span class="icon-tile tint-lilac"><lucide-icon [img]="Sparkles" [size]="16" [strokeWidth]="2.2" /></span>
+          <div class="stack" style="--gap: 0; min-width: 0">
+            <b class="small">Asistente de precios</b>
+            <span class="tiny muted truncate">
+              {{ data.totalResults }} alojamientos + {{ snapshots().length }} consulta(s) en memoria
+            </span>
+          </div>
+          <span class="spacer"></span>
+          <button type="button" class="icon-btn" (click)="chatOpen.set(false)" aria-label="Cerrar chat">
+            <lucide-icon [img]="X" [size]="16" />
+          </button>
+        </header>
+
+        <div class="ai-prompts">
+          @for (p of quickPrompts; track p) {
+            <button type="button" class="prompt-chip" (click)="sendPrompt(p)" [disabled]="chatLoading()">
+              {{ p }}
+            </button>
+          }
+        </div>
+
+        <div class="ai-body">
+          @if (chatMessages().length === 0) {
+            <div class="ai-empty muted small">
+              Tengo en contexto los <b>{{ data.totalResults }} alojamientos</b> de esta búsqueda
+              @if (snapshots().length > 1) {
+                y tus <b>{{ snapshots().length }} consultas</b> guardadas (sé cuáles se reservaron o cambiaron de precio).
+              } @else {
+                . Cuando vuelvas a consultar más tarde, también detectaré cuáles se reservaron o cambiaron de tarifa.
+              }
+            </div>
+          }
+          @for (m of chatMessages(); track $index) {
+            <div class="ai-msg" [class.user]="m.role === 'user'">
+              @if (m.role === 'user') {
+                <div class="ai-bubble">{{ m.text }}</div>
+              } @else {
+                <div class="stack" style="--gap: 4px; width: 100%; min-width: 0">
+                  <div class="ai-bubble rt" [innerHTML]="rich(m.text)"></div>
+                  @if (m.queries?.length) {
+                    <span class="ai-queried">
+                      <lucide-icon [img]="Database" [size]="11" />
+                      Consultó tu BD ({{ m.queries!.length }})
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+          }
+          @if (chatLoading()) {
+            <div class="ai-msg">
+              <div class="ai-bubble muted">Analizando los precios…</div>
+            </div>
+          }
+        </div>
+
+        <form class="ai-input" (ngSubmit)="sendPrompt()">
+          <input
+            type="text"
+            [(ngModel)]="chatInput"
+            name="chatInput"
+            placeholder="Ej: ¿Cuáles se reservaron? ¿A cuánto pongo mi apto?"
+            [disabled]="chatLoading()" />
+          <button type="submit" data-tone="ai" data-icon [disabled]="!chatInput.trim() || chatLoading()" aria-label="Enviar">
+            <lucide-icon [img]="Send" [size]="16" [strokeWidth]="2.2" />
+          </button>
+        </form>
+      </aside>
+    }
+  }
+
+</div>

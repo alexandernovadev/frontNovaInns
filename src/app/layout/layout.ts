@@ -1,9 +1,9 @@
-import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 import { EnvironmentService } from '../core/services/environment.service';
 import { AlertNova } from '../shared/components/alert-nova';
-import { LucideAngularModule, CalendarDays, Calendar, Building2, BarChart3, Receipt, LogOut, Menu, ChevronLeft, Shield, Sparkles } from 'lucide-angular';
+import { LucideAngularModule, CalendarDays, Calendar, Building2, BarChart3, Receipt, LogOut, Menu, ChevronLeft, Shield, Sparkles, Radar } from 'lucide-angular';
 
 @Component({
   selector: 'app-layout',
@@ -53,13 +53,18 @@ export class LayoutComponent {
       : 'assets/images/LogoNovaInns.png';
   }
 
-  navItems = [
-    { label: 'Reservas', route: '/bookings', icon: CalendarDays },
-    { label: 'Apartamentos', route: '/apartments', icon: Building2 },
-    { label: 'Calendario', route: '/calendar', icon: Calendar },
-    { label: 'Gastos', route: '/expenses', icon: Receipt },
-    { label: 'Analítica', route: '/analytics', icon: BarChart3 },
-    { label: 'NovaAI', route: '/nova-ai', icon: Sparkles },
-    { label: 'Admin', route: '/admin', icon: Shield },
+  private allNavItems = [
+    { label: 'Reservas', route: '/bookings', icon: CalendarDays, devOnly: false },
+    { label: 'Apartamentos', route: '/apartments', icon: Building2, devOnly: false },
+    { label: 'Calendario', route: '/calendar', icon: Calendar, devOnly: false },
+    { label: 'Gastos', route: '/expenses', icon: Receipt, devOnly: false },
+    { label: 'Analítica', route: '/analytics', icon: BarChart3, devOnly: false },
+    { label: 'Tracker', route: '/tracker', icon: Radar, devOnly: true },
+    { label: 'NovaAI', route: '/nova-ai', icon: Sparkles, devOnly: false },
+    { label: 'Admin', route: '/admin', icon: Shield, devOnly: false },
   ];
+
+  navItems = computed(() =>
+    this.allNavItems.filter((item) => !item.devOnly || this.environmentService.isDev()),
+  );
 }

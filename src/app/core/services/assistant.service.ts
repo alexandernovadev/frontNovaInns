@@ -78,10 +78,76 @@ export class AssistantService {
   }
 
   // El back recibe el historial completo (máx. 40 mensajes, empezando por el usuario)
-  sendChat(messages: ChatMessage[]) {
+  // más el contexto de Booking guardado en localStorage por el Tracker.
+  sendChat(messages: ChatMessage[], customTrackerContext?: Record<string, unknown>) {
     let history = messages.slice(-40).map(({ role, text }) => ({ role, text }));
     if (history[0]?.role === 'model') history = history.slice(1);
-    return this.http.post<ChatReply>(`${API}/assistant/chat`, { messages: history });
+    const trackerContext = customTrackerContext ?? this.readTrackerContextFromStorage();
+    return this.http.post<ChatReply>(`${API}/assistant/chat`, {
+      messages: history,
+      trackerContext,
+    });
+  }
+
+  private readTrackerContextFromStorage(): Record<string, unknown> | null {
+    try {
+      const snapsRaw = localStorage.getItem('nova_tracker_snapshots_v1');
+      const catRaw = localStorage.getItem('nova_tracker_catalog_v1');
+      const snapshots: any[] = snapsRaw ? JSON.parse(snapsRaw) : [];
+      const catalog: Record<string, any> = catRaw ? JSON.parse(catRaw) : {};
+      if (!snapshots.length && !Object.keys(catalog).length) return null;
+
+      const latest = snapshots[0] ?? null;
+      const presentSlugs = new Set<string>(
+        (latest?.results ?? []).map(
+          (r: any) => r.slug || (r.url ? String(r.url).split('?')[0] : r.name),
+        ),
+      );
+      const bookedOutFromCatalog = Object.values(catalog)
+        .filter((c: any) => !presentSlugs.has(c.slug))
+        .map((c: any) => ({
+          name: c.name,
+          distance: c.distance,
+          lastRoom: c.lastRoom,
+          lastTotal: c.lastTotal,
+          lastSeenAt: c.lastSeenAt,
+        }));
+
+      return {
+        latestSearch: latest
+          ? {
+              savedAt: latest.savedAt,
+              checkIn: latest.checkIn,
+              checkOut: latest.checkOut,
+              adults: latest.adults,
+              children: latest.children,
+              totalResults: latest.totalResults,
+              results: (latest.results ?? []).map((r: any) => ({
+                name: r.name,
+                distance: r.distance,
+                room: r.room,
+                price: r.price,
+                taxes: r.taxes,
+                taxesIncluded: r.taxesIncluded,
+                total: r.total,
+              })),
+            }
+          : null,
+        catalogTotalKnown: Object.keys(catalog).length,
+        bookedOutFromCatalog,
+        recentSnapshots: snapshots.slice(0, 35).map((s: any) => ({
+          savedAt: s.savedAt,
+          checkIn: s.checkIn,
+          checkOut: s.checkOut,
+          adults: s.adults,
+          children: s.children,
+          totalResults: s.totalResults,
+          hotelNames: (s.results ?? []).map((r: any) => r.name),
+        })),
+      };
+    } catch {
+      return null;
+    }
   }
 
   // Screenshot de Booking / AirBnB en el chat → propuesta "Crear reserva"

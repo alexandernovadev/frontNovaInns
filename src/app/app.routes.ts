@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { devOnlyGuard } from './core/guards/dev-only.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'bookings', pathMatch: 'full' },
@@ -49,6 +50,12 @@ export const routes: Routes = [
         path: 'analytics',
         loadComponent: () =>
           import('./pages/analytics/analytics').then((m) => m.AnalyticsComponent),
+      },
+      {
+        path: 'tracker',
+        loadComponent: () =>
+          import('./pages/tracker/tracker').then((m) => m.TrackerComponent),
+        canActivate: [devOnlyGuard],
       },
       {
         path: 'expenses',

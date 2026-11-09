@@ -24,7 +24,7 @@
     </button>
 
     <nav class="nav">
-      @for (item of navItems; track item.route) {
+      @for (item of navItems(); track item.route) {
         <a [routerLink]="item.route" routerLinkActive="nav-active" [routerLinkActiveOptions]="{ exact: false }"
           (click)="closeSidebar()" (mouseenter)="setTooltip(item.label, $event)" (mouseleave)="clearTooltip()"
           class="nav-item">
