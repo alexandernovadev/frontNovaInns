@@ -202,10 +202,11 @@
                 <platform-icon [platform]="b.billing.platform" size="sm" />
               </span>
               <div class="stack" style="--gap: 4px; min-width: 0">
-                <div>
-                  <p class="strong small truncate">{{ b.group.host.fullName }}</p>
-                  <p class="tiny muted truncate">{{ aptName(b) }}</p>
+                <div class="row" style="align-items: center; --gap: 6px">
+                  <p class="strong small truncate" style="min-width: 0">{{ b.group.host.fullName }}</p>
+                  <span class="b-pax" [title]="totalGuests(b) + ' huéspedes'">{{ totalGuests(b) }}p</span>
                 </div>
+                <p class="tiny muted truncate">{{ aptName(b) }}</p>
                 <div class="row tiny soft" style="--gap: 6px">
                   <span>{{ b.stay.checkIn | dateEs:'short' }}</span>
                   <lucide-icon class="t-brand" [img]="ChevronRight" [size]="12" [strokeWidth]="2.6" />
