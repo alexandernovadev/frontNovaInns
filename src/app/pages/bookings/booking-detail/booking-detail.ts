@@ -1,7 +1,7 @@
 import { Component, inject, signal, viewChild, ElementRef, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { NgTemplateOutlet } from '@angular/common';
 import { BookingsService } from '../../../core/services/bookings.service';
 import { IBooking } from '../../../core/interfaces';
 import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
@@ -25,7 +25,7 @@ import { apartmentColor, apartmentShortName } from '../../../shared/utils/apartm
 @Component({
   selector: 'app-booking-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, DatePipe, NgTemplateOutlet, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer, CurrencyCopPipe],
+  imports: [FormsModule, LucideAngularModule, NgTemplateOutlet, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer, CurrencyCopPipe],
   templateUrl: './booking-detail.html',
   styleUrl: './booking-detail.css',
 })

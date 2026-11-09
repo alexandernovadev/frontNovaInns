@@ -56,7 +56,7 @@
                   <span class="pill" [class]="categoryClass[expense.category]">{{ categoryLabels[expense.category] }}</span>
                 </td>
                 <td data-label="Monto" class="strong num">{{ expense.amount | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}</td>
-                <td data-label="Fecha" class="soft">{{ expense.date | date:'dd/MM/yyyy' }}</td>
+                <td data-label="Fecha" class="soft">{{ expense.date | dateEs }}</td>
                 <td data-label="Método" class="soft">{{ expense.paymentMethod }}</td>
                 <td class="right">
                   <div class="row end" style="--gap: var(--sp-1)">

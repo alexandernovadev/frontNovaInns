@@ -1,6 +1,7 @@
 import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
+import { DateEsPipe } from '../../shared/pipes/date-es.pipe';
 import { ExpensesService } from '../../core/services/expenses.service';
 import { IExpense, ExpenseQuery } from '../../core/interfaces';
 import { ModalNova } from '../../shared/components/modal-nova';
@@ -17,7 +18,7 @@ import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delet
 @Component({
   selector: 'app-expenses',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [EmptyState, FormsModule, CurrencyPipe, DatePipe, LucideAngularModule, ModalNova, Pagination, AutocompleteSelect],
+  imports: [EmptyState, FormsModule, CurrencyPipe, DateEsPipe, LucideAngularModule, ModalNova, Pagination, AutocompleteSelect],
   templateUrl: './expenses.html',
 })
 export class ExpensesComponent implements OnInit {

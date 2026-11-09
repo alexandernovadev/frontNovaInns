@@ -46,9 +46,9 @@
       <lucide-icon [img]="Hash" [size]="12" [strokeWidth]="2" />
       {{ b._id.slice(-8).toUpperCase() }}
     </span>
-    <span class="tiny muted hide-sm">· Creado {{ b.createdAt | date:'longDate':'':'es' }}</span>
+    <span class="tiny muted hide-sm">· Creado {{ b.createdAt | dateEs }}</span>
     @if (b.updatedAt) {
-      <span class="tiny muted hide-sm">· Editado {{ b.updatedAt | date:'longDate':'':'es' }}</span>
+      <span class="tiny muted hide-sm">· Editado {{ b.updatedAt | dateEs }}</span>
     }
   </div>
 

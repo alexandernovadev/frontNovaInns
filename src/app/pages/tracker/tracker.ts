@@ -16,6 +16,7 @@ import { ApartmentsService } from '../../core/services/apartments.service';
 import { renderRich } from '../nova-ai/rich-text';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { isHoliday } from '../../shared/constants/holidays.constant';
+import { prettyDate } from '../../shared/utils/pretty-date';
 import {
   LucideAngularModule,
   AlertTriangle,
@@ -834,12 +835,8 @@ export class TrackerComponent implements OnInit {
   }
 
   dateText(value: string) {
-    return new Date(`${value}T12:00:00`).toLocaleDateString('es-CO', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    });
+    // Mismo formato que dateEs en toda la app: "Lun 4 Mar 2026"
+    return prettyDate(value) ?? value;
   }
 
   snapshotLabel(s: TrackerSnapshot) {

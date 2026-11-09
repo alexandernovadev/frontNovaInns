@@ -5,6 +5,7 @@ import { LucideAngularModule, CalendarDays, ChevronLeft, ChevronRight } from 'lu
 import { BookingsService } from '../../core/services/bookings.service';
 import type { IBooking } from '../../core/interfaces';
 import { isHoliday } from '../../shared/constants/holidays.constant';
+import { prettyDate } from '../../shared/utils/pretty-date';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { apartmentColor, apartmentShortName } from '../../shared/utils/apartment-color';
 
@@ -139,7 +140,7 @@ export class CalendarComponent implements OnInit {
     this.popover.set({
       x: Math.max(8, x),
       y: Math.max(8, y),
-      dayStr: day.dateStr,
+      dayStr: prettyDate(day.dateStr) ?? day.dateStr,
       bookings: day.bookings,
       holiday: day.holiday,
     });
