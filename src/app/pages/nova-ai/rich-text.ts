@@ -140,28 +140,52 @@ function dayBox(label: string, d: Date): string {
   );
 }
 
+// Registry en memoria de tarjetas renderizadas (Angular sanitizer elimina data-* en [innerHTML])
+const CARD_REGISTRY: BookingCardPayload[] = [];
+
+export interface BookingCardPayload {
+  guest: string;
+  apartment: string;
+  apartmentId: string;
+  checkIn: string;
+  checkOut: string;
+  nights: number;
+  statuses: string[];
+  amount: string;
+  platform: string;
+  note: string;
+}
+
+export function findBookingCardFromElement(el: HTMLElement | null): BookingCardPayload | null {
+  const card = el?.closest?.('.rt-card') as HTMLElement | null;
+  if (!card) return null;
+  for (const cls of Array.from(card.classList)) {
+    const m = /^rt-bcard-(\d+)$/.exec(cls);
+    if (m) return CARD_REGISTRY[+m[1]] ?? null;
+  }
+  return null;
+}
+
 function bookingCard(b: BookingCard, aptIds: Map<string, string>): string {
   const aptId = b.apartment ? aptIds.get(apartmentShortName(b.apartment).toLowerCase()) : undefined;
   const apt = aptId ? (APT_CLASS[apartmentColor(aptId)] ?? APT_NONE) : APT_NONE;
   const nights = Math.round((b.checkOut.getTime() - b.checkIn.getTime()) / 86_400_000);
   const platformKey = b.platform?.toLowerCase();
-  const payload = escape(
-    JSON.stringify({
-      guest: b.guest,
-      apartment: b.apartment ?? '',
-      apartmentId: aptId ?? '',
-      checkIn: b.checkInIso,
-      checkOut: b.checkOutIso,
-      nights,
-      statuses: b.statuses,
-      amount: b.amount ?? '',
-      platform: b.platform ?? '',
-      note: b.note ?? '',
-    }),
-  );
+  const idx = CARD_REGISTRY.push({
+    guest: b.guest,
+    apartment: b.apartment ?? '',
+    apartmentId: aptId ?? '',
+    checkIn: b.checkInIso,
+    checkOut: b.checkOutIso,
+    nights,
+    statuses: b.statuses,
+    amount: b.amount ?? '',
+    platform: b.platform ?? '',
+    note: b.note ?? '',
+  }) - 1;
 
   return (
-    `<div class="rt-card ${apt}" data-booking="${payload}">` +
+    `<div class="rt-card ${apt} rt-bcard-${idx}">` +
     // Huésped + estado
     `<div class="rt-card-head">` +
     `<div class="rt-card-who">` +

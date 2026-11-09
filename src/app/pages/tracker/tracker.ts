@@ -13,7 +13,7 @@ import { firstValueFrom } from 'rxjs';
 import { TrackerService } from '../../core/services/tracker.service';
 import { AssistantService, ChatMessage } from '../../core/services/assistant.service';
 import { ApartmentsService } from '../../core/services/apartments.service';
-import { renderRich } from '../nova-ai/rich-text';
+import { renderRich, findBookingCardFromElement } from '../nova-ai/rich-text';
 import { BookingDetailModal, BookingCardQuery } from '../../shared/components/booking-detail-modal';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { isHoliday } from '../../shared/constants/holidays.constant';
@@ -647,14 +647,8 @@ export class TrackerComponent implements OnInit {
   selectedBooking = signal<BookingCardQuery | null>(null);
 
   onBubbleClick(e: MouseEvent) {
-    const cardEl = (e.target as HTMLElement | null)?.closest?.('.rt-card[data-booking]') as HTMLElement | null;
-    const raw = cardEl?.getAttribute('data-booking');
-    if (!raw) return;
-    try {
-      this.selectedBooking.set(JSON.parse(raw) as BookingCardQuery);
-    } catch {
-      // ignora payload malformado
-    }
+    const found = findBookingCardFromElement(e.target as HTMLElement | null);
+    if (found) this.selectedBooking.set({ ...found });
   }
 
   toggleChat() {

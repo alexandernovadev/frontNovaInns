@@ -7,7 +7,7 @@ import { ApartmentsService } from '../../core/services/apartments.service';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { NovaActionCard } from './action-card';
 import { BookingDetailModal, BookingCardQuery } from '../../shared/components/booking-detail-modal';
-import { renderRich } from './rich-text';
+import { renderRich, findBookingCardFromElement } from './rich-text';
 
 @Component({
   selector: 'app-nova-ai',
@@ -339,14 +339,8 @@ export class NovaAiComponent {
   selectedBooking = signal<BookingCardQuery | null>(null);
 
   onBubbleClick(e: MouseEvent) {
-    const cardEl = (e.target as HTMLElement | null)?.closest?.('.rt-card[data-booking]') as HTMLElement | null;
-    const raw = cardEl?.getAttribute('data-booking');
-    if (!raw) return;
-    try {
-      this.selectedBooking.set(JSON.parse(raw) as BookingCardQuery);
-    } catch {
-      // ignora payload malformado
-    }
+    const found = findBookingCardFromElement(e.target as HTMLElement | null);
+    if (found) this.selectedBooking.set({ ...found });
   }
 
   readonly suggestions = [
