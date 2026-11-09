@@ -76,11 +76,13 @@ const STATUS_RE = /\b(FALTA PAGO|NO SHOW|PAGADO|PENDIENTE|CHECK-IN|CHECK-OUT)\b/
 const MONEY_RE = /\$\s?\d{1,3}(?:\.\d{3})+(?:,\d+)?|\$\s?\d+(?:,\d+)?/;
 const PLATFORM_RE = /\b(Booking|AirBnB|Airbnb|Directo)\b/i;
 
-interface BookingCard {
+export interface BookingCard {
   guest: string;
   apartment?: string;
   checkIn: Date;
   checkOut: Date;
+  checkInIso: string;
+  checkOutIso: string;
   statuses: string[];
   amount?: string;
   platform?: string;
@@ -88,12 +90,15 @@ interface BookingCard {
 }
 
 const utc = (m: RegExpMatchArray) => new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+const isoDay = (m: RegExpMatchArray) => `${m[1]}-${m[2]}-${m[3]}`;
 
 function parseBooking(raw: string): BookingCard | null {
   const dates = [...raw.matchAll(ISO_RE)];
   if (dates.length < 2) return null;
   const checkIn = utc(dates[0]);
   const checkOut = utc(dates[1]);
+  const checkInIso = isoDay(dates[0]);
+  const checkOutIso = isoDay(dates[1]);
   const nights = (checkOut.getTime() - checkIn.getTime()) / 86_400_000;
   if (!(nights >= 1 && nights <= 60)) return null;
 
@@ -115,14 +120,15 @@ function parseBooking(raw: string): BookingCard | null {
     .split(/\s*[|:·,–—]\s*/)
     .map((p) => p.replace(/\*\*/g, '').trim())
     .filter((p) => /[\p{L}\d]/u.test(p) && !/^(al|a|→|del|de|y|hasta)$/i.test(p))
-    // "(Sábado a domingo)" sobra: la tarjeta ya muestra los días
+    // "(Sábado a domingo)" o "(3 noches)" sobra: la tarjeta ya los calcula y muestra
+    .filter((p) => !/^\(?\d+\s*noches?\)?$/i.test(p))
     .filter((p) => /[\p{L}\d]/u.test(p.replace(/lunes|martes|miércoles|miercoles|jueves|viernes|sábado|sabado|domingo|\b(a|al|y)\b/gi, '')));
 
   const guest = bold?.[1] ?? parts.shift();
   if (!guest) return null;
   const aptIdx = parts.findIndex((p) => /apartamento|apto/i.test(p));
   const apartment = aptIdx >= 0 ? parts.splice(aptIdx, 1)[0] : parts.shift();
-  return { guest, apartment, checkIn, checkOut, statuses, amount, platform, note: parts.join(' · ') || undefined };
+  return { guest, apartment, checkIn, checkOut, checkInIso, checkOutIso, statuses, amount, platform, note: parts.join(' · ') || undefined };
 }
 
 function dayBox(label: string, d: Date): string {
@@ -139,28 +145,45 @@ function bookingCard(b: BookingCard, aptIds: Map<string, string>): string {
   const apt = aptId ? (APT_CLASS[apartmentColor(aptId)] ?? APT_NONE) : APT_NONE;
   const nights = Math.round((b.checkOut.getTime() - b.checkIn.getTime()) / 86_400_000);
   const platformKey = b.platform?.toLowerCase();
+  const payload = escape(
+    JSON.stringify({
+      guest: b.guest,
+      apartment: b.apartment ?? '',
+      apartmentId: aptId ?? '',
+      checkIn: b.checkInIso,
+      checkOut: b.checkOutIso,
+      nights,
+      statuses: b.statuses,
+      amount: b.amount ?? '',
+      platform: b.platform ?? '',
+      note: b.note ?? '',
+    }),
+  );
 
   return (
-    `<div class="rt-card ${apt}">` +
+    `<div class="rt-card ${apt}" data-booking="${payload}">` +
     // Huésped + estado
     `<div class="rt-card-head">` +
     `<div class="rt-card-who">` +
     `<p class="rt-guest">${inline(b.guest)}</p>` +
+    `<div class="rt-sub">` +
     (b.apartment ? `<p class="rt-apt"><i></i>${escape(apartmentShortName(b.apartment))}</p>` : '') +
+    `<span class="rt-nights-pill" title="${nights} ${nights === 1 ? 'noche' : 'noches'}">🌙 ${nights} ${nights === 1 ? 'noche' : 'noches'}</span>` +
+    `</div>` +
     `</div>` +
     `<div class="rt-statuses">${b.statuses.map((st) => `<span class="rt-status ${STATUS_CLASS[st]}">${st}</span>`).join('')}</div>` +
     `</div>` +
     // Entrada → salida
     `<div class="rt-stay">` +
     dayBox('Entrada', b.checkIn) +
-    `<div class="rt-nights"><span>${nights} ${nights === 1 ? 'noche' : 'noches'}</span><span>→</span></div>` +
+    `<div class="rt-nights"><span class="rt-nights-badge">${nights}n</span><span>→</span></div>` +
     dayBox('Salida', b.checkOut) +
     `</div>` +
     // Plataforma + total
     `<div class="rt-card-foot">` +
     (b.platform
       ? `<span class="rt-plat ${PLATFORM_CLASS[platformKey!] ?? 'tint-neutral'}"><i></i>${escape(b.platform)}</span>`
-      : `<span></span>`) +
+      : `<span class="rt-hint">Ver detalle →</span>`) +
     (b.amount ? `<span class="rt-total">${b.amount}</span>` : '') +
     `</div>` +
     (b.note ? `<p class="rt-note">${inline(b.note)}</p>` : '') +

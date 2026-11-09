@@ -9,6 +9,7 @@ const FIELD_LABELS: Record<string, string> = {
   apartmentId: 'Apartamento',
   'stay.checkIn': 'Entrada',
   'stay.checkOut': 'Salida',
+  'stay.nights': 'Noches',
   'stay.status': 'Estadía',
   'billing.basePrice': 'Precio base',
   'billing.extraServices': 'Servicios extra',

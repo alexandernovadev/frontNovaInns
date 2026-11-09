@@ -6,12 +6,13 @@ import { Observable } from 'rxjs';
 import { ApartmentsService } from '../../core/services/apartments.service';
 import { AlertService } from '../../shared/components/services/alert.service';
 import { NovaActionCard } from './action-card';
+import { BookingDetailModal, BookingCardQuery } from '../../shared/components/booking-detail-modal';
 import { renderRich } from './rich-text';
 
 @Component({
   selector: 'app-nova-ai',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, NovaActionCard],
+  imports: [FormsModule, LucideAngularModule, NovaActionCard, BookingDetailModal],
   template: `
     <div class="page chat"
       (dragenter)="onDragEnter($event)" (dragover)="$event.preventDefault()"
@@ -76,7 +77,7 @@ import { renderRich } from './rich-text';
             <div class="msg-model nova-in">
               <span class="orb sm"><lucide-icon [img]="Sparkles" [size]="16" [strokeWidth]="2.2" /></span>
               <div class="msg-body">
-                <div data-msg="model" class="bubble-model rt" [innerHTML]="rich(m.text)"></div>
+                <div data-msg="model" class="bubble-model rt" [innerHTML]="rich(m.text)" (click)="onBubbleClick($event)"></div>
                 @if (m.queries?.length) {
                   <span class="queried">
                     <lucide-icon [img]="Database" [size]="12" [strokeWidth]="2" />
@@ -122,6 +123,8 @@ import { renderRich } from './rich-text';
           <lucide-icon [img]="SendHorizontal" [size]="20" [strokeWidth]="2.2" />
         </button>
       </form>
+
+      <booking-detail-modal [query]="selectedBooking()" (closed)="selectedBooking.set(null)" />
     </div>
   `,
   styles: `
@@ -333,6 +336,18 @@ export class NovaAiComponent {
   private failedImage: { file: File; hint: string } | null = null;
   private dragDepth = 0;
   apartmentNames = signal<Record<string, string>>({});
+  selectedBooking = signal<BookingCardQuery | null>(null);
+
+  onBubbleClick(e: MouseEvent) {
+    const cardEl = (e.target as HTMLElement | null)?.closest?.('.rt-card[data-booking]') as HTMLElement | null;
+    const raw = cardEl?.getAttribute('data-booking');
+    if (!raw) return;
+    try {
+      this.selectedBooking.set(JSON.parse(raw) as BookingCardQuery);
+    } catch {
+      // ignora payload malformado
+    }
+  }
 
   readonly suggestions = [
     { icon: '💰', text: '¿Cuánto gané este mes?' },

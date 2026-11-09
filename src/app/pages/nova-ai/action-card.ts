@@ -38,7 +38,7 @@ const KIND = {
           <p class="tiny strong" style="margin-bottom: var(--sp-2)">{{ pretty(t.label) }}</p>
           @if (c.type !== 'update') {
             <dl class="ac-details">
-              @for (d of t.details; track d.field) {
+              @for (d of withNights(t.details); track d.field) {
                 @if (d.value !== '' && d.value !== null && d.value !== undefined) {
                   <dt>{{ label(d.field) }}</dt>
                   <dd>{{ format(d.field, d.value) }}</dd>
@@ -164,5 +164,22 @@ export class NovaActionCard {
 
   format(field: string, value: unknown): string {
     return formatValue(field, value, this.apartmentNames());
+  }
+
+  withNights(details: { field: string; value: unknown }[]) {
+    if (details.some((d) => d.field === 'stay.nights')) return details;
+    const ci = details.find((d) => d.field === 'stay.checkIn')?.value;
+    const co = details.find((d) => d.field === 'stay.checkOut')?.value;
+    if (!ci || !co) return details;
+    const nights = Math.round((new Date(String(co)).getTime() - new Date(String(ci)).getTime()) / 86_400_000);
+    if (!(nights >= 1)) return details;
+    const out: { field: string; value: unknown }[] = [];
+    for (const d of details) {
+      out.push(d);
+      if (d.field === 'stay.checkOut') {
+        out.push({ field: 'stay.nights', value: `${nights} ${nights === 1 ? 'noche' : 'noches'}` });
+      }
+    }
+    return out;
   }
 }

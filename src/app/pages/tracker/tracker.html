@@ -543,7 +543,7 @@
                 <div class="ai-bubble">{{ m.text }}</div>
               } @else {
                 <div class="stack" style="--gap: 4px; width: 100%; min-width: 0">
-                  <div class="ai-bubble rt" [innerHTML]="rich(m.text)"></div>
+                  <div class="ai-bubble rt" [innerHTML]="rich(m.text)" (click)="onBubbleClick($event)"></div>
                   @if (m.queries?.length) {
                     <span class="ai-queried">
                       <lucide-icon [img]="Database" [size]="11" />
@@ -575,5 +575,7 @@
       </aside>
     }
   }
+
+  <booking-detail-modal [query]="selectedBooking()" (closed)="selectedBooking.set(null)" />
 
 </div>

@@ -14,6 +14,7 @@ import { TrackerService } from '../../core/services/tracker.service';
 import { AssistantService, ChatMessage } from '../../core/services/assistant.service';
 import { ApartmentsService } from '../../core/services/apartments.service';
 import { renderRich } from '../nova-ai/rich-text';
+import { BookingDetailModal, BookingCardQuery } from '../../shared/components/booking-detail-modal';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { isHoliday } from '../../shared/constants/holidays.constant';
 import { prettyDate } from '../../shared/utils/pretty-date';
@@ -136,7 +137,7 @@ interface ChatTurn {
 @Component({
   selector: 'app-tracker',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, CurrencyCopPipe, LucideAngularModule],
+  imports: [FormsModule, CurrencyCopPipe, LucideAngularModule, BookingDetailModal],
   templateUrl: './tracker.html',
   styleUrl: './tracker.css',
 })
@@ -643,6 +644,19 @@ export class TrackerComponent implements OnInit {
   }
 
   // ── Chat IA con contexto de la tabla + localStorage + MongoDB (NovaAI) ──
+  selectedBooking = signal<BookingCardQuery | null>(null);
+
+  onBubbleClick(e: MouseEvent) {
+    const cardEl = (e.target as HTMLElement | null)?.closest?.('.rt-card[data-booking]') as HTMLElement | null;
+    const raw = cardEl?.getAttribute('data-booking');
+    if (!raw) return;
+    try {
+      this.selectedBooking.set(JSON.parse(raw) as BookingCardQuery);
+    } catch {
+      // ignora payload malformado
+    }
+  }
+
   toggleChat() {
     this.chatOpen.update((v) => !v);
   }
