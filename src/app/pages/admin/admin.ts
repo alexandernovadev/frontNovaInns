@@ -2,13 +2,20 @@ import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@ang
 import { DataService, ClearableModel } from '../../core/services/data.service';
 import { ModalNova } from '../../shared/components/modal-nova';
 import { AlertService } from '../../shared/components/services/alert.service';
-import { LucideAngularModule, Trash2, CalendarDays, Building2, Receipt } from 'lucide-angular';
+import { LucideAngularModule, Trash2, CalendarDays, Building2, Receipt, Banknote } from 'lucide-angular';
 
 interface AdminModel {
   key: ClearableModel;
   label: string;
   description: string;
   icon: typeof CalendarDays;
+}
+
+// Resultado de la herramienta temporal "Arreglar precios"
+interface FixPricesResult {
+  checked: number;
+  fixed: number;
+  changes: string[];
 }
 
 @Component({
@@ -20,6 +27,7 @@ interface AdminModel {
 })
 export class AdminComponent implements OnInit {
   readonly TrashIcon = Trash2;
+  readonly BanknoteIcon = Banknote;
 
   private dataService = inject(DataService);
   private alert = inject(AlertService);
@@ -35,6 +43,11 @@ export class AdminComponent implements OnInit {
 
   confirmTarget = signal<AdminModel | null>(null);
   saving = signal(false);
+
+  // TEMPORAL: "Arreglar precios" (múltiplos de $100). Se quita cuando no haga falta
+  showFix = signal(false);
+  fixing = signal(false);
+  fixResult = signal<FixPricesResult | null>(null);
 
   ngOnInit() { this.loadCounts(); }
 
@@ -66,6 +79,31 @@ export class AdminComponent implements OnInit {
       error: () => {
         this.saving.set(false);
         this.alert.error('Error al vaciar los datos');
+      },
+    });
+  }
+
+  // ── Arreglar precios (temporal) ──
+  openFix() { this.showFix.set(true); }
+
+  onFixClosed() {
+    this.showFix.set(false);
+    this.fixResult.set(null);
+  }
+
+  confirmFix() {
+    this.fixing.set(true);
+    this.dataService.fixBookingPrices().subscribe({
+      next: (res) => {
+        this.fixing.set(false);
+        this.fixResult.set(res);
+        this.alert.success(
+          res.fixed ? `${res.fixed} reservas con precios corregidos` : 'Todo estaba en múltiplos de $100',
+        );
+      },
+      error: () => {
+        this.fixing.set(false);
+        this.alert.error('No se pudieron arreglar los precios');
       },
     });
   }

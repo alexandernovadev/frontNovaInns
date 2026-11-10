@@ -32,6 +32,31 @@
       </div>
     }
   </section>
+
+  <!-- ===== TEMPORAL: arreglar precios a múltiplos de $100 (luego se quita) ===== -->
+  <header class="stack" style="--gap: 2px">
+    <h2 class="sec-title fix">
+      <lucide-icon [img]="BanknoteIcon" [size]="20" [strokeWidth]="2" />
+      Arreglar precios
+    </h2>
+    <p class="page-sub">En Colombia no se usan centavos: deja los montos en múltiplos de $100 (556.874 → 556.800).</p>
+  </header>
+
+  <section class="grid-cards" style="--min: 260px">
+    <div class="surface pad stack model" data-tone="brand">
+      <div class="row">
+        <span class="model-ic"><lucide-icon [img]="BanknoteIcon" [size]="20" [strokeWidth]="2" /></span>
+        <div class="stack" style="--gap: 0">
+          <p class="strong small truncate">Precios sin centavos</p>
+          <p class="tiny muted truncate">Precio base, recibido y servicios extra</p>
+        </div>
+      </div>
+      <button (click)="openFix()" data-tone="brand" data-block [disabled]="fixing()" [attr.aria-busy]="fixing() || null">
+        <lucide-icon [img]="BanknoteIcon" [size]="16" [strokeWidth]="2.2" />
+        {{ fixing() ? 'Arreglando...' : 'Arreglar precios' }}
+      </button>
+    </div>
+  </section>
 </div>
 
 <!-- ======= MODAL CONFIRMAR ======= -->
@@ -49,5 +74,44 @@
   <div class="modal-actions">
     <button (click)="onConfirmClosed()">Cancelar</button>
     <button (click)="confirmClear()" [disabled]="saving()" [attr.aria-busy]="saving() || null" data-tone="danger">Vaciar</button>
+  </div>
+</ng-template>
+
+<!-- ======= MODAL ARREGLAR PRECIOS (temporal) ======= -->
+<modal-nova [visible]="showFix()" title="Arreglar precios" size="sm" (closed)="onFixClosed()" [footerTemplate]="fixFooter">
+  <div class="stack confirm">
+    <span class="model-ic big" data-tone="brand">
+      <lucide-icon [img]="BanknoteIcon" [size]="24" [strokeWidth]="2" />
+    </span>
+    @if (fixResult(); as r) {
+      <p class="soft small">
+        Revisadas <strong class="strong">{{ r.checked }}</strong> ·
+        corregidas <strong class="strong">{{ r.fixed }}</strong>
+      </p>
+      @for (c of r.changes; track c) {
+        <p class="tiny muted fix-line">{{ c }}</p>
+      }
+      @if (r.changes.length >= 10) {
+        <p class="tiny muted">Se listan las 10 primeras.</p>
+      }
+    } @else {
+      <p class="soft small">
+        Trunca hacia abajo el precio base, el monto recibido y los servicios extra de
+        <strong class="strong">todas las reservas</strong>, y recalcula el total.
+        Solo toca las que no están en múltiplos de $100.
+      </p>
+    }
+  </div>
+</modal-nova>
+<ng-template #fixFooter>
+  <div class="modal-actions">
+    @if (fixResult()) {
+      <button (click)="onFixClosed()" data-tone="brand">Cerrar</button>
+    } @else {
+      <button (click)="onFixClosed()">Cancelar</button>
+      <button (click)="confirmFix()" [disabled]="fixing()" [attr.aria-busy]="fixing() || null" data-tone="brand">
+        {{ fixing() ? 'Arreglando...' : 'Arreglar' }}
+      </button>
+    }
   </div>
 </ng-template>
