@@ -40,6 +40,10 @@
       <platform-icon [platform]="b.billing.platform" size="sm" />
     </span>
     <span class="apt" [style.--c]="aptColor()"><i></i>{{ aptShort() }}</span>
+    <span class="chip pax" [attr.title]="totalGuests() === 1 ? '1 huésped' : totalGuests() + ' huéspedes'">
+      <lucide-icon [img]="Users" [size]="13" [strokeWidth]="2.2" />
+      {{ totalGuests() }} {{ totalGuests() === 1 ? 'huésped' : 'huéspedes' }}
+    </span>
     <status-badge [value]="b.stay.status || 'PENDIENTE'" type="lifecycle" />
     <status-badge [value]="b.billing.status" type="billing" />
     <span class="tiny muted row" style="--gap: 4px">
@@ -61,6 +65,7 @@
     <button role="tab" [attr.aria-selected]="tab() === 'guests'" (click)="tab.set('guests')">
       <lucide-icon [img]="Users" [size]="16" [strokeWidth]="2" />
       Huéspedes
+      <span class="tab-count">{{ totalGuests() }}</span>
     </button>
   </div>
 
