@@ -1,10 +1,7 @@
 .sec-title { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-h3); }
 .sec-title lucide-icon { color: var(--danger); }
-.sec-title.fix lucide-icon { color: var(--brand); }
 .model { --gap: var(--sp-4); }
 .model-ic { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 12px; color: var(--c); background: var(--c-soft); }
 .model-ic.big { width: 56px; height: 56px; border-radius: 50%; }
 .count { font-size: 1.4rem; color: var(--text-1); }
 .confirm { align-items: center; text-align: center; padding: var(--sp-2) 0; }
-/* Arreglar precios (temporal): el detalle va alineado a la izquierda */
-.fix-line { align-self: stretch; text-align: left; overflow-wrap: anywhere; }

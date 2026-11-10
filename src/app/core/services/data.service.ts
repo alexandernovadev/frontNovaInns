@@ -32,13 +32,4 @@ export class DataService {
   clearModel(model: ClearableModel) {
     return this.http.delete<{ deleted: number }>(`${API}/data/clear/${model}`);
   }
-
-  // Herramienta temporal de Admin: deja los montos de las reservas en
-  // múltiplos de $100 (en Colombia no se usan centavos)
-  fixBookingPrices() {
-    return this.http.post<{ checked: number; fixed: number; changes: string[] }>(
-      `${API}/data/fix-prices`,
-      {},
-    );
-  }
 }
