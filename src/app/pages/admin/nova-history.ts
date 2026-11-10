@@ -274,7 +274,7 @@ export class NovaHistoryComponent implements OnInit {
   undoing = signal(false);
 
   ngOnInit() {
-    this.apartmentsService.findAll().subscribe({
+    this.apartmentsService.findAllCached().subscribe({
       next: (res) => this.apartmentNames.set(Object.fromEntries(res.data.map((a) => [a._id, a.internalName]))),
     });
     this.load(1);

@@ -363,7 +363,7 @@ export class NovaAiComponent {
   }
 
   constructor() {
-    this.apartmentsService.findAll().subscribe({
+    this.apartmentsService.findAllCached().subscribe({
       next: (res) => {
         this.richCache.clear(); // las tarjetas toman el color del apartamento
         this.apartmentNames.set(Object.fromEntries(res.data.map((a) => [a._id, a.internalName])));
