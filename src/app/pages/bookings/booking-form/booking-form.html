@@ -171,14 +171,14 @@
       <header class="panel-head"><lucide-icon [img]="Banknote" [size]="16" [strokeWidth]="2.2" /> Precio base</header>
       <div class="panel-body">
         <input class="big-num" type="text" inputmode="numeric" [value]="fmtNumber(formBilling.basePrice)"
-          (input)="onPriceInput($event, 'basePrice')" placeholder="0" autocomplete="off" aria-label="Precio base" />
+          (input)="onPriceInput($event, 'basePrice')" (blur)="onPriceBlur('basePrice')" placeholder="0" autocomplete="off" aria-label="Precio base" />
       </div>
     </section>
     <section class="surface panel tint-mint">
       <header class="panel-head"><lucide-icon [img]="CreditCard" [size]="16" [strokeWidth]="2.2" /> Monto recibido</header>
       <div class="panel-body">
         <input class="big-num" type="text" inputmode="numeric" [value]="fmtNumber(formBilling.amountReceived)"
-          (input)="onPriceInput($event, 'amountReceived')" placeholder="0" autocomplete="off" aria-label="Monto recibido" />
+          (input)="onPriceInput($event, 'amountReceived')" (blur)="onPriceBlur('amountReceived')" placeholder="0" autocomplete="off" aria-label="Monto recibido" />
       </div>
     </section>
   </div>
@@ -265,7 +265,7 @@
           <label class="field">
             <span class="field-label">Precio unit.</span>
             <input class="right-num" type="text" inputmode="numeric" [value]="fmtNumber(svc.price)"
-              (input)="onExtraServicePriceInput($event, $index)" placeholder="0" autocomplete="off" />
+              (input)="onExtraServicePriceInput($event, $index)" (blur)="onExtraServicePriceBlur($index)" placeholder="0" autocomplete="off" />
           </label>
         </div>
 

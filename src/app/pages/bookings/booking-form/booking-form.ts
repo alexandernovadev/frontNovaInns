@@ -11,7 +11,7 @@ import { PaymentMethodIcon } from '../../../shared/components/payment-method-ico
 import { AutocompleteSelect, AutocompleteOption } from '../../../shared/components/autocomplete-select';
 import { CurrencyCopPipe } from '../../../shared/pipes/currency-cop.pipe';
 import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
-import { fmtNumber } from '../../../shared/utils/number.util';
+import { fmtNumber, roundCopDown } from '../../../shared/utils/number.util';
 import { PLATFORMS, METHODS, ID_TYPES, ID_LABELS, PLATFORM_CLASS, LIFECYCLE_STATUSES } from '../../../shared/constants/booking.constants';
 import {
   LucideAngularModule,
@@ -214,6 +214,14 @@ export class BookingFormComponent implements OnInit {
     )
       return;
     this.saving.set(true);
+    // Montos en múltiplos de 100 COP: en Colombia no se usan centavos
+    const basePrice = roundCopDown(this.formBilling.basePrice);
+    const extraServices = this.extraServices.map((s) => ({
+      ...s,
+      price: roundCopDown(s.price),
+    }));
+    const extrasTotal = extraServices.reduce((sum, s) => sum + s.price * s.quantity, 0);
+    const amountReceived = roundCopDown(this.formBilling.amountReceived);
     const payload = {
       apartmentId: this.formGeneral.apartmentId,
       group: {
@@ -238,14 +246,13 @@ export class BookingFormComponent implements OnInit {
       },
       stay: { checkIn: this.formGeneral.checkIn, checkOut: this.formGeneral.checkOut, status: this.formGeneral.status || 'PENDIENTE' },
       billing: {
-        basePrice: this.formBilling.basePrice,
-        extraServices: this.extraServices,
-        totalAmount: this.totalAmount,
-        amountReceived: this.formBilling.amountReceived,
+        basePrice,
+        extraServices,
+        totalAmount: basePrice + extrasTotal,
+        amountReceived,
         platform: this.formGeneral.platform,
         paymentMethod: this.formBilling.paymentMethod,
-        status:
-          this.formBilling.amountReceived >= this.formBilling.basePrice ? 'PAGADO' : 'FALTA PAGO',
+        status: amountReceived >= basePrice ? 'PAGADO' : 'FALTA PAGO',
       },
       observations: this.formGeneral.observations,
     };
@@ -404,6 +411,14 @@ export class BookingFormComponent implements OnInit {
       : '';
   }
 
+  // Precio unitario en múltiplos de 100 COP al salir del campo
+  onExtraServicePriceBlur(idx: number) {
+    this.extraServices[idx] = {
+      ...this.extraServices[idx],
+      price: roundCopDown(this.extraServices[idx].price),
+    };
+  }
+
   onExtraServiceTypeChange(value: string, idx: number) {
     this.extraServices[idx] = {
       ...this.extraServices[idx],
@@ -426,6 +441,12 @@ export class BookingFormComponent implements OnInit {
     input.value = num
       ? new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 }).format(num)
       : '';
+  }
+
+  // Al salir del campo el monto se ajusta a múltiplos de 100 COP:
+  // en Colombia no se usan centavos (556.874 → 556.800)
+  onPriceBlur(field: 'basePrice' | 'amountReceived') {
+    this.formBilling[field] = roundCopDown(this.formBilling[field]);
   }
 
   fmtNumber = fmtNumber;

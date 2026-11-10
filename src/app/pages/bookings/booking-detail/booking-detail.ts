@@ -11,6 +11,7 @@ import { PlatformIcon } from '../../../shared/components/platform-icon';
 import { PaymentMethodIcon } from '../../../shared/components/payment-method-icon';
 import { PhotoViewer } from '../../../shared/components/photo-viewer';
 import { CurrencyCopPipe } from '../../../shared/pipes/currency-cop.pipe';
+import { roundCopDown } from '../../../shared/utils/number.util';
 import { CalendarDays, Building2, LogIn, LogOut,
   User, Users, CreditCard, Banknote, Wallet,
   ArrowLeft, Pencil, Trash2, MapPin, IdCard,
@@ -103,9 +104,15 @@ export class BookingDetailComponent implements OnInit {
 
   confirmPayment() {
     const id = this.booking()?._id;
-    if (!id || !this.payAmount) return;
+    // Pagos en múltiplos de 100 COP (sin centavos): 556.874 → 556.800
+    const amount = roundCopDown(this.payAmount);
+    if (!id) return;
+    if (!amount) {
+      if (this.payAmount > 0) this.alert.error('El pago mínimo es de $100');
+      return;
+    }
     this.saving.set(true);
-    this.bookingsService.registerPayment(id, this.payAmount).subscribe({
+    this.bookingsService.registerPayment(id, amount).subscribe({
       next: updated => { this.booking.set(updated); this.showPayment.set(false); this.saving.set(false); this.alert.success('Pago registrado'); },
       error: () => { this.saving.set(false); this.alert.error('Error al registrar pago'); },
     });
