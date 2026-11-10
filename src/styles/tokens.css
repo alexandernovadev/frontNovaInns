@@ -41,7 +41,6 @@
   /* ── 5. Tipografía · opción B "Gordita" ──────────────────────── */
   --font-display: "Baloo 2 Variable", "Baloo 2", ui-rounded, system-ui, sans-serif;
   --font-body: "Lexend Variable", "Lexend", system-ui, sans-serif;
-  --font-ipa: "Noto Sans", "Lexend Variable", system-ui, sans-serif; /* símbolos fonéticos */
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   /* Escala 1.25 · base 16 */

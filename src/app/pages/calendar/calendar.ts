@@ -1,4 +1,12 @@
-import { Component, inject, signal, computed, OnInit, HostListener } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  computed,
+  OnInit,
+  HostListener,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LucideAngularModule, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-angular';
@@ -30,6 +38,7 @@ interface PopoverData {
 
 @Component({
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgClass, NgTemplateOutlet, RouterLink, LucideAngularModule, CurrencyCopPipe],
   selector: 'app-calendar',
   templateUrl: './calendar.html',

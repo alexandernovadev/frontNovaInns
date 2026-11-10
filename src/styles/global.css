@@ -8,8 +8,6 @@
 /* Fuentes autoalojadas */
 @import "@fontsource-variable/baloo-2";
 @import "@fontsource-variable/lexend";
-@import "@fontsource/noto-sans/400.css";
-@import "@fontsource/noto-sans/600.css";
 
 @import "./tokens.css";
 @import "./native.css" layer(native);

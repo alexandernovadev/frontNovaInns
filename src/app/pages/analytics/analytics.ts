@@ -2,14 +2,31 @@ import { Component, inject, signal, computed, OnInit, OnDestroy, HostListener, C
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
-import * as echarts from 'echarts';
-import * as L from 'leaflet';
+import * as echarts from 'echarts/core';
+// alias: PieChart también es un icono de lucide en esta vista
+import { BarChart as EChartsBar, PieChart as EChartsPie } from 'echarts/charts';
+import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
+// Leaflet solo hace falta en la pestaña Mapa: se trae con import dinámico
+import type * as L from 'leaflet';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { ApartmentsService } from '../../core/services/apartments.service';
 import { DashboardData, VacancyData } from '../../core/interfaces';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { fmtNumber } from '../../shared/utils/number.util';
+
+// Solo lo que usan las gráficas de esta vista (barra y pastel): así el chunk
+// deja de arrastrar ECharts completo
+// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+echarts.use([
+  EChartsBar,
+  EChartsPie,
+  GridComponent,
+  LegendComponent,
+  TooltipComponent,
+  CanvasRenderer,
+]);
 import {
   LucideAngularModule,
   BarChart3,
@@ -116,6 +133,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   // Leaflet map
   private map: L.Map | null = null;
+  // módulo de leaflet una vez cargado (ver loadLeaflet)
+  private l: typeof import('leaflet') | null = null;
+  private mapRetries = 0;
   private geoLayer: L.GeoJSON | null = null;
   private mapInitialized = false;
 
@@ -209,8 +229,20 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   // ── Leaflet map ──
-  private initMap() {
+  /** El mapa es una pestaña más: leaflet se descarga solo cuando se abre */
+  private async loadLeaflet(): Promise<typeof import('leaflet')> {
+    if (this.l) return this.l;
+    const mod = (await import('leaflet')) as unknown as {
+      default?: typeof import('leaflet');
+      map?: unknown;
+    };
+    // Leaflet es CommonJS: en el build de producción la API viene en `default`
+    return (this.l = (mod.default ?? mod) as unknown as typeof import('leaflet'));
+  }
+
+  private async initMap() {
     if (this.mapInitialized) return;
+    const L = await this.loadLeaflet();
     const el = document.getElementById('leaflet-map');
     if (!el) {
       setTimeout(() => this.initMap(), 300);
@@ -243,8 +275,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       this.mapInitialized = true;
       this.leafletReady.set(true);
       this.loadDeptLayer(this.selectedMapCountry());
-    } catch {
-      setTimeout(() => this.initMap(), 500);
+    } catch (err) {
+      // antes reintentaba al infinito en silencio: se avisa y se frena
+      console.warn('No se pudo montar el mapa:', (err as Error)?.message ?? err);
+      if (++this.mapRetries < 5) setTimeout(() => this.initMap(), 500);
     }
   }
 
@@ -293,7 +327,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     '#f3e7b0','#b8ead3','#c3e3fb','#ddd3fb','#fbd2b6','#f9cdd2',
   ];
 
-  private drawDeptLayer(geo: any, countryCode: string) {
+  private async drawDeptLayer(geo: any, countryCode: string) {
+    const L = await this.loadLeaflet();
     if (!this.map) return;
     if (this.geoLayer) {
       this.map.removeLayer(this.geoLayer);
