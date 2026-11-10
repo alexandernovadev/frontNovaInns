@@ -11,6 +11,7 @@ import { PaymentMethodIcon } from '../../../shared/components/payment-method-ico
 import { AutocompleteSelect, AutocompleteOption } from '../../../shared/components/autocomplete-select';
 import { CurrencyCopPipe } from '../../../shared/pipes/currency-cop.pipe';
 import { DateEsPipe } from '../../../shared/pipes/date-es.pipe';
+import { CdnPipe } from '../../../shared/pipes/cdn.pipe';
 import { fmtNumber, roundCopDown } from '../../../shared/utils/number.util';
 import { PLATFORMS, METHODS, ID_TYPES, ID_LABELS, PLATFORM_CLASS, LIFECYCLE_STATUSES } from '../../../shared/constants/booking.constants';
 import {
@@ -61,7 +62,7 @@ interface GuestForm {
 @Component({
   selector: 'app-booking-form',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, NgTemplateOutlet, LucideAngularModule, PlatformIcon, PaymentMethodIcon, CurrencyCopPipe, DateEsPipe, AutocompleteSelect],
+  imports: [FormsModule, NgTemplateOutlet, LucideAngularModule, PlatformIcon, PaymentMethodIcon, CurrencyCopPipe, DateEsPipe, AutocompleteSelect, CdnPipe],
   templateUrl: './booking-form.html',
   styleUrl: './booking-form.css',
 })
@@ -135,7 +136,7 @@ export class BookingFormComponent implements OnInit {
 
   ngOnInit() {
     this.apartmentsService
-      .findAll({ limit: 100 } as any)
+      .findAllCached({ limit: 100 })
       .subscribe({ next: (r) => this.apartments.set(r.data) });
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {

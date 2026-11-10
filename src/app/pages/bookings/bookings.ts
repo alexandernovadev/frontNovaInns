@@ -122,7 +122,7 @@ export class BookingsComponent implements OnInit {
   apartmentOptions = signal<{ label: string; value: string }[]>([{ label: 'Todos', value: '' }]);
 
   private loadApartments() {
-    this.apartmentsService.findAll().subscribe({
+    this.apartmentsService.findAllCached().subscribe({
       next: res => this.apartmentOptions.set([
         { label: 'Todos', value: '' },
         ...res.data.map(a => ({ label: a.internalName, value: a._id })),

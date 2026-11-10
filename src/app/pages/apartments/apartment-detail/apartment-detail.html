@@ -216,7 +216,7 @@
     <div class="photos">
       @for (photo of apartment()!.photos; track photo.publicId) {
       <div class="photo">
-        <img [src]="photo.url" [alt]="photo.caption" />
+        <img [src]="photo.url | cdn:900" [alt]="photo.caption" loading="lazy" decoding="async" />
         <div class="photo-over">
           <button data-tone="danger" data-icon data-size="sm" (click)="removePhoto(photo.publicId)" aria-label="Eliminar foto" title="Eliminar foto">
             <lucide-icon [img]="Trash2" [size]="18" [strokeWidth]="2.2" />

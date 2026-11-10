@@ -41,6 +41,7 @@ import { PaymentMethodIcon } from './payment-method-icon';
 import { PhotoViewer } from './photo-viewer';
 import { DateEsPipe } from '../pipes/date-es.pipe';
 import { CurrencyCopPipe } from '../pipes/currency-cop.pipe';
+import { CdnPipe } from '../pipes/cdn.pipe';
 import { PLATFORM_CLASS, ID_LABELS, LIFECYCLE_CLASS } from '../constants/booking.constants';
 import { apartmentColor, apartmentShortName } from '../utils/apartment-color';
 
@@ -70,6 +71,7 @@ export interface BookingCardQuery {
     PhotoViewer,
     DateEsPipe,
     CurrencyCopPipe,
+    CdnPipe,
   ],
   template: `
     <modal-nova
@@ -347,7 +349,7 @@ export interface BookingCardQuery {
         <div class="bdm-ids">
           @for (photo of p.identifications; track photo.type) {
             <button type="button" class="bdm-id-photo" (click)="photoUrl.set(photo.url)">
-              <img [src]="photo.url" alt="" />
+              <img [src]="photo.url | cdn:320" alt="" loading="lazy" decoding="async" />
               <span class="bdm-zoom"><lucide-icon [img]="ZoomIn" [size]="22" [strokeWidth]="2" /></span>
               <span class="bdm-id-tag">{{ ID_LABELS[photo.type] || photo.type }}</span>
             </button>
@@ -681,6 +683,21 @@ export class BookingDetailModal {
     this.loading.set(true);
     this.booking.set(null);
 
+    // La lista ya no trae las identificaciones (pesan), así que el detalle del
+    // modal se toma por id: una sola lectura, solo cuando el usuario abre la ficha
+    const open = (resumen: IBooking) =>
+      this.bookingsService.findById(resumen._id).subscribe({
+        next: (full) => {
+          this.booking.set(full);
+          this.loading.set(false);
+        },
+        // si el detalle no llega, al menos mostrar lo que ya trajimos
+        error: () => {
+          this.booking.set(resumen);
+          this.loading.set(false);
+        },
+      });
+
     this.bookingsService
       .findAll({
         search: q.guest,
@@ -697,8 +714,11 @@ export class BookingDetailModal {
             list.find((b) => iso(b.stay.checkIn) === q.checkIn) ??
             list[0] ??
             null;
-          this.booking.set(exact);
-          this.loading.set(false);
+          if (exact) open(exact);
+          else {
+            this.booking.set(null);
+            this.loading.set(false);
+          }
         },
         error: () => {
           this.loading.set(false);

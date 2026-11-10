@@ -1,17 +1,18 @@
 import { Component, input, output, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, X } from 'lucide-angular';
+import { CdnPipe } from '../pipes/cdn.pipe';
 
 @Component({
   selector: 'photo-viewer',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [LucideAngularModule],
+  imports: [LucideAngularModule, CdnPipe],
   template: `
     @if (url()) {
       <div class="viewer" (click)="close()">
         <button (click)="close()" data-icon aria-label="Cerrar" class="close">
           <lucide-icon [img]="X" [size]="22" [strokeWidth]="2" />
         </button>
-        <img [src]="url()!" alt="Foto" (click)="$event.stopPropagation()" />
+        <img [src]="url() | cdn:1600" alt="Foto" decoding="async" (click)="$event.stopPropagation()" />
       </div>
     }
   `,

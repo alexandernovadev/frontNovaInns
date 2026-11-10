@@ -249,7 +249,7 @@
         <div class="ids">
           @for (photo of p.identifications; track photo.type) {
             <button type="button" class="id-photo" (click)="photoUrl.set(photo.url)" [attr.aria-label]="'Ver ' + (ID_LABELS[photo.type] || photo.type)">
-              <img [src]="photo.url" alt="" />
+              <img [src]="photo.url | cdn:320" alt="" loading="lazy" decoding="async" />
               <span class="zoom"><lucide-icon [img]="ZoomIn" [size]="28" [strokeWidth]="1.9" /></span>
               <span class="id-tags">
                 <span>{{ ID_LABELS[photo.type] || photo.type }}</span>

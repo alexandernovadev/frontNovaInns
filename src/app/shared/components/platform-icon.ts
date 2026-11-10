@@ -13,7 +13,7 @@ const IMAGES: Record<string, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (img()) {
-      <img [src]="img()" [alt]="platform()" [style.width.px]="px()" [style.height.px]="px()" />
+      <img [src]="img()" [alt]="platform()" [style.width.px]="px()" [style.height.px]="px()" loading="lazy" decoding="async" />
     }
   `,
   styles: `

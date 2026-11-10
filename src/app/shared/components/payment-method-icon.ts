@@ -12,7 +12,7 @@ const SIZES: Record<string, number> = { sm: 28, md: 40, lg: 56 };
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (img()) {
-      <img [src]="img()" [alt]="method()" [style.width.px]="px()" [style.height.px]="px()" />
+      <img [src]="img()" [alt]="method()" [style.width.px]="px()" [style.height.px]="px()" loading="lazy" decoding="async" />
     } @else {
       <span class="none" [style.width.px]="px()" [style.height.px]="px()">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

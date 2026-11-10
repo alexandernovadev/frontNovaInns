@@ -336,7 +336,7 @@
       @for (type of ID_TYPES; track type) {
         @if (getPhoto(p, type); as photo) {
         <div class="id-photo">
-          <img [src]="photo.url" alt="" />
+          <img [src]="photo.url | cdn:320" alt="" loading="lazy" decoding="async" />
           <div class="id-over">
             <button type="button" data-tone="danger" data-icon data-size="sm" (click)="removePhoto(p, type)" aria-label="Quitar foto">
               <lucide-icon [img]="X" [size]="16" [strokeWidth]="2.4" />

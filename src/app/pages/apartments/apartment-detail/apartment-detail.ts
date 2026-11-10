@@ -5,6 +5,7 @@ import { ApartmentsService } from '../../../core/services/apartments.service';
 import { IApartment, IRoom, IBathroom } from '../../../core/interfaces';
 import { ModalNova } from '../../../shared/components/modal-nova';
 import { StatusBadge } from '../../../shared/components/status-badge';
+import { CdnPipe } from '../../../shared/pipes/cdn.pipe';
 import { AlertService } from '../../../shared/components/services/alert.service';
 import {
   LucideAngularModule,
@@ -46,7 +47,7 @@ type Tab = 'general' | 'rooms' | 'bathrooms' | 'equipment' | 'photos';
 @Component({
   selector: 'app-apartment-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge],
+  imports: [FormsModule, LucideAngularModule, ModalNova, StatusBadge, CdnPipe],
   templateUrl: './apartment-detail.html',
   styleUrl: './apartment-detail.css',
 })

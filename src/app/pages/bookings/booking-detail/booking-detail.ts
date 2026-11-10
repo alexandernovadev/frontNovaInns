@@ -11,6 +11,7 @@ import { PlatformIcon } from '../../../shared/components/platform-icon';
 import { PaymentMethodIcon } from '../../../shared/components/payment-method-icon';
 import { PhotoViewer } from '../../../shared/components/photo-viewer';
 import { CurrencyCopPipe } from '../../../shared/pipes/currency-cop.pipe';
+import { CdnPipe } from '../../../shared/pipes/cdn.pipe';
 import { roundCopDown } from '../../../shared/utils/number.util';
 import { CalendarDays, Building2, LogIn, LogOut,
   User, Users, CreditCard, Banknote, Wallet,
@@ -26,7 +27,7 @@ import { apartmentColor, apartmentShortName } from '../../../shared/utils/apartm
 @Component({
   selector: 'app-booking-detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [FormsModule, LucideAngularModule, NgTemplateOutlet, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer, CurrencyCopPipe],
+  imports: [FormsModule, LucideAngularModule, NgTemplateOutlet, DateEsPipe, ModalNova, StatusBadge, PlatformIcon, PaymentMethodIcon, PhotoViewer, CurrencyCopPipe, CdnPipe],
   templateUrl: './booking-detail.html',
   styleUrl: './booking-detail.css',
 })

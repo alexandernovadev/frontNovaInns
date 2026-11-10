@@ -253,7 +253,7 @@ export class BookingJsonModal implements OnInit {
   }
 
   ngOnInit() {
-    this.apartmentsService.findAll({ limit: 100 } as any).subscribe({
+    this.apartmentsService.findAllCached({ limit: 100 }).subscribe({
       next: (r) => this.apartmentOptions.set(r.data.map((a) => ({ label: a.internalName, value: a._id }))),
     });
   }
