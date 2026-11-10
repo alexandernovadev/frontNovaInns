@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "start": "node scripts/serve-static.mjs",
-    "build": "pnpm gen-version && node scripts/gen-api-url.mjs && ng build",
+    "build": "pnpm gen-version && node scripts/gen-api-url.mjs && ng build && node scripts/precompress.mjs",
     "gen-api-url": "node scripts/gen-api-url.mjs",
     "gen-icons": "node scripts/gen-icons.mjs",
     "gen-version": "node scripts/gen-version.mjs",
