@@ -36,7 +36,8 @@
 
   <!-- Un mes, reutilizado en la vista anual y en la de móvil -->
   <ng-template #monthTpl let-month let-big="big">
-    <div class="surface month" [class.big]="big">
+    <!-- id solo en la vista anual: en móvil el mes se repetiría -->
+    <div class="surface month" [class.big]="big" [attr.id]="big ? null : month.id">
       <!-- En móvil el mes ya está en la navegación de arriba -->
       @if (!big) {
       <h3 class="month-name">{{ month.name }}</h3>

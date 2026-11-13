@@ -6,9 +6,11 @@ import {
   OnInit,
   HostListener,
   ChangeDetectionStrategy,
+  Injector,
+  afterNextRender,
 } from '@angular/core';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { LucideAngularModule, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-angular';
 import { BookingsService } from '../../core/services/bookings.service';
 import type { IBooking } from '../../core/interfaces';
@@ -50,6 +52,10 @@ export class CalendarComponent implements OnInit {
   readonly ChevronRight = ChevronRight;
 
   private bookingsService = inject(BookingsService);
+  private route = inject(ActivatedRoute);
+  private injector = inject(Injector);
+  // El scroll al mes se hace una sola vez, en la primera carga
+  private autoScrolled = false;
 
   year = signal(new Date().getFullYear());
   rawBookings = signal<IBooking[]>([]);
@@ -102,7 +108,7 @@ export class CalendarComponent implements OnInit {
       }
     }
 
-    const result: { month: number; name: string; days: DayInfo[]; holidays: { day: number; name: string }[] }[] = [];
+    const result: { month: number; id: string; name: string; days: DayInfo[]; holidays: { day: number; name: string }[] }[] = [];
     for (let m = 0; m < 12; m++) {
       const daysInMonth = new Date(y, m + 1, 0).getDate();
       const firstDay = (new Date(y, m, 1).getDay() + 6) % 7;
@@ -124,7 +130,8 @@ export class CalendarComponent implements OnInit {
         });
       }
       const holidays = days.filter(x => x.holiday).map(x => ({ day: x.day, name: x.holiday! }));
-      result.push({ month: m, name: this.monthNames[m], days, holidays });
+      // id = ancla del mes (#noviembre): /calendar#marzo abre en marzo
+      result.push({ month: m, id: this.monthNames[m].toLowerCase(), name: this.monthNames[m], days, holidays });
     }
     return result;
   });
@@ -180,6 +187,9 @@ export class CalendarComponent implements OnInit {
   private scrollEl: HTMLElement | null = null;
 
   ngOnInit() {
+    // /calendar#marzo: en móvil arranca en ese mes
+    const target = this.fragmentMonth();
+    if (target !== null) this.mobileMonth.set(target);
     this.loadYear();
     document.addEventListener('click', this.onDocClick);
     window.addEventListener('wheel', this.onScroll, { passive: true });
@@ -193,6 +203,27 @@ export class CalendarComponent implements OnInit {
   onDocClick = () => this.popover.set(null);
   private onScroll = () => this.popover.set(null);
 
+  // Mes de la URL (#marzo) o, si no hay, el mes actual (solo en el año actual)
+  private fragmentMonth(): number | null {
+    const f = this.route.snapshot.fragment?.toLowerCase();
+    const i = f ? this.monthNames.findIndex((n) => n.toLowerCase() === f) : -1;
+    return i >= 0 ? i : null;
+  }
+
+  // Escritorio: baja hasta el mes (en móvil la grilla anual está oculta y no hace nada)
+  private scrollToMonth() {
+    if (this.autoScrolled) return;
+    this.autoScrolled = true;
+    const now = new Date();
+    const target = this.fragmentMonth() ?? (this.year() === now.getFullYear() ? now.getMonth() : null);
+    if (target === null) return;
+    const id = this.monthNames[target].toLowerCase();
+    afterNextRender(
+      () => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+      { injector: this.injector },
+    );
+  }
+
   private loadYear() {
     this.loading.set(true);
     this.popover.set(null);
@@ -203,6 +234,7 @@ export class CalendarComponent implements OnInit {
         // keep only what the calendar needs
         this.rawBookings.set(res.data || []);
         this.loading.set(false);
+        this.scrollToMonth();
       },
       error: () => this.loading.set(false),
     });

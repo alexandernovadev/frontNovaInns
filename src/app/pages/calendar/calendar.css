@@ -26,7 +26,7 @@
 @media (width >= 64rem) {
   .year-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
-.month { padding: var(--sp-3); }
+.month { padding: var(--sp-3); scroll-margin-top: var(--sp-4); }
 .month.big { padding: var(--sp-4); }
 .month-name {
   margin-bottom: var(--sp-3);
