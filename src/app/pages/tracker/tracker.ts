@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { TrackerService } from '../../core/services/tracker.service';
 import { AssistantService, ChatMessage } from '../../core/services/assistant.service';
+import { AuthService } from '../../core/services/auth.service';
 import { ApartmentsService } from '../../core/services/apartments.service';
 import { renderRich, findBookingCardFromElement } from '../nova-ai/rich-text';
 import { BookingDetailModal, BookingCardQuery } from '../../shared/components/booking-detail-modal';
@@ -170,6 +171,8 @@ export class TrackerComponent implements OnInit {
 
   private tracker = inject(TrackerService);
   private assistant = inject(AssistantService);
+  private auth = inject(AuthService);
+  canUseAi = computed(() => this.auth.role() === 'SUPER_ADMIN');
   private apartmentsService = inject(ApartmentsService);
   private host = inject(ElementRef<HTMLElement>);
 
@@ -664,7 +667,7 @@ export class TrackerComponent implements OnInit {
     this.chatMessages.set(next);
     this.chatLoading.set(true);
 
-    this.assistant.sendChat(next, this.buildAiContext()).subscribe({
+    this.assistant.sendChat(text, this.buildAiContext()).subscribe({
       next: (res) => {
         this.chatMessages.update((list) => [
           ...list,

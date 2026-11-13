@@ -16,7 +16,7 @@ export const PLATFORM_ACCENT: Record<string, string> = {
 
 export const METHODS = ['Efectivo', 'Nequi', 'Bancolombia', 'None'] as const;
 
-export const STATUSES = ['PAGADO', 'FALTA PAGO', 'NO SHOW'] as const;
+export const STATUSES = ['PAGADO', 'FALTA PAGO'] as const;
 
 export const LIFECYCLE_STATUSES = ['PENDIENTE', 'CHECK-IN', 'CHECK-OUT'] as const;
 

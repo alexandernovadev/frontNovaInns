@@ -1,6 +1,6 @@
 export interface IUser {
   _id: string;
-  auth:        { email: string; role: 'SUPER_ADMIN' | 'ADMIN' | 'STAFF' | 'GUEST' };
+  auth:        { email: string; role: 'SUPER_ADMIN' | 'STAFF' | 'GUEST' };
   profile:     { fullName: string; phone: string; identificationNumber?: string };
   workContext: { isActive: boolean };
   preferences: { language: string };

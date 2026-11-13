@@ -59,7 +59,7 @@ export class AdminLayoutComponent {
     { label: 'Mensajes', route: 'messages', icon: MessageSquare },
     { label: 'Import / Export', route: 'data', icon: ArrowUpDown },
     { label: 'Info Sistema', route: 'info', icon: Info },
-    { label: 'Historial NovaAI', route: 'nova-history', icon: History },
+    { label: 'Historial NovaAI', route: 'nova-history', icon: History, superAdminOnly: true },
     { label: 'Vaciar datos', route: 'clear', icon: Trash2, superAdminOnly: true },
   ];
 

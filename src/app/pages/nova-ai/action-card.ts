@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, input, output, linkedSignal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, Pencil, Trash2, ArrowRight, CalendarPlus, TriangleAlert, Building2 } from 'lucide-angular';
 import { ActionCard } from '../../core/services/assistant.service';
 import { ACTION_STATUS_TEXT, fieldLabel, formatValue, prettyDatesIn } from './nova-format';
@@ -144,7 +144,8 @@ export class NovaActionCard {
   cancel = output<string>();
   confirm = output<{ id: string; apartmentId?: string }>();
 
-  apartmentId = signal('');
+  // Arranca con el apartamento que sugirió NovaAI ("para Beta"); se puede cambiar
+  apartmentId = linkedSignal(() => this.card().apartmentId ?? '');
   kind = computed(() => KIND[this.card().type as keyof typeof KIND] ?? KIND.update);
   apartmentOptions = computed(() =>
     Object.entries(this.apartmentNames()).map(([id, name]) => ({ id, name })),

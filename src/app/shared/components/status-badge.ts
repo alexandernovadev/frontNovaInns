@@ -5,7 +5,6 @@ const MAPS: Record<string, Record<string, { tone: string; label: string }>> = {
   billing: {
     PAGADO: { tone: 'success', label: 'Pagado' },
     'FALTA PAGO': { tone: 'warning', label: 'Falta pago' },
-    'NO SHOW': { tone: 'danger', label: 'No show' },
   },
   lifecycle: {
     PENDIENTE: { tone: 'info', label: 'Pendiente' },

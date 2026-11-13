@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { devOnlyGuard } from './core/guards/dev-only.guard';
+import { superAdminGuard } from './core/guards/super-admin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'bookings', pathMatch: 'full' },
@@ -68,9 +69,12 @@ export const routes: Routes = [
           import('./pages/calendar/calendar').then((m) => m.CalendarComponent),
       },
       {
+        // ?c=<id> abre una conversación guardada (query param: no recrea el componente)
         path: 'nova-ai',
         loadComponent: () => import('./pages/nova-ai/nova-ai').then((m) => m.NovaAiComponent),
+        canActivate: [superAdminGuard],
       },
+
       {
         path: 'admin',
         loadComponent: () =>
@@ -98,6 +102,7 @@ export const routes: Routes = [
             path: 'nova-history',
             loadComponent: () =>
               import('./pages/admin/nova-history').then((m) => m.NovaHistoryComponent),
+            canActivate: [superAdminGuard],
           },
           {
             path: 'clear',

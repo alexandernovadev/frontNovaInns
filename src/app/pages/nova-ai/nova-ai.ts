@@ -1,7 +1,9 @@
-import { Component, inject, signal, effect, viewChild, ElementRef, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, computed, effect, viewChild, ElementRef, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { LucideAngularModule, Sparkles, SendHorizontal, RotateCcw, Database, Paperclip, ImageUp } from 'lucide-angular';
-import { AssistantService, ChatMessage, ChatReply } from '../../core/services/assistant.service';
+import { LucideAngularModule, Sparkles, SendHorizontal, Database, Paperclip, ImageUp, Plus, Pencil, Trash2, History, X } from 'lucide-angular';
+import { AssistantService, ChatMessage, ChatReply, ConversationSummary } from '../../core/services/assistant.service';
 import { Observable } from 'rxjs';
 import { ApartmentsService } from '../../core/services/apartments.service';
 import { AlertService } from '../../shared/components/services/alert.service';
@@ -14,6 +16,54 @@ import { renderRich, findBookingCardFromElement } from './rich-text';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [FormsModule, LucideAngularModule, NovaActionCard, BookingDetailModal],
   template: `
+    <div class="nova-shell">
+    <!-- Conversaciones guardadas: columna fija en escritorio, cajón en móvil -->
+    @if (panelOpen()) {
+      <div class="convs-backdrop" (click)="panelOpen.set(false)"></div>
+    }
+    <aside class="convs" [class.open]="panelOpen()" aria-label="Conversaciones">
+      <div class="convs-head">
+        <button data-size="sm" data-tone="brand" class="convs-new" (click)="newConversation()" [disabled]="sending()">
+          <lucide-icon [img]="Plus" [size]="16" [strokeWidth]="2.4" />
+          Nueva conversación
+        </button>
+        <button class="icon-btn convs-close" (click)="panelOpen.set(false)" aria-label="Cerrar conversaciones">
+          <lucide-icon [img]="X" [size]="18" [strokeWidth]="2.2" />
+        </button>
+      </div>
+      <nav class="convs-list">
+        @for (g of groups(); track g.label) {
+          <p class="convs-group">{{ g.label }}</p>
+          @for (c of g.items; track c.id) {
+            <div class="conv" [class.active]="c.id === conversationId()">
+              @if (renaming() === c.id) {
+                <input #rn class="conv-rename" [value]="c.title" maxlength="60" aria-label="Nuevo nombre"
+                  (keydown.enter)="saveRename(c, rn.value)" (keydown.escape)="renaming.set(null)"
+                  (blur)="saveRename(c, rn.value)" />
+              } @else if (confirmingDelete() === c.id) {
+                <span class="conv-ask">¿Eliminar?</span>
+                <button data-size="sm" data-variant="ghost" (click)="confirmingDelete.set(null)">No</button>
+                <button data-size="sm" data-tone="danger" (click)="deleteConversation(c.id)">Sí</button>
+              } @else {
+                <button class="conv-open" (click)="openConversation(c.id)" [disabled]="sending()" [title]="c.title">
+                  {{ c.title || 'Sin título' }}
+                </button>
+                <button class="icon-btn conv-act" (click)="startRename(c.id)" title="Renombrar" aria-label="Renombrar">
+                  <lucide-icon [img]="Pencil" [size]="14" [strokeWidth]="2" />
+                </button>
+                <button class="icon-btn conv-act" (click)="renaming.set(null); confirmingDelete.set(c.id)" [disabled]="sending()" title="Eliminar" aria-label="Eliminar">
+                  <lucide-icon [img]="Trash2" [size]="14" [strokeWidth]="2" />
+                </button>
+              }
+            </div>
+          }
+        } @empty {
+          <p class="tiny soft convs-empty">Aquí aparecen tus conversaciones guardadas.</p>
+        }
+      </nav>
+      <p class="convs-note">Se borran solas a los 90 días sin uso.</p>
+    </aside>
+
     <div class="page chat"
       (dragenter)="onDragEnter($event)" (dragover)="$event.preventDefault()"
       (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
@@ -37,17 +87,24 @@ import { renderRich, findBookingCardFromElement } from './rich-text';
           </h1>
           <p class="page-sub">Pregúntale a tu negocio</p>
         </div>
-        @if (messages().length) {
-          <button data-size="sm" data-variant="ghost" (click)="reset()" [disabled]="sending()" title="Nueva conversación">
-            <lucide-icon [img]="RotateCcw" [size]="16" [strokeWidth]="2.2" />
-            <span class="hide-sm">Nueva conversación</span>
+        <div class="row header-btns" style="--gap: var(--sp-2)">
+          <button data-size="sm" data-variant="ghost" class="convs-toggle" (click)="panelOpen.set(true)" title="Conversaciones" aria-label="Conversaciones">
+            <lucide-icon [img]="History" [size]="16" [strokeWidth]="2.2" />
           </button>
-        }
+          @if (messages().length) {
+            <button data-size="sm" data-variant="ghost" (click)="newConversation()" [disabled]="sending()" title="Nueva conversación">
+              <lucide-icon [img]="Plus" [size]="16" [strokeWidth]="2.2" />
+              <span class="hide-sm">Nueva conversación</span>
+            </button>
+          }
+        </div>
       </header>
 
       <!-- Mensajes -->
       <div #scroller class="scroller">
-        @if (!messages().length) {
+        @if (loadingConversation()) {
+          <div class="welcome"><span class="dots"><i></i><i></i><i></i></span></div>
+        } @else if (!messages().length) {
           <div class="welcome nova-in">
             <span class="orb lg nova-glow"><lucide-icon [img]="Sparkles" [size]="36" [strokeWidth]="1.9" /></span>
             <div class="stack" style="--gap: 6px; align-items: center">
@@ -126,10 +183,78 @@ import { renderRich, findBookingCardFromElement } from './rich-text';
 
       <booking-detail-modal [query]="selectedBooking()" (closed)="selectedBooking.set(null)" />
     </div>
+    </div>
   `,
   styles: `
     :host { display: block; height: 100%; }
-    .chat { position: relative; height: 100%; gap: var(--sp-4); }
+    .nova-shell { position: relative; display: flex; height: 100%; min-width: 0; }
+    .chat { position: relative; flex: 1; min-width: 0; height: 100%; gap: var(--sp-4); }
+
+    /* Conversaciones */
+    .convs {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+      width: 16rem;
+      flex: none;
+      padding: var(--sp-6) var(--sp-3) var(--sp-4);
+      background: var(--bg-1);
+      border-right: 1px solid var(--line);
+    }
+    .convs-head { display: flex; align-items: center; gap: var(--sp-2); }
+    .convs-new { flex: 1; }
+    .convs-close, .convs-backdrop { display: none; }
+    .convs-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+    .convs-group { margin: var(--sp-3) var(--sp-2) 4px; font-size: 11px; font-weight: var(--fw-semibold); color: var(--text-3); text-transform: uppercase; letter-spacing: 0.04em; }
+    .convs-empty { padding: var(--sp-3) var(--sp-2); }
+    .convs-note { font-size: 11px; color: var(--text-3); padding-inline: var(--sp-2); }
+    .conv { display: flex; align-items: center; gap: 2px; min-height: 36px; padding-right: 4px; border-radius: var(--r-sm); }
+    .conv:hover { background: var(--bg-2); }
+    .conv.active { background: var(--brand-soft); }
+    .conv.active .conv-open { color: var(--brand); font-weight: var(--fw-semibold); }
+    .conv-open {
+      flex: 1;
+      min-width: 0;
+      justify-content: flex-start;
+      padding: 8px var(--sp-2);
+      font-family: var(--font-body);
+      font-size: var(--fs-caption);
+      font-weight: var(--fw-regular, 400);
+      letter-spacing: normal;
+      color: var(--text-2);
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      filter: none;
+    }
+    .conv-open:hover { translate: none; }
+    .conv-act { width: 28px; height: 28px; flex: none; opacity: 0; color: var(--text-3); }
+    .conv:hover .conv-act, .conv.active .conv-act, .conv-act:focus-visible { opacity: 1; }
+    .conv-rename { flex: 1; min-width: 0; height: 32px; font-size: var(--fs-caption); }
+    .conv-ask { flex: 1; padding-left: var(--sp-2); font-size: var(--fs-caption); color: var(--danger); }
+    .convs-toggle { display: none; }
+
+    /* Móvil / tablet: el panel es un cajón */
+    @media (width < 64rem) {
+      .convs {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 60;
+        width: min(18rem, 85vw);
+        translate: -100% 0;
+        transition: translate var(--t-base) ease;
+        box-shadow: 0 0 40px rgb(0 0 0 / 0.4);
+      }
+      .convs.open { translate: 0 0; }
+      .convs-close { display: grid; }
+      .convs-backdrop { display: block; position: fixed; inset: 0; z-index: 59; background: rgb(0 0 0 / 0.45); }
+      .convs-toggle { display: inline-flex; }
+      .conv-act { opacity: 1; }
+    }
     .halo {
       pointer-events: none;
       position: absolute;
@@ -315,7 +440,11 @@ import { renderRich, findBookingCardFromElement } from './rich-text';
 export class NovaAiComponent {
   readonly Sparkles = Sparkles;
   readonly SendHorizontal = SendHorizontal;
-  readonly RotateCcw = RotateCcw;
+  readonly Plus = Plus;
+  readonly Pencil = Pencil;
+  readonly Trash2 = Trash2;
+  readonly History = History;
+  readonly X = X;
   readonly Database = Database;
   readonly Paperclip = Paperclip;
   readonly ImageUp = ImageUp;
@@ -324,8 +453,30 @@ export class NovaAiComponent {
   private apartmentsService = inject(ApartmentsService);
   private alert = inject(AlertService);
   private scroller = viewChild<ElementRef<HTMLElement>>('scroller');
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   messages = this.assistant.chat;
+  conversationId = this.assistant.conversationId;
+  conversations = this.assistant.conversations;
+  // Panel de conversaciones: cajón en móvil
+  panelOpen = signal(false);
+  loadingConversation = signal(false);
+  renaming = signal<string | null>(null);
+  confirmingDelete = signal<string | null>(null);
+
+  // Hoy / Ayer / Últimos 7 días / Antes (por última actividad, en hora local)
+  groups = computed(() => {
+    const day = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+    const today = day(new Date());
+    const labels = ['Hoy', 'Ayer', 'Últimos 7 días', 'Antes'];
+    const buckets: ConversationSummary[][] = [[], [], [], []];
+    for (const c of this.conversations()) {
+      const diff = Math.round((today - day(new Date(c.updatedAt))) / 86_400_000);
+      buckets[diff <= 0 ? 0 : diff === 1 ? 1 : diff < 7 ? 2 : 3].push(c);
+    }
+    return labels.map((label, i) => ({ label, items: buckets[i] })).filter((g) => g.items.length);
+  });
   draft = signal('');
   sending = signal(false);
   error = signal<string | null>(null);
@@ -368,6 +519,26 @@ export class NovaAiComponent {
         this.richCache.clear(); // las tarjetas toman el color del apartamento
         this.apartmentNames.set(Object.fromEntries(res.data.map((a) => [a._id, a.internalName])));
       },
+    });
+
+    // ?c=<id> es la conversación abierta. Al volver a NovaAI sin ?c se deja la
+    // que ya estaba abierta en la URL
+    this.route.queryParamMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      const c = params.get('c');
+      const current = this.conversationId();
+      if (c && c !== current) this.loadConversation(c);
+      else if (!c && current) this.syncUrl(current);
+    });
+
+    // La primera vez en la sesión se retoma la última conversación
+    this.assistant.loadConversations().subscribe({
+      next: (list) => {
+        const first = !this.assistant.autoOpened;
+        this.assistant.autoOpened = true;
+        if (first && !this.conversationId() && !this.messages().length && !this.route.snapshot.queryParamMap.get('c') && list[0])
+          this.openConversation(list[0].id);
+      },
+      error: () => this.alert.error('No se pudieron cargar las conversaciones'),
     });
 
     // Baja al último mensaje cuando llega uno nuevo
@@ -459,9 +630,75 @@ export class NovaAiComponent {
     });
   }
 
-  reset() {
-    this.messages.set([]);
+  // ── Conversaciones ──
+  newConversation() {
+    if (this.sending()) return;
+    this.assistant.newConversation();
+    this.clearTransient();
+    this.panelOpen.set(false);
+    this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+  }
+
+  openConversation(id: string) {
+    if (this.sending()) return;
+    this.panelOpen.set(false);
+    if (id === this.conversationId()) return;
+    this.router.navigate([], { relativeTo: this.route, queryParams: { c: id } });
+  }
+
+  startRename(id: string) {
+    this.confirmingDelete.set(null);
+    this.renaming.set(id);
+    // El input aparece en el siguiente ciclo de render
+    setTimeout(() => document.querySelector<HTMLInputElement>('.conv-rename')?.select());
+  }
+
+  // Enter y blur pueden llegar los dos: solo cuenta el primero
+  saveRename(c: ConversationSummary, value: string) {
+    if (this.renaming() !== c.id) return;
+    this.renaming.set(null);
+    const title = value.trim();
+    if (!title || title === c.title) return;
+    this.assistant.renameConversation(c.id, title).subscribe({
+      error: () => this.alert.error('No se pudo renombrar la conversación'),
+    });
+  }
+
+  deleteConversation(id: string) {
+    this.confirmingDelete.set(null);
+    const wasOpen = id === this.conversationId();
+    this.assistant.deleteConversation(id).subscribe({
+      next: () => {
+        if (wasOpen) {
+          this.clearTransient();
+          this.router.navigate([], { relativeTo: this.route, queryParams: {} });
+        }
+      },
+      error: () => this.alert.error('No se pudo eliminar la conversación'),
+    });
+  }
+
+  private loadConversation(id: string) {
+    this.clearTransient();
+    this.loadingConversation.set(true);
+    this.assistant.openConversation(id).subscribe({
+      next: () => this.loadingConversation.set(false),
+      error: () => {
+        this.loadingConversation.set(false);
+        this.alert.error('No se encontró la conversación', 'Puede que se haya eliminado o vencido (90 días sin uso).');
+        this.assistant.newConversation();
+        this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
+      },
+    });
+  }
+
+  private syncUrl(id: string) {
+    this.router.navigate([], { relativeTo: this.route, queryParams: { c: id }, replaceUrl: true });
+  }
+
+  private clearTransient() {
     this.error.set(null);
+    this.failedImage = null;
   }
 
   confirmAction(id: string, apartmentId?: string) {
@@ -515,7 +752,7 @@ export class NovaAiComponent {
 
   private request() {
     this.failedImage = null;
-    this.handleReply(this.assistant.sendChat(this.messages()));
+    this.handleReply(this.assistant.sendChat(this.messages().at(-1)!.text));
   }
 
   private handleReply(req: Observable<ChatReply>, onError?: () => void) {
@@ -526,6 +763,7 @@ export class NovaAiComponent {
         this.messages.update((m) => [...m, { role: 'model', text: r.reply, queries: r.queries, actions: r.actions } as ChatMessage]);
         this.sending.set(false);
         this.readingImage.set(false);
+        if (this.route.snapshot.queryParamMap.get('c') !== r.conversationId) this.syncUrl(r.conversationId);
       },
       error: (err) => {
         onError?.();

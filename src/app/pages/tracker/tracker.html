@@ -490,7 +490,8 @@
   }
 
   <!-- ═══════════ BURBUJA DE IA CON CONTEXTO ═══════════ -->
-  @if (bookingResults(); as data) {
+  <!-- NovaAI es solo para SUPER_ADMIN (el back responde 403 a los demás) -->
+  @if (canUseAi() && bookingResults(); as data) {
     <button
       type="button"
       data-tone="ai"

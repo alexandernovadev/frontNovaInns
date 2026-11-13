@@ -28,7 +28,7 @@ export interface IBilling {
   amountReceived: number;
   platform: 'Booking' | 'AirBnB' | 'Directo';
   paymentMethod: 'Efectivo' | 'Nequi' | 'Bancolombia' | 'None';
-  status: 'PAGADO' | 'FALTA PAGO' | 'NO SHOW';
+  status: 'PAGADO' | 'FALTA PAGO';
 }
 
 export interface IBooking {

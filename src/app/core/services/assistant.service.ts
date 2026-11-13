@@ -1,5 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable, map, tap } from 'rxjs';
 import { API } from '../../shared/constants/api.constant';
 import { buildParams } from '../../shared/utils/http-params.util';
 
@@ -19,6 +20,8 @@ export interface ActionCard {
   // Avisos (ej: posible reserva duplicada)
   warnings: string[];
   expiresAt: string;
+  // create: apartamento sugerido por NovaAI (el select arranca con este)
+  apartmentId?: string | null;
   targets: {
     id: string;
     label: string;
@@ -55,6 +58,22 @@ export interface ChatReply {
   model: string;
   queries: string[];
   actions: ActionCard[];
+  // Conversación donde quedó guardado el turno (nueva si no se mandó una)
+  conversationId: string;
+}
+
+// Conversación guardada (se borra sola a los 90 días sin uso)
+export interface ConversationSummary {
+  id: string;
+  title: string;
+  messageCount: number;
+  updatedAt: string;
+}
+
+interface ConversationDetail {
+  id: string;
+  title: string;
+  messages: { role: 'user' | 'model'; text: string; queries: string[]; actions: ActionCard[] }[];
 }
 
 export interface ExtractedBooking {
@@ -66,8 +85,13 @@ export interface ExtractedBooking {
 export class AssistantService {
   private http = inject(HttpClient);
 
-  // Conversación de NovaAI: vive mientras la app esté abierta (se conserva al cambiar de página)
+  // Conversación abierta de NovaAI (se conserva al cambiar de página). Se
+  // guarda en el back; conversationId null = conversación nueva sin mensajes
   chat = signal<ChatMessage[]>([]);
+  conversationId = signal<string | null>(null);
+  conversations = signal<ConversationSummary[]>([]);
+  // La primera vez que se abre NovaAI en la sesión se retoma la última conversación
+  autoOpened = false;
 
   // Screenshot de Booking / AirBnB → JSON de la reserva (no guarda nada)
   extractBooking(file: File, hint?: string) {
@@ -77,16 +101,61 @@ export class AssistantService {
     return this.http.post<ExtractedBooking>(`${API}/assistant/extract-booking`, form);
   }
 
-  // El back recibe el historial completo (máx. 40 mensajes, empezando por el usuario)
-  // más el contexto de Booking guardado en localStorage por el Tracker.
-  sendChat(messages: ChatMessage[], customTrackerContext?: Record<string, unknown>) {
-    let history = messages.slice(-40).map(({ role, text }) => ({ role, text }));
-    if (history[0]?.role === 'model') history = history.slice(1);
+  // Solo viaja el texto nuevo: el back arma el historial con la conversación
+  // guardada. Va también el contexto de Booking guardado en localStorage por el Tracker.
+  sendChat(text: string, customTrackerContext?: Record<string, unknown>) {
     const trackerContext = customTrackerContext ?? this.readTrackerContextFromStorage();
-    return this.http.post<ChatReply>(`${API}/assistant/chat`, {
-      messages: history,
-      trackerContext,
-    });
+    return this.http
+      .post<ChatReply>(`${API}/assistant/chat`, {
+        text,
+        conversationId: this.conversationId() ?? undefined,
+        trackerContext,
+      })
+      .pipe(tap((r) => this.saved(r.conversationId)));
+  }
+
+  // ── Conversaciones guardadas ──
+  loadConversations(): Observable<ConversationSummary[]> {
+    return this.http
+      .get<ConversationSummary[]>(`${API}/assistant/conversations`)
+      .pipe(tap((list) => this.conversations.set(list)));
+  }
+
+  // Abre una conversación: sus mensajes y tarjetas con el estado actual
+  openConversation(id: string) {
+    return this.http.get<ConversationDetail>(`${API}/assistant/conversations/${id}`).pipe(
+      tap((c) => {
+        this.conversationId.set(c.id);
+        this.chat.set(c.messages.map((m) => ({ role: m.role, text: m.text, queries: m.queries, actions: m.actions })));
+      }),
+      map(() => undefined),
+    );
+  }
+
+  newConversation() {
+    this.conversationId.set(null);
+    this.chat.set([]);
+  }
+
+  renameConversation(id: string, title: string) {
+    return this.http.patch<{ id: string; title: string }>(`${API}/assistant/conversations/${id}`, { title }).pipe(
+      tap((r) => this.conversations.update((list) => list.map((c) => (c.id === id ? { ...c, title: r.title } : c)))),
+    );
+  }
+
+  deleteConversation(id: string) {
+    return this.http.delete(`${API}/assistant/conversations/${id}`).pipe(
+      tap(() => {
+        this.conversations.update((list) => list.filter((c) => c.id !== id));
+        if (this.conversationId() === id) this.newConversation();
+      }),
+    );
+  }
+
+  // Tras cada turno: la conversación queda abierta y la lista al día (título, orden)
+  private saved(id: string) {
+    this.conversationId.set(id);
+    this.loadConversations().subscribe({ error: () => undefined });
   }
 
   private readTrackerContextFromStorage(): Record<string, unknown> | null {
@@ -155,7 +224,11 @@ export class AssistantService {
     const form = new FormData();
     form.append('file', file);
     if (hint?.trim()) form.append('hint', hint.trim());
-    return this.http.post<ChatReply>(`${API}/assistant/chat-image`, form);
+    const id = this.conversationId();
+    if (id) form.append('conversationId', id);
+    return this.http
+      .post<ChatReply>(`${API}/assistant/chat-image`, form)
+      .pipe(tap((r) => this.saved(r.conversationId)));
   }
 
   // Ejecuta la propuesta. 409 si venció, ya no estaba pendiente o el documento cambió

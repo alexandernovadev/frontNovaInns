@@ -8,7 +8,6 @@ import { apartmentColor, apartmentShortName } from '../../shared/utils/apartment
 const STATUS_CLASS: Record<string, string> = {
   PAGADO: 'tint-mint',
   'FALTA PAGO': 'tint-peach',
-  'NO SHOW': 'tint-rose',
   PENDIENTE: 'tint-sky',
   'CHECK-IN': 'tint-mint',
   'CHECK-OUT': 'tint-lilac',
@@ -41,7 +40,7 @@ function inline(raw: string): string {
   );
   // Estados de pago y de estadía
   s = s.replace(
-    /\b(FALTA PAGO|NO SHOW|PAGADO|PENDIENTE|CHECK-IN|CHECK-OUT)\b/g,
+    /\b(FALTA PAGO|PAGADO|PENDIENTE|CHECK-IN|CHECK-OUT)\b/g,
     (m) => `<span class="rt-status ${STATUS_CLASS[m]}">${m}</span>`,
   );
   // Plataformas
@@ -72,7 +71,7 @@ const DAY_SHORT = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 const MONTH_SHORT = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
 const ISO_RE = /\b(\d{4})-(\d{2})-(\d{2})(?:T[\d:.]+Z?)?\b/g;
-const STATUS_RE = /\b(FALTA PAGO|NO SHOW|PAGADO|PENDIENTE|CHECK-IN|CHECK-OUT)\b/g;
+const STATUS_RE = /\b(FALTA PAGO|PAGADO|PENDIENTE|CHECK-IN|CHECK-OUT)\b/g;
 const MONEY_RE = /\$\s?\d{1,3}(?:\.\d{3})+(?:,\d+)?|\$\s?\d+(?:,\d+)?/;
 const PLATFORM_RE = /\b(Booking|AirBnB|Airbnb|Directo)\b/i;
 

@@ -60,11 +60,15 @@ export class LayoutComponent {
     { label: 'Gastos', route: '/expenses', icon: Receipt, devOnly: false },
     { label: 'Analítica', route: '/analytics', icon: BarChart3, devOnly: false },
     { label: 'Tracker', route: '/tracker', icon: Radar, devOnly: true },
-    { label: 'NovaAI', route: '/nova-ai', icon: Sparkles, devOnly: false },
+    { label: 'NovaAI', route: '/nova-ai', icon: Sparkles, devOnly: false, superAdminOnly: true },
     { label: 'Admin', route: '/admin', icon: Shield, devOnly: false },
   ];
 
   navItems = computed(() =>
-    this.allNavItems.filter((item) => !item.devOnly || this.environmentService.isDev()),
+    this.allNavItems.filter(
+      (item) =>
+        (!item.devOnly || this.environmentService.isDev()) &&
+        (!('superAdminOnly' in item) || this.auth.role() === 'SUPER_ADMIN'),
+    ),
   );
 }

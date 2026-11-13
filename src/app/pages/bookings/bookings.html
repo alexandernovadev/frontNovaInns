@@ -85,7 +85,7 @@
         <div class="b-actions">
           <!-- Estado: solo punto si la tarjeta es angosta, pill completo si es ancha -->
           <span class="b-dot narrow" [title]="b.billing.status"
-            [attr.data-tone]="b.billing.status === 'PAGADO' ? 'success' : b.billing.status === 'NO SHOW' ? 'danger' : 'warning'"></span>
+            [attr.data-tone]="b.billing.status === 'PAGADO' ? 'success' : 'warning'"></span>
           <span class="wide"><status-badge [value]="b.billing.status" type="billing" /></span>
           <button class="icon-btn" (click)="openObservations(b, $event)" title="Observaciones" aria-label="Observaciones">
             <lucide-icon [img]="MessageSquare" [size]="16" [strokeWidth]="2" />
@@ -173,7 +173,7 @@
             </span>
             <span class="tiny muted">{{ b.billing.paymentMethod }}</span>
           </div>
-          @if (b.billing.status !== 'PAGADO' && b.billing.status !== 'NO SHOW') {
+          @if (b.billing.status !== 'PAGADO') {
           <button data-size="sm" data-variant="soft" data-tone="brand" (click)="openPayment(b, $event)">+ Pago</button>
           }
         </div>
@@ -331,7 +331,7 @@
       [readonly]="true"
       placeholder="Todos los estados" />
     <autocomplete-select
-      [options]="STATUSES.filter(s => s !== 'NO SHOW').map(s => ({ label: s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s, value: s }))"
+      [options]="STATUSES.map(s => ({ label: s === 'PAGADO' ? 'Pagado' : s === 'FALTA PAGO' ? 'Falta pago' : s, value: s }))"
       [value]="statusFilter"
       (valueChange)="statusFilter = $event; onFilterChange()"
       [readonly]="true"

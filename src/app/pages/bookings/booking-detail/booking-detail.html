@@ -17,7 +17,7 @@
 
     <!-- Acciones: solo icono en móvil, con texto en sm+ -->
     <div class="header-actions">
-      @if (b.billing.status !== 'PAGADO' && b.billing.status !== 'NO SHOW') {
+      @if (b.billing.status !== 'PAGADO') {
         <button data-size="sm" data-variant="soft" data-tone="success" (click)="openPayment()" aria-label="Registrar pago">
           <lucide-icon [img]="CreditCard" [size]="16" [strokeWidth]="2.2" />
           <span class="hide-sm">Registrar pago</span>
