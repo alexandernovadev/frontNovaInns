@@ -243,3 +243,38 @@
 /* Observaciones */
 .obs { font-size: var(--fs-small); line-height: 1.65; white-space: pre-wrap; color: var(--text-1); }
 .obs-foot { margin-top: var(--sp-4); padding-top: var(--sp-3); border-top: 1px solid var(--line); }
+
+/* ── Pago: badge "Falta pago" clickeable + botón billetes con brillo verde ── */
+.pay-badge:not(.wide) { display: inline-flex; }
+.pay-badge {
+  align-items: center;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  filter: none;
+  cursor: pointer;
+  border-radius: var(--r-full, 999px);
+  transition: transform var(--t-fast, 120ms) ease, box-shadow var(--t-fast, 120ms) ease;
+}
+.pay-badge:hover { transform: scale(1.05); box-shadow: 0 0 0 3px var(--warning-soft); }
+.pay-badge:active { transform: scale(0.96); }
+
+.icon-btn.pay-icon,
+.pay-btn {
+  color: var(--success);
+  background: var(--success-soft);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--success) 55%, transparent);
+  transform: scale(1.05);
+  transition: transform var(--t-fast, 120ms) ease, box-shadow var(--t-fast, 120ms) ease;
+}
+.icon-btn.pay-icon:hover,
+.pay-btn:hover {
+  color: var(--success-deep);
+  background: var(--success-soft);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--success) 75%, transparent);
+}
+.icon-btn.pay-icon:active,
+.pay-btn:active { transform: scale(0.95); }
+.pay-btn { display: inline-flex; align-items: center; gap: 4px; }

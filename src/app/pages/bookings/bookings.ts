@@ -14,7 +14,7 @@ import { fmtNumber } from '../../shared/utils/number.util';
 import { PLATFORMS, PLATFORM_CLASS, PLATFORM_ACCENT, STATUSES, LIFECYCLE_STATUSES, LIFECYCLE_CLASS } from '../../shared/constants/booking.constants';
 import { apartmentColor, apartmentShortName } from '../../shared/utils/apartment-color';
 import { AlertService } from '../../shared/components/services/alert.service';
-import { LucideAngularModule, CalendarDays, LayoutGrid, Rows3, MessageSquare, Braces, SlidersHorizontal, Plus, Pencil, Trash2, ChevronRight } from 'lucide-angular';
+import { LucideAngularModule, CalendarDays, LayoutGrid, Rows3, MessageSquare, Braces, SlidersHorizontal, Plus, Pencil, Trash2, ChevronRight, Banknote } from 'lucide-angular';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
 import { loadList } from '../../shared/utils/list.util';
 import { DeleteState, openDelete, confirmDelete } from '../../shared/utils/delete.util';
@@ -35,6 +35,7 @@ export class BookingsComponent implements OnInit {
   readonly Braces = Braces;
   readonly SlidersHorizontal = SlidersHorizontal;
   readonly Plus = Plus;
+  readonly Banknote = Banknote;
   readonly Pencil = Pencil;
   readonly Trash2 = Trash2;
   readonly ChevronRight = ChevronRight;
@@ -81,9 +82,11 @@ export class BookingsComponent implements OnInit {
   }
 
   // Mismo orden que el backend: activas primero por check-in ascendente,
-  // y las CHECK-OUT terminadas caen al final (también por check-in).
+  // y las CHECK-OUT ya PAGADAS caen al final (también por check-in).
+  // Un CHECK-OUT con saldo pendiente se queda arriba para cobrarlo.
   private static sortBookings(list: IBooking[]): IBooking[] {
-    const done = (x: IBooking) => (x.stay.status === 'CHECK-OUT' ? 1 : 0);
+    const done = (x: IBooking) =>
+      x.stay.status === 'CHECK-OUT' && x.billing.status === 'PAGADO' ? 1 : 0;
     return [...list].sort(
       (a, b) =>
         done(a) - done(b) ||
@@ -305,7 +308,9 @@ export class BookingsComponent implements OnInit {
     this.saving.set(true);
     this.bookingsService.registerPayment(id, this.payAmount).subscribe({
       next: updated => {
-        this.bookings.update(list => list.map(b => b._id === updated._id ? updated : b));
+        this.bookings.update(list =>
+          BookingsComponent.sortBookings(list.map(b => b._id === updated._id ? updated : b)),
+        );
         this.showPayment.set(false);
         this.saving.set(false);
         this.loadSummary();

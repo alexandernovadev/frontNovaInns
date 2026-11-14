@@ -84,9 +84,19 @@
         </span>
         <div class="b-actions">
           <!-- Estado: solo punto si la tarjeta es angosta, pill completo si es ancha -->
-          <span class="b-dot narrow" [title]="b.billing.status"
-            [attr.data-tone]="b.billing.status === 'PAGADO' ? 'success' : 'warning'"></span>
+          @if (b.billing.status === 'PAGADO') {
+          <span class="b-dot narrow" [title]="b.billing.status" data-tone="success"></span>
           <span class="wide"><status-badge [value]="b.billing.status" type="billing" /></span>
+          } @else {
+          <button type="button" class="pay-badge narrow" (click)="openPayment(b, $event)"
+            title="Registrar pago" aria-label="Registrar pago">
+            <span class="b-dot" data-tone="warning"></span>
+          </button>
+          <button type="button" class="pay-badge wide" (click)="openPayment(b, $event)"
+            title="Registrar pago" aria-label="Registrar pago">
+            <status-badge [value]="b.billing.status" type="billing" />
+          </button>
+          }
           <button class="icon-btn" (click)="openObservations(b, $event)" title="Observaciones" aria-label="Observaciones">
             <lucide-icon [img]="MessageSquare" [size]="16" [strokeWidth]="2" />
           </button>
@@ -174,7 +184,9 @@
             <span class="tiny muted">{{ b.billing.paymentMethod }}</span>
           </div>
           @if (b.billing.status !== 'PAGADO') {
-          <button data-size="sm" data-variant="soft" data-tone="brand" (click)="openPayment(b, $event)">+ Pago</button>
+          <button class="pay-btn" data-size="sm" data-variant="soft" data-tone="success" (click)="openPayment(b, $event)">
+            <lucide-icon [img]="Banknote" [size]="16" [strokeWidth]="2.2" /> Pago
+          </button>
           }
         </div>
       </div>
@@ -231,7 +243,14 @@
                 [title]="b.stay.status === 'CHECK-OUT' ? 'Estado final' : 'Cambiar estado'">
                 {{ b.stay.status || 'PENDIENTE' }}
               </span>
+              @if (b.billing.status === 'PAGADO') {
               <status-badge [value]="b.billing.status" type="billing" />
+              } @else {
+              <button type="button" class="pay-badge" (click)="openPayment(b, $event)"
+                title="Registrar pago" aria-label="Registrar pago">
+                <status-badge [value]="b.billing.status" type="billing" />
+              </button>
+              }
               <div class="row" style="--gap: 0" (click)="$event.stopPropagation()">
                 <button class="icon-btn" (click)="openObservations(b, $event)" title="Observaciones" aria-label="Observaciones">
                   <lucide-icon [img]="MessageSquare" [size]="14" [strokeWidth]="2" />
@@ -239,8 +258,8 @@
                 <button class="icon-btn" (click)="openEdit(b, $event)" title="Editar" aria-label="Editar">
                   <lucide-icon [img]="Pencil" [size]="14" [strokeWidth]="2" />
                 </button>
-                <button class="icon-btn" (click)="openPayment(b, $event)" title="Pago" aria-label="Pago">
-                  <lucide-icon [img]="Plus" [size]="14" [strokeWidth]="2.4" />
+                <button class="icon-btn pay-icon" (click)="openPayment(b, $event)" title="Pago" aria-label="Pago">
+                  <lucide-icon [img]="Banknote" [size]="14" [strokeWidth]="2.4" />
                 </button>
                 <button class="icon-btn danger" (click)="openDeleteConfirm(b, $event)" title="Borrar" aria-label="Borrar">
                   <lucide-icon [img]="Trash2" [size]="14" [strokeWidth]="2" />
