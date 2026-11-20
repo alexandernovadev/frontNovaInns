@@ -11,6 +11,7 @@ import { CanvasRenderer } from 'echarts/renderers';
 import type * as L from 'leaflet';
 import { AnalyticsService } from '../../core/services/analytics.service';
 import { ApartmentsService } from '../../core/services/apartments.service';
+import { apartmentShortName } from '../../shared/utils/apartment-color';
 import { DashboardData, VacancyData } from '../../core/interfaces';
 import { CurrencyCopPipe } from '../../shared/pipes/currency-cop.pipe';
 import { AutocompleteSelect } from '../../shared/components/autocomplete-select';
@@ -81,7 +82,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.apartmentsService.findAll().subscribe({
       next: res => this.apartmentOptions.set([
         { label: 'Todos', value: '' },
-        ...res.data.map(a => ({ label: a.internalName, value: a._id })),
+        ...res.data.map(a => ({ label: apartmentShortName(a.internalName), value: a._id })),
       ]),
     });
   }

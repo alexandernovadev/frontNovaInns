@@ -1,6 +1,7 @@
 import { Component, input, output, linkedSignal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { LucideAngularModule, Pencil, Trash2, ArrowRight, CalendarPlus, TriangleAlert, Building2 } from 'lucide-angular';
 import { ActionCard } from '../../core/services/assistant.service';
+import { apartmentShortName } from '../../shared/utils/apartment-color';
 import { ACTION_STATUS_TEXT, fieldLabel, formatValue, prettyDatesIn } from './nova-format';
 
 // Estilo de cada tipo de propuesta (tono del sistema: data-tone)
@@ -72,7 +73,7 @@ const KIND = {
           <select [value]="apartmentId()" (change)="apartmentId.set($any($event.target).value)">
             <option value="" disabled>Elige el apartamento…</option>
             @for (a of apartmentOptions(); track a.id) {
-              <option [value]="a.id">{{ a.name }}</option>
+              <option [value]="a.id">{{ shortName(a.name) }}</option>
             }
           </select>
         </label>
@@ -135,6 +136,7 @@ export class NovaActionCard {
   readonly ArrowRight = ArrowRight;
   readonly TriangleAlert = TriangleAlert;
   readonly Building2 = Building2;
+  readonly shortName = apartmentShortName;
 
   card = input.required<ActionCard>();
   busy = input(false);

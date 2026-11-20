@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NgTemplateOutlet } from '@angular/common';
 import { BookingsService } from '../../../core/services/bookings.service';
 import { ApartmentsService } from '../../../core/services/apartments.service';
+import { apartmentShortName } from '../../../shared/utils/apartment-color';
 import { IBooking, IApartment, IExtraService } from '../../../core/interfaces';
 import { COUNTRIES_DATA, CountryData } from './countries';
 import { PlatformIcon } from '../../../shared/components/platform-icon';
@@ -127,7 +128,7 @@ export class BookingFormComponent implements OnInit {
   lifecycleOptions = (): AutocompleteOption[] => this.LIFECYCLE_STATUSES.map(s => ({ label: s, value: s }));
 
   apartmentOptions = (): AutocompleteOption[] =>
-    this.apartments().map(a => ({ label: a.internalName, value: a._id }));
+    this.apartments().map(a => ({ label: apartmentShortName(a.internalName), value: a._id }));
 
   // Autocomplete helpers
   countryOptions = (): AutocompleteOption[] => this.COUNTRIES_DATA.map(c => ({ label: c.name, value: c.code }));

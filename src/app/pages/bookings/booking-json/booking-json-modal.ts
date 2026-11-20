@@ -5,6 +5,7 @@ import { LucideAngularModule, Braces, FileCode, Copy, Check, ClipboardPaste, Bui
 import { ModalNova } from '../../../shared/components/modal-nova';
 import { AutocompleteSelect, AutocompleteOption } from '../../../shared/components/autocomplete-select';
 import { ApartmentsService } from '../../../core/services/apartments.service';
+import { apartmentShortName } from '../../../shared/utils/apartment-color';
 import { AssistantService } from '../../../core/services/assistant.service';
 import { PLATFORMS, METHODS, STATUSES } from '../../../shared/constants/booking.constants';
 
@@ -254,7 +255,7 @@ export class BookingJsonModal implements OnInit {
 
   ngOnInit() {
     this.apartmentsService.findAllCached({ limit: 100 }).subscribe({
-      next: (r) => this.apartmentOptions.set(r.data.map((a) => ({ label: a.internalName, value: a._id }))),
+      next: (r) => this.apartmentOptions.set(r.data.map((a) => ({ label: apartmentShortName(a.internalName), value: a._id }))),
     });
   }
 

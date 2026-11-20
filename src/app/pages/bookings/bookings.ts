@@ -128,7 +128,7 @@ export class BookingsComponent implements OnInit {
     this.apartmentsService.findAllCached().subscribe({
       next: res => this.apartmentOptions.set([
         { label: 'Todos', value: '' },
-        ...res.data.map(a => ({ label: a.internalName, value: a._id })),
+        ...res.data.map(a => ({ label: apartmentShortName(a.internalName), value: a._id })),
       ]),
     });
   }
